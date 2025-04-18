@@ -314,8 +314,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="logo_app" />
-                            <entry key="sourceFile" value="$USER_HOME$/Documents/logo_app.svg" />
+                            <entry key="outputName" value="logo_color_textblack" />
+                            <entry key="sourceFile" value="$USER_HOME$/Documents/logo-color-textBlack.svg" />
                           </map>
                         </option>
                       </PersistentState>
