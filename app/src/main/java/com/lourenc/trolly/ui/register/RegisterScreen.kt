@@ -13,7 +13,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 fun RegisterScreen(
     onRegisterClick: (String, String) -> Unit
 ) {
-    var name by rememberSaveable { mutableStateOf("") }
+    var firstName by rememberSaveable { mutableStateOf("") }
+    var lastName by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
@@ -30,9 +31,18 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Name") },
+            value = firstName,
+            onValueChange = { firstName = it },
+            label = { Text("First Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = lastName,
+            onValueChange = { lastName = it },
+            label = { Text("Last Name") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -70,6 +80,7 @@ fun RegisterScreen(
         Button(
             onClick = {
                 if (password == confirmPassword && email.isNotBlank()) {
+                    println("Chamada de onRegisterClick")
                     onRegisterClick(email, password)
                 }
             },
