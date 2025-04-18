@@ -10,16 +10,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lourenc.trolly.splash.SplashScreen
 import com.lourenc.trolly.ui.login.LoginScreen
+import com.lourenc.trolly.ui.register.RegisterScreen
+
 
 import com.lourenc.trolly.ui.theme.TrollyTheme
-
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
+
             setContent {
                 val navController: NavHostController = rememberNavController()
 
@@ -36,7 +36,17 @@ class MainActivity : ComponentActivity() {
                                 }
                          composable("login") {
                              LoginScreen(
-                                 println("Login feito")
+                                 onLoginSuccess = {
+                                     println("Login feito")
+                                 }
+
+                             )
+                         }
+                         composable("register") {
+                             RegisterScreen(
+                                 onRegisterClick = { email, password ->
+                                     println("Registrado: $email, $password")
+                                 }
                              )
                          }
                      }
@@ -48,4 +58,4 @@ class MainActivity : ComponentActivity() {
 
     }
 
-}
+

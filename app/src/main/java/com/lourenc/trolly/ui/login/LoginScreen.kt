@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import com.lourenc.trolly.R
 
 @Composable
-fun LoginScreen(println: Unit) {
+fun LoginScreen(onLoginSuccess: () -> Unit) {
     // Estado do e-mail e senha
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -73,8 +73,10 @@ fun LoginScreen(println: Unit) {
             Text("Entrar")
         }
     }
-}
 
-fun onLoginSuccess() {
-    TODO("Not yet implemented")
+
+    fun onLoginSuccess() {
+        TODO("Not yet implemented")
+    }
+
 }
