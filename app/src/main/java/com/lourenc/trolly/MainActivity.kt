@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lourenc.trolly.splash.SplashScreen
+import com.lourenc.trolly.ui.home.HomeScreen
 import com.lourenc.trolly.ui.login.LoginScreen
 import com.lourenc.trolly.ui.register.RegisterScreen
 
@@ -38,6 +39,9 @@ class MainActivity : ComponentActivity() {
                              LoginScreen(
                                  onLoginSuccess = {
                                      println("Login feito")
+                                     navController.navigate("home") {
+                                         popUpTo("Login") { inclusive = true }
+                                     }
                                  }
 
                              )
@@ -46,8 +50,14 @@ class MainActivity : ComponentActivity() {
                              RegisterScreen(
                                  onRegisterClick = { email, password ->
                                      println("Registrado: $email, $password")
+                                     navController.navigate("home") {
+                                         popUpTo("register") { inclusive = true}
+                                     }
                                  }
                              )
+                         }
+                         composable("home") {
+                             HomeScreen()
                          }
                      }
 
