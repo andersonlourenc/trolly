@@ -8,6 +8,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
+import com.lourenc.trolly.data.UserPreferences
+
 
 @Composable
 fun RegisterScreen(
@@ -77,11 +81,22 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
+
         Button(
             onClick = {
                 if (password == confirmPassword && email.isNotBlank()) {
-                    println("Chamada de onRegisterClick")
-                    onRegisterClick(email, password)
+                    scope.launch {
+                        UserPreferences(context).saveUser(
+                            firstName = firstName,
+                            lastName = lastName,
+                            email = email,
+                            password = password
+                        )
+                        onRegisterClick(email, password)
+
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth()
