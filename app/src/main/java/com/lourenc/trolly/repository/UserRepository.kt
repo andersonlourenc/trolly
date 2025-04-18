@@ -1,18 +1,17 @@
-package com.lourenc.trolly.data.repository
+package com.lourenc.trolly.repository
 
-import com.lourenc.trolly.data.model.User
-
+import com.lourenc.trolly.model.User
 
 
 object UserRepository {
     private val users = mutableListOf<User>()
 
-    fun registerUser(name: String, email: String, password: String): Boolean {
+    fun registerUser(firstName: String, lastName: String, email: String, password: String): Boolean {
 
         val userExists = users.any { it.email == email }
         if (userExists) return false
 
-        users.add(User(name, email, password))
+        users.add(User(firstName, lastName, email, password))
         return true
     }
 
