@@ -1,6 +1,5 @@
 package com.lourenc.trolly.auth
 
-
 import android.content.Context
 import android.widget.Toast
 import androidx.navigation.NavController
@@ -39,6 +38,7 @@ fun createUserWithEmail(
             }
         }
 }
+
 fun loginWithEmail(
     email: String,
     senha: String,
