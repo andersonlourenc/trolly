@@ -142,7 +142,7 @@ fun LoginScreen(navController: NavController, context: Context) {
 
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Botão Entrar
         Button(
@@ -151,6 +151,7 @@ fun LoginScreen(navController: NavController, context: Context) {
             },
             modifier = Modifier.fillMaxWidth()
                 .height(50.dp),
+            shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.surface
