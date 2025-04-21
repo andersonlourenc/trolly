@@ -1,14 +1,14 @@
 package com.lourenc.trolly.auth
 
 import android.content.Context
+import android.widget.Toast
+import androidx.navigation.NavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
-import android.widget.Toast
-import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 
 fun getGoogleSignInClient(context: Context): GoogleSignInClient {
     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -18,7 +18,11 @@ fun getGoogleSignInClient(context: Context): GoogleSignInClient {
     return GoogleSignIn.getClient(context, gso)
 }
 
-fun firebaseAuthWithGoogle(idToken: String, context: Context, navController: NavController) {
+fun firebaseAuthWithGoogle(
+    idToken: String,
+    context: Context,
+    navController: NavController
+) {
     val credential = GoogleAuthProvider.getCredential(idToken, null)
     val auth = FirebaseAuth.getInstance()
 
@@ -27,7 +31,6 @@ fun firebaseAuthWithGoogle(idToken: String, context: Context, navController: Nav
             if (task.isSuccessful) {
                 val user: FirebaseUser? = auth.currentUser
                 Toast.makeText(context, "Bem-vindo, ${user?.displayName}", Toast.LENGTH_SHORT).show()
-                // Você pode navegar para a próxima tela aqui, se quiser
                 navController.navigate("home")
             } else {
                 Toast.makeText(context, "Falha na autenticação", Toast.LENGTH_SHORT).show()

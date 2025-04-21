@@ -3,6 +3,7 @@ package com.lourenc.trolly.ui.screens
 import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -45,12 +47,14 @@ import com.lourenc.trolly.auth.getGoogleSignInClient
 import com.lourenc.trolly.auth.firebaseAuthWithGoogle
 
 
+
 @Composable
 fun RegisterScreen(navController: NavController, context: Context) {
-    val googleSignInClient = remember { getGoogleSignInClient(context) }
+    val context = LocalContext.current
+    val googleSignInClient = remember{ getGoogleSignInClient(context) }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
-    ) { result: androidx.activity.result.ActivityResult ->
+    ) { result: ActivityResult ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
             val account = task.getResult(ApiException::class.java)
@@ -67,13 +71,9 @@ fun RegisterScreen(navController: NavController, context: Context) {
     var senha by remember { mutableStateOf("") }
     val passwordVisible = remember { mutableStateOf(false) }
     var termosAceitos by remember { mutableStateOf(false) }
-    val passwordError = remember { mutableStateOf(false) }
 
-    fun isValidPassword(password: String): Boolean {
-        val hasUppercase = password.any { it.isUpperCase() }
-        val hasDigit = password.any { it.isDigit() }
-        return hasUppercase && hasDigit
-    }
+
+
 
 
     Column(
@@ -169,15 +169,44 @@ fun RegisterScreen(navController: NavController, context: Context) {
         Button(
             onClick = {
                 println("===> Botão Criar Conta clicado")
-                if (termosAceitos) {
-                    createUserWithEmail(nome, sobrenome, email, senha, context, navController)
-                } else {
-                    Toast.makeText(context, "Você deve aceitar os termos", Toast.LENGTH_SHORT).show()
+                if (!isValidPassword(senha)) {
+                    Toast.makeText(
+                        context,
+                        "A senha deve conter pelo menos 8 caracteres.", Toast.LENGTH_LONG
+                    ).show()
+
+
+
+                    return@Button
                 }
+                if (!termosAceitos) {
+                    Toast.makeText(
+                        context, "Você deve aceitar os termos",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@Button
+                }
+
+                createUserWithEmail(
+                    nome = nome,
+                    sobrenome = sobrenome,
+                    email = email,
+                    senha = senha,
+                    context = context,
+                    navController = navController
+                )
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Criar conta")
         }
     }
+}
+
+fun isValidPassword(password: String): Boolean {
+    val hasUppercase = password.any { it.isUpperCase() }
+    val hasDigit = password.any { it.isDigit() }
+    val isLongEnough = password.length >= 8
+
+    return hasUppercase && hasDigit && isLongEnough
 }
