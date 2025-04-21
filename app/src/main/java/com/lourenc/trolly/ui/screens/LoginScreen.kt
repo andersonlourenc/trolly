@@ -144,7 +144,7 @@ fun LoginScreen(navController: NavController, context: Context) {
         Spacer(modifier = Modifier.height(8.dp))
 
         // Esqueceu senha
-        TextButton(onClick = { /* Redirecionar para recuperação */ }) {
+        TextButton(onClick = { navController.navigate("forgot_password") }) {
             Text("Esqueceu a senha?")
         }
 

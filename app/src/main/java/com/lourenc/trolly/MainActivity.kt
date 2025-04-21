@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lourenc.trolly.ui.screens.ForgotPasswordScreen
 import com.lourenc.trolly.ui.screens.HomeScreen
 import com.lourenc.trolly.ui.screens.LaunchScreen
 import com.lourenc.trolly.ui.screens.LoginScreen
@@ -34,6 +35,9 @@ fun AppNavigator() {
             composable("register") { RegisterScreen(navController, context) }
             composable("login") { LoginScreen(navController, context) }
             composable("home") { HomeScreen() }
+            composable("forgot_password") { ForgotPasswordScreen(navController)
+            }
+
         }
     }
 }
