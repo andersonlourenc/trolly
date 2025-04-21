@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "741353373161",
+    "project_id": "lourenc-ae374",
+    "storage_bucket": "lourenc-ae374.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:741353373161:android:6cab06f6183cb88c145f78",
+        "android_client_info": {
+          "package_name": "com.lourenc.trolly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "741353373161-gkhm582ibc88qn8e723p96nu0oogl9oa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lourenc.trolly",
+            "certificate_hash": "8dd295eaa8da157ba172333d024ccb2cd9ac28ac"
+          }
+        },
+        {
+          "client_id": "741353373161-9bh6d8me3nq3knrmo1couq94ui2ioeid.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRlwbIVi-Ov8zi1i8OUBFmKC9ZT2kBl_8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "741353373161-9bh6d8me3nq3knrmo1couq94ui2ioeid.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
