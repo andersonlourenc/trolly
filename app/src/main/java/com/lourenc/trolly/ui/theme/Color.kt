@@ -3,27 +3,34 @@ package com.lourenc.trolly.ui.theme
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 
+// Light
+val BluePrimary = Color(0xFF246BFD)
+val BluePrimaryVariant = Color(0xFF1A4FCC)
+val BlueSecondary = Color(0xFFDDE9FF)
+val BlueBackground = Color(0xFFF7F9FC)
+val BlueSurface = Color(0xFFFFFFFF)
+val BlueOnPrimary = Color(0xFFFFFFFF)
+val BlueOnSecondary = Color(0xFF1A4FCC)
+val BlueOnBackground = Color(0xFF1C1C1E)
+val BlueOnSurface = Color(0xFF1C1C1E)
 
-// ====== Light Theme ======
-val LightPrimary = Color(0xFF4E6EF2)
-val LightSecondary = Color(0xFFFFB836)
-val LightBackground = Color(0xFFF9FAFB)
-val LightSurface = Color(0xFFFFFFFF)
-val LightTextPrimary = Color(0xFF1C1C1E)
-val LightTextSecondary = Color(0xFF6C6C70)
-val LightSuccess = Color(0xFF22C55E)
-val LightError = Color(0xFFEF4444)
+// Dark
+val DarkBluePrimaryVariant = Color(0xFF123D9B)
+val DarkBlueSecondary = Color(0xFF2C3E50)
+val DarkBlueBackground = Color(0xFF0E1116)
+val DarkBlueSurface = Color(0xFF1A1D23)
+val DarkBlueOnBackground = Color(0xFFE2EAFB)
+val DarkBlueOnSurface = Color(0xFFCBD6EA)
 
+// ✅ Feedback
+val SuccessGreen = Color(0xFF2ECC71)
+val SuccessGreenVariant = Color(0xFF27AE60) // Dark
+val OnSuccess = Color(0xFFFFFFFF)
 
-// ====== Dark Theme ======
-val DarkPrimary = Color(0xFF8E9CFF)
-val DarkSecondary = Color(0xFFFFD173)
-val DarkBackground = Color(0xFF121212)
-val DarkSurface = Color(0xFF1E1E1E)
-val DarkTextPrimary = Color(0xFFF5F5F5)
-val DarkTextSecondary = Color(0xFFAAAAAA)
-val DarkSuccess = Color(0xFF4ADE80)
-val DarkError = Color(0xFFF87171)
+val ErrorRed = Color(0xFFE74C3C)
+val ErrorRedVariant = Color(0xFFC0392B) // Dark
+val OnError = Color(0xFFFFFFFF)
+
 
 data class ExtraColors(
     val success: Color
@@ -32,6 +39,6 @@ data class ExtraColors(
 // Crie uma CompositionLocal para acesso
 val LocalExtraColors = compositionLocalOf {
     ExtraColors(
-        success = LightSuccess // fallback
+        success = SuccessGreen // fallback
     )
 }
