@@ -11,43 +11,33 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
 
 
-
 private val LightColorScheme = lightColorScheme(
     primary = BluePrimary,
-    onPrimary = BlueOnPrimary,
+    onPrimary = OnPrimary,
     primaryContainer = BluePrimaryVariant,
-
     secondary = BlueSecondary,
-    onSecondary = BlueOnSecondary,
-
+    onSecondary = OnSecondary,
     background = BlueBackground,
-    onBackground = BlueOnBackground,
-
+    onBackground = OnBackground,
     surface = BlueSurface,
-    onSurface = BlueOnSurface,
-
-    error = ErrorRed,
+    onSurface = OnSurface,
+    error = Error,
     onError = OnError
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = BluePrimary,
-    onPrimary = BlueOnPrimary,
-    primaryContainer = DarkBluePrimaryVariant,
-
-    secondary = DarkBlueSecondary,
-    onSecondary = BlueSecondary,
-
-    background = DarkBlueBackground,
-    onBackground = DarkBlueOnBackground,
-
-    surface = DarkBlueSurface,
-    onSurface = DarkBlueOnSurface,
-
-    error = ErrorRedVariant,
-    onError = OnError
+    primary = BluePrimaryDark,
+    onPrimary = OnPrimaryDark,
+    primaryContainer = BluePrimaryVariantDark,
+    secondary = BlueSecondaryDark,
+    onSecondary = OnSecondaryDark,
+    background = BlueBackgroundDark,
+    onBackground = OnBackgroundDark,
+    surface = BlueSurfaceDark,
+    onSurface = OnSurfaceDark,
+    error = ErrorDark,
+    onError = OnErrorDark
 )
-
 
 
 @Composable
@@ -57,9 +47,9 @@ fun TrollyTheme(
 ) {
     val colors = if (darkTheme) DarkColorScheme else LightColorScheme
     val extraColors = if (darkTheme) {
-        ExtraColors(success = SuccessGreenVariant)
+        ExtraColors(success = Success)
     } else {
-        ExtraColors(success = SuccessGreen)
+        ExtraColors(success = SuccessDark)
     }
 
     CompositionLocalProvider(LocalExtraColors provides extraColors) {

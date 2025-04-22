@@ -41,6 +41,11 @@ import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Construction
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material3.Icon
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import com.lourenc.trolly.auth.firebaseAuthWithGoogle
 
@@ -95,11 +100,11 @@ fun LaunchScreen(navController: NavController) {
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.logo_color_textblack),
+                    painter = painterResource(id = R.drawable.logo),
                     contentDescription = "Logo",
                     modifier = Modifier
 
-                        .size(240.dp)
+                        .size(180.dp)
                 )
             }
 
@@ -115,20 +120,21 @@ fun LaunchScreen(navController: NavController) {
                     onClick = {
                         navController.navigate("login")
                     },
-                    modifier = Modifier.fillMaxWidth()
-                        .height(48.dp),
                     shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth()
+                        .height(48.dp)
+                        .shadow(elevation = 8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = Color.White
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Box(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.email),
-                            contentDescription = "email logo",
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = "E-mail",
                             modifier = Modifier
                                 .padding(start = 0.dp)
                                 .size(24.dp)
@@ -152,10 +158,9 @@ fun LaunchScreen(navController: NavController) {
                         .height(48.dp),
                     shape = MaterialTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
-                    ),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    )
 
                 ) {
                     Box(
@@ -189,10 +194,10 @@ fun LaunchScreen(navController: NavController) {
                         .height(48.dp),
                     shape = MaterialTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
                     ),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondary)
+
                 ) {
                     Box(
                         modifier = Modifier.fillMaxWidth()
