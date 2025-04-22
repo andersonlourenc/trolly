@@ -1,5 +1,6 @@
 package com.lourenc.trolly.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,27 +32,53 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.remember
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.platform.LocalContext
+import com.lourenc.trolly.auth.firebaseAuthWithGoogle
 
 
 @Composable
 fun LaunchScreen(navController: NavController) {
+
+
+    val context = LocalContext.current
+
+    val googleSignInClient = remember {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("741353373161-9bh6d8me3nq3knrmo1couq94ui2ioeid.apps.googleusercontent.com")
+            .requestEmail()
+            .build()
+        GoogleSignIn.getClient(context, gso)
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.result
+            val idToken = account.idToken
+            if (idToken != null) {
+                firebaseAuthWithGoogle(idToken, context, navController)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        Image(
-            painter = painterResource(id = R.drawable.image_background),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.6f))
-        )
 
         Column(
             modifier = Modifier
@@ -60,20 +87,6 @@ fun LaunchScreen(navController: NavController) {
 
             ) {
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.TopCenter
-            ){
-                Image(
-                    painter = painterResource(id = R.drawable.logo_white_textwhite),
-                    contentDescription = "Logo",
-                    modifier = Modifier
-                        .padding(top = 0.dp)
-                        .size(120.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(32.dp))
 
             Box(
                 modifier = Modifier
@@ -81,55 +94,125 @@ fun LaunchScreen(navController: NavController) {
                     .weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "Planeje, compre e acompanhe seus gastos facilmente.",
-                    color = Color.White,
-                    style = MaterialTheme.typography.headlineSmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 24.dp)
+                Image(
+                    painter = painterResource(id = R.drawable.logo_color_textblack),
+                    contentDescription = "Logo",
+                    modifier = Modifier
+
+                        .size(240.dp)
                 )
             }
 
-            Column (
+            Column(
                 modifier = Modifier
 
-                    .navigationBarsPadding(), // Garante que os botões fiquem acima da barra do sistema
+                    .navigationBarsPadding(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 Button(
                     onClick = {
-                        navController.navigate("register")
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text("Cadastrar")
-                }
-
-                OutlinedButton(
-                    onClick = {
                         navController.navigate("login")
                     },
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.fillMaxWidth()
+                        .height(48.dp),
+                    shape = MaterialTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = Color.White
                     )
                 ) {
-                    Text("Já tenho uma conta")
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.email),
+                            contentDescription = "email logo",
+                            modifier = Modifier
+                                .padding(start = 0.dp)
+                                .size(24.dp)
+                        )
+                        Text(
+                            "Entrar com o E-mail",
+                            modifier = Modifier.align(Alignment.Center),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+
+                    }
+                }
+
+
+                Button(
+                    onClick = {
+
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+
+                        Image(
+                            painter = painterResource(id = R.drawable.facebook),
+                            contentDescription = "Facebook logo",
+                            modifier = Modifier
+                                .padding(start = 0.dp)
+                                .size(24.dp)
+                        )
+
+                        Text(
+                            "Entrar com o Facebook",
+                            modifier = Modifier.align(Alignment.Center),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+
+
+                Button(
+                    onClick = {
+                        val signInIntent = googleSignInClient.signInIntent
+                        launcher.launch(signInIntent)
+                    },
+
+                    modifier = Modifier.fillMaxWidth()
+                        .height(48.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondary)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.google),
+                            contentDescription = "Google logo",
+                            modifier = Modifier
+                                .padding(start = 0.dp)
+                                .size(24.dp)
+                        )
+
+                        Text(
+                            "Entrar com Google",
+                            modifier = Modifier.align(Alignment.Center),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
                 }
             }
-
-
         }
     }
 }
