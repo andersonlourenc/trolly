@@ -211,7 +211,7 @@ fun LaunchScreen(navController: NavController) {
                         )
 
                         Text(
-                            "Entrar com Google",
+                            "Entrar com o Google",
                             modifier = Modifier.align(Alignment.Center),
                             style = MaterialTheme.typography.bodyLarge
                         )
