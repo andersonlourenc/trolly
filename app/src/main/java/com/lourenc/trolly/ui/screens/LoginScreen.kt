@@ -33,13 +33,22 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.withStyle
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.lourenc.trolly.auth.firebaseAuthWithGoogle
@@ -53,28 +62,6 @@ fun LoginScreen(navController: NavController, context: Context) {
     val passwordState = remember { mutableStateOf("") }
     val passwordVisible = remember { mutableStateOf(false) }
 
-    val googleSignInClient = remember {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("741353373161-9bh6d8me3nq3knrmo1couq94ui2ioeid.apps.googleusercontent.com")
-            .requestEmail()
-            .build()
-        GoogleSignIn.getClient(context, gso)
-    }
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.result
-            val idToken = account.idToken
-            if (idToken != null) {
-                firebaseAuthWithGoogle(idToken, context, navController)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
 
     Column(
         modifier = Modifier
@@ -85,17 +72,14 @@ fun LoginScreen(navController: NavController, context: Context) {
     ) {
 
 
-        // Logo
-        Image(
-            painter = painterResource(id = R.drawable.logo_color_textblack), // substitua por seu logo real
-            contentDescription = "Logo",
-            modifier = Modifier.size(120.dp)
-        )
+            Image(
+                painter = painterResource(id = R.drawable.logo2),
+                contentDescription = "Logo",
+                modifier = Modifier.size(100.dp)
+            )
 
 
-
-
-        Text("Login", style = MaterialTheme.typography.titleMedium)
+        Text("Bem vindo de volta", style = MaterialTheme.typography.titleMedium)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -106,7 +90,8 @@ fun LoginScreen(navController: NavController, context: Context) {
             onValueChange = { emailState.value = it },
             label = { Text("Email") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium
 
         )
 
@@ -114,6 +99,7 @@ fun LoginScreen(navController: NavController, context: Context) {
 
         // Senha
         OutlinedTextField(
+
             value = passwordState.value,
             onValueChange = { passwordState.value = it },
             label = { Text("Senha") },
@@ -128,7 +114,9 @@ fun LoginScreen(navController: NavController, context: Context) {
                 IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
                     Icon(imageVector = image, contentDescription = null)
                 }
-            }
+            },
+            shape = MaterialTheme.shapes.medium
+
         )
 
         // Esqueceu senha
@@ -136,86 +124,52 @@ fun LoginScreen(navController: NavController, context: Context) {
             modifier = Modifier.align(Alignment.Start),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                contentColor = MaterialTheme.colorScheme.onBackground
             )) {
             Text("Esqueceu a senha?")
 
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         // Botão Entrar
         Button(
             onClick = {
                 loginWithEmail(emailState.value, passwordState.value, context, navController)
             },
+            shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
-                .height(50.dp),
-            colors = ButtonDefaults.buttonColors(
+                .height(48.dp)
+                .shadow(elevation = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.surface
+                contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
             Text("Entrar")
         }
 
+        Spacer(modifier = Modifier.height(6.dp))
 
-
-        DividerWithText()
-
-
-        // Botão Google
-        Button(
-            onClick = {
-                val signInIntent = googleSignInClient.signInIntent
-                launcher.launch(signInIntent)
-            },
-
-            modifier = Modifier.fillMaxWidth()
-                .height(50.dp),
-            shape = MaterialTheme.shapes.medium,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.background,
+        TextButton(
+            onClick = { navController.navigate("register") },
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            colors = ButtonDefaults.textButtonColors(
+                containerColor = Color.Transparent,
                 contentColor = MaterialTheme.colorScheme.onBackground
-        ),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-        )  {
-                Image(
-                    painter = painterResource(id = R.drawable.google),
-                    contentDescription = "Google logo",
-                    modifier = Modifier
-                        .size(24.dp)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text("Entrar com Google")
-            }
-
-    }
-
-}
+            )
+        ) {
+            Text(
+                buildAnnotatedString {
+                    append("Não tem uma conta? ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Cadastre-se agora")
+                    }
+                }
+            )
+        }
 
 
-@Composable
-fun DividerWithText(text: String = "Ou") {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp)
-    ) {
-        Divider(
-            modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.secondaryContainer
-        )
-        Text(
-            text = text,
-            modifier = Modifier.padding(horizontal = 8.dp),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-        Divider(
-            modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.secondaryContainer
-        )
+
     }
 }
