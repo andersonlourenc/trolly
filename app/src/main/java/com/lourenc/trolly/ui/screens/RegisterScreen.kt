@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,15 +15,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,12 +36,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
@@ -51,7 +60,7 @@ import com.lourenc.trolly.auth.firebaseAuthWithGoogle
 @Composable
 fun RegisterScreen(navController: NavController, context: Context) {
     val context = LocalContext.current
-    val googleSignInClient = remember{ getGoogleSignInClient(context) }
+    val googleSignInClient = remember { getGoogleSignInClient(context) }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -70,73 +79,61 @@ fun RegisterScreen(navController: NavController, context: Context) {
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     val passwordVisible = remember { mutableStateOf(false) }
-    var termosAceitos by remember { mutableStateOf(false) }
-
-
-
+    var termosAccepted by remember { mutableStateOf(false) }
 
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+
     ) {
-        Spacer(modifier = Modifier.height(24.dp))
 
         Image(
-            painter = painterResource(id = R.drawable.logo_color_textblack),
+            painter = painterResource(id = R.drawable.logo2),
             contentDescription = "Logo",
-            modifier = Modifier.height(80.dp)
+            modifier = Modifier.size(100.dp)
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
-        Text("Create an account / Crie sua conta", fontSize = 18.sp)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Text("Cadastre-se")
 
-        Button(
-            onClick = {
-                launcher.launch(googleSignInClient.signInIntent)
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(Icons.Default.AccountCircle, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Continue with Google")
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-        Text("Ou / Or")
-
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = nome,
             onValueChange = { nome = it },
             label = { Text("Nome") },
-            modifier = Modifier.fillMaxWidth()
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium
         )
 
         OutlinedTextField(
             value = sobrenome,
             onValueChange = { sobrenome = it },
             label = { Text("Sobrenome") },
-            modifier = Modifier.fillMaxWidth()
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium
         )
 
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium
         )
 
         OutlinedTextField(
             value = senha,
             onValueChange = { senha = it },
             label = { Text("Senha") },
+            singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
@@ -148,42 +145,66 @@ fun RegisterScreen(navController: NavController, context: Context) {
                     Icon(imageVector = image, contentDescription = null)
                 }
             }
-
-
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = termosAceitos,
-                onCheckedChange = { termosAceitos = it }
-            )
-            Text("Concordo com os Termos de Uso")
+        val annotatedText = buildAnnotatedString {
+            append("Eu li e aceito os ")
+
+            pushStringAnnotation(tag = "TERMS", annotation = "terms_privacy")
+            withStyle(
+                style = SpanStyle(
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = TextDecoration.Underline
+                )
+            ) {
+                append("Termos de Uso e Política de Privacidade")
+            }
+            pop()
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.Top
+        ) {
+            Checkbox(
+                checked = termosAccepted,
+                onCheckedChange = { termosAccepted = it }
+            )
+
+            ClickableText(
+                text = annotatedText,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 10.dp),
+                onClick = { offset ->
+                    annotatedText.getStringAnnotations(tag = "TERMS", start = offset, end = offset)
+                        .firstOrNull()?.let {
+                            navController.navigate("terms_privacy")
+                        }
+                }
+            )
+        }
+Spacer(modifier = Modifier.height(8.dp))
 
         Button(
             onClick = {
-                println("===> Botão Criar Conta clicado")
+
                 if (!isValidPassword(senha)) {
                     Toast.makeText(
                         context,
                         "A senha deve conter pelo menos 8 caracteres.", Toast.LENGTH_LONG
                     ).show()
 
-
-
                     return@Button
                 }
-                if (!termosAceitos) {
+                if (!termosAccepted) {
                     Toast.makeText(
                         context, "Você deve aceitar os termos",
                         Toast.LENGTH_SHORT
                     ).show()
+
                     return@Button
                 }
 
@@ -196,9 +217,89 @@ fun RegisterScreen(navController: NavController, context: Context) {
                     navController = navController
                 )
             },
+            shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
+                .height(48.dp)
+                .shadow(elevation = 8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
         ) {
             Text("Criar conta")
+        }
+
+        DividerWithText()
+
+        Button(
+            onClick = {
+
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            shape = MaterialTheme.shapes.medium,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            )
+
+        ) {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Image(
+                    painter = painterResource(id = R.drawable.facebook),
+                    contentDescription = "Facebook logo",
+                    modifier = Modifier
+                        .padding(start = 0.dp)
+                        .size(24.dp)
+                )
+
+                Text(
+                    "Entrar com o Facebook",
+                    modifier = Modifier.align(Alignment.Center),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                val signInIntent = googleSignInClient.signInIntent
+                launcher.launch(signInIntent)
+            },
+
+            modifier = Modifier.fillMaxWidth()
+                .height(48.dp),
+            shape = MaterialTheme.shapes.medium,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            ),
+
+
+
+            ) {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.google),
+                    contentDescription = "Google logo",
+                    modifier = Modifier
+                        .padding(start = 0.dp)
+                        .size(24.dp)
+                )
+
+                Text(
+                    "Entrar com o Google",
+                    modifier = Modifier.align(Alignment.Center),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
         }
     }
 }
@@ -210,3 +311,29 @@ fun isValidPassword(password: String): Boolean {
 
     return hasUppercase && hasDigit && isLongEnough
 }
+
+@Composable
+fun DividerWithText(text: String = "Ou") {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
+    ) {
+        Divider(
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.secondaryContainer
+        )
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 8.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary
+        )
+        Divider(
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.secondaryContainer
+        )
+    }
+}
+

@@ -1,5 +1,7 @@
 package com.lourenc.trolly
 
+import TermsAndPrivacyPolicyScreen
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,6 +15,7 @@ import com.lourenc.trolly.ui.screens.HomeScreen
 import com.lourenc.trolly.ui.screens.LaunchScreen
 import com.lourenc.trolly.ui.screens.LoginScreen
 import com.lourenc.trolly.ui.screens.RegisterScreen
+
 import com.lourenc.trolly.ui.theme.TrollyTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,13 +33,17 @@ fun AppNavigator() {
     val context = LocalContext.current
 
     TrollyTheme {
-        NavHost(navController = navController, startDestination = "launch") {
+        NavHost(navController = navController, startDestination = "register") {
             composable("launch") { LaunchScreen(navController) }
             composable("register") { RegisterScreen(navController, context) }
             composable("login") { LoginScreen(navController, context) }
             composable("home") { HomeScreen() }
-            composable("forgot_password") { ForgotPasswordScreen(navController)
+            composable("forgot_password") { ForgotPasswordScreen(navController) }
+            composable("terms_privacy") { TermsAndPrivacyPolicyScreen(navController = navController)
             }
+
+
+
 
         }
     }
