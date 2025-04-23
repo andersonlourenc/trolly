@@ -66,6 +66,7 @@ fun ForgotPasswordScreen(navController: NavController) {
                     titleContentColor = MaterialTheme.colorScheme.onSurface,
                     navigationIconContentColor = MaterialTheme.colorScheme.onSurface
        ),
+
     )
 },
         content = { innerPadding ->

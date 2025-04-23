@@ -26,7 +26,7 @@ fun TermsAndPrivacyPolicyScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Termos de Uso e Política de Privacidade") },
+                title = { Text("Termos de Uso e Política de Privacidade", style = MaterialTheme.typography.titleMedium) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Voltar")
@@ -39,14 +39,14 @@ fun TermsAndPrivacyPolicyScreen(navController: NavController) {
             modifier = Modifier
                 .padding(padding)
                 .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp)
+                .padding(24.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Termos de Uso
+
             Text(
                 text = "Termos de Uso",
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -73,11 +73,10 @@ fun TermsAndPrivacyPolicyScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Política de Privacidade
+
             Text(
                 text = "Política de Privacidade",
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(

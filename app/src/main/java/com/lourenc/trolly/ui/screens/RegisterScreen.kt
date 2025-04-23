@@ -19,17 +19,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +62,7 @@ import com.lourenc.trolly.auth.getGoogleSignInClient
 import com.lourenc.trolly.auth.firebaseAuthWithGoogle
 
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navController: NavController, context: Context) {
     val context = LocalContext.current
@@ -83,26 +88,39 @@ fun RegisterScreen(navController: NavController, context: Context) {
     var termosAccepted by remember { mutableStateOf(false) }
 
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Scaffold(
 
-    ) {
+        topBar = {
+            CenterAlignedTopAppBar(
 
-        Image(
-            painter = painterResource(id = R.drawable.logo2),
-            contentDescription = "Logo",
-            modifier = Modifier.size(100.dp)
-        )
+                title = {
+                    Text ("Inscrever-se", style = MaterialTheme.typography.titleMedium)
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Voltar")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
+                ),
 
+                )
+        },
+        content = { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
 
-        Text("Cadastre-se")
+                ) {
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = nome,
@@ -151,13 +169,20 @@ fun RegisterScreen(navController: NavController, context: Context) {
 
 
         val annotatedText = buildAnnotatedString {
-            append("Eu li e aceito os ")
+            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {
+                append("Eu li e aceito os ")
+            }
+
 
             pushStringAnnotation(tag = "TERMS", annotation = "terms_privacy")
             withStyle(
                 style = SpanStyle(
                     fontWeight = FontWeight.Bold,
-                    textDecoration = TextDecoration.Underline
+                    textDecoration = TextDecoration.Underline,
+                    color = MaterialTheme.colorScheme.onBackground
+
+
+
                 )
             ) {
                 append("Termos de Uso e Política de Privacidade")
@@ -169,6 +194,7 @@ fun RegisterScreen(navController: NavController, context: Context) {
             modifier = Modifier
                 .padding(top = 16.dp)
                 .fillMaxWidth(),
+
             verticalAlignment = Alignment.Top
         ) {
             Checkbox(
@@ -233,40 +259,7 @@ Spacer(modifier = Modifier.height(8.dp))
 
         DividerWithText()
 
-        Button(
-            onClick = {
 
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            shape = MaterialTheme.shapes.medium,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
-            )
-
-        ) {
-            Box(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-
-                Image(
-                    painter = painterResource(id = R.drawable.facebook),
-                    contentDescription = "Facebook logo",
-                    modifier = Modifier
-                        .padding(start = 0.dp)
-                        .size(24.dp)
-                )
-
-                Text(
-                    "Entrar com o Facebook",
-                    modifier = Modifier.align(Alignment.Center),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
@@ -303,7 +296,43 @@ Spacer(modifier = Modifier.height(8.dp))
                 )
             }
         }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    )
+
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+
+                        Image(
+                            painter = painterResource(id = R.drawable.facebook),
+                            contentDescription = "Facebook logo",
+                            modifier = Modifier
+                                .padding(start = 0.dp)
+                                .size(24.dp)
+                        )
+
+                        Text(
+                            "Entrar com o Facebook",
+                            modifier = Modifier.align(Alignment.Center),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
     }
+})
 }
 
 fun isValidPassword(password: String): Boolean {
@@ -324,7 +353,7 @@ fun DividerWithText(text: String = "Ou") {
     ) {
         Divider(
             modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.secondaryContainer
+            color = MaterialTheme.colorScheme.secondary
         )
         Text(
             text = text,
@@ -334,7 +363,7 @@ fun DividerWithText(text: String = "Ou") {
         )
         Divider(
             modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.secondaryContainer
+            color = MaterialTheme.colorScheme.secondary
         )
     }
 }
