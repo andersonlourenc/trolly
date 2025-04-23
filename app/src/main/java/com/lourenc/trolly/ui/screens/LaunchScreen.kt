@@ -133,7 +133,39 @@ fun LaunchScreen(navController: NavController) {
 
                     }
                 }
+                Button(
+                    onClick = {
+                        val signInIntent = googleSignInClient.signInIntent
+                        launcher.launch(signInIntent)
+                    },
 
+                    modifier = Modifier.fillMaxWidth()
+                        .height(48.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    ),
+
+                    ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.google),
+                            contentDescription = "Google logo",
+                            modifier = Modifier
+                                .padding(start = 0.dp)
+                                .size(24.dp)
+                        )
+
+                        Text(
+                            "Entrar com o Google",
+                            modifier = Modifier.align(Alignment.Center),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
 
                 Button(
                     onClick = {
@@ -170,39 +202,7 @@ fun LaunchScreen(navController: NavController) {
                 }
 
 
-                Button(
-                    onClick = {
-                        val signInIntent = googleSignInClient.signInIntent
-                        launcher.launch(signInIntent)
-                    },
 
-                    modifier = Modifier.fillMaxWidth()
-                        .height(48.dp),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary
-                    ),
-
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.google),
-                            contentDescription = "Google logo",
-                            modifier = Modifier
-                                .padding(start = 0.dp)
-                                .size(24.dp)
-                        )
-
-                        Text(
-                            "Entrar com o Google",
-                            modifier = Modifier.align(Alignment.Center),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                }
             }
         }
     }
