@@ -33,7 +33,7 @@ fun AppNavigator() {
     val context = LocalContext.current
 
     TrollyTheme {
-        NavHost(navController = navController, startDestination = "register") {
+        NavHost(navController = navController, startDestination = "launch") {
             composable("launch") { LaunchScreen(navController) }
             composable("register") { RegisterScreen(navController, context) }
             composable("login") { LoginScreen(navController, context) }
