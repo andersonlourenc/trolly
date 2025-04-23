@@ -41,10 +41,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 
-
-
-
-
 @Composable
 
 fun LoginScreen(navController: NavController, context: Context) {
@@ -62,7 +58,6 @@ fun LoginScreen(navController: NavController, context: Context) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-
             Image(
                 painter = painterResource(id = R.drawable.logo2),
                 contentDescription = "Logo",
@@ -75,7 +70,6 @@ fun LoginScreen(navController: NavController, context: Context) {
         Spacer(modifier = Modifier.height(16.dp))
 
 
-        // Email
         OutlinedTextField(
             value = emailState.value,
             onValueChange = { emailState.value = it },
@@ -88,7 +82,6 @@ fun LoginScreen(navController: NavController, context: Context) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Senha
         OutlinedTextField(
 
             value = passwordState.value,
@@ -110,7 +103,6 @@ fun LoginScreen(navController: NavController, context: Context) {
 
         )
 
-        // Esqueceu senha
         TextButton(onClick = { navController.navigate("forgot_password") },
             modifier = Modifier.align(Alignment.Start),
             colors = ButtonDefaults.buttonColors(
@@ -123,7 +115,6 @@ fun LoginScreen(navController: NavController, context: Context) {
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        // Botão Entrar
         Button(
             onClick = {
                 loginWithEmail(emailState.value, passwordState.value, context, navController)
@@ -131,7 +122,7 @@ fun LoginScreen(navController: NavController, context: Context) {
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
                 .height(48.dp)
-                .shadow(elevation = 8.dp), 
+                .shadow(elevation = 8.dp),
                     colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary

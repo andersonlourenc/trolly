@@ -62,7 +62,7 @@ fun ForgotPasswordScreen(navController: NavController) {
                 Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Voltar")
             }
         },   colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
+                    containerColor = MaterialTheme.colorScheme.background,
                     titleContentColor = MaterialTheme.colorScheme.onSurface,
                     navigationIconContentColor = MaterialTheme.colorScheme.onSurface
        ),
@@ -107,7 +107,7 @@ fun ForgotPasswordScreen(navController: NavController) {
                             loading = false
                             if (task.isSuccessful) {
                                 Toast.makeText(context, "Email enviado com instruções para redefinir a senha.", Toast.LENGTH_LONG).show()
-                                navController.popBackStack() // volta pra tela anterior (ex: login)
+                                navController.popBackStack()
                             } else {
                                 Toast.makeText(context, "Erro: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                             }
