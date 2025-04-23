@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -29,18 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.lourenc.trolly.R
 import com.lourenc.trolly.auth.loginWithEmail
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Email
+import androidx.compose.foundation.background
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -49,9 +40,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.lourenc.trolly.auth.firebaseAuthWithGoogle
+
+
 
 
 
@@ -66,6 +56,7 @@ fun LoginScreen(navController: NavController, context: Context) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(24.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -140,7 +131,7 @@ fun LoginScreen(navController: NavController, context: Context) {
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
                 .height(48.dp)
-                .shadow(elevation = 8.dp),
+                .shadow(elevation = 8.dp), 
                     colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary

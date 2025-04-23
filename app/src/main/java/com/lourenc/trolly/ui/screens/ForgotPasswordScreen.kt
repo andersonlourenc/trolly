@@ -1,6 +1,7 @@
 package com.lourenc.trolly.ui.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,7 +51,6 @@ fun ForgotPasswordScreen(navController: NavController) {
     Scaffold(
 
         topBar = {
-
             CenterAlignedTopAppBar(
 
                 title = {
@@ -65,7 +65,7 @@ fun ForgotPasswordScreen(navController: NavController) {
                     containerColor = MaterialTheme.colorScheme.secondary,
                     titleContentColor = MaterialTheme.colorScheme.onSurface,
                     navigationIconContentColor = MaterialTheme.colorScheme.onSurface
-       )
+       ),
     )
 },
         content = { innerPadding ->
@@ -73,9 +73,11 @@ fun ForgotPasswordScreen(navController: NavController) {
                 modifier = Modifier
                     .padding(innerPadding)
                     .padding(horizontal = 24.dp, vertical = 16.dp)
+                    .background(MaterialTheme.colorScheme.background)
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
+
 
             ) {
 

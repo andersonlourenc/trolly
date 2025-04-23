@@ -1,3 +1,4 @@
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -5,9 +6,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -27,7 +29,7 @@ fun TermsAndPrivacyPolicyScreen(navController: NavController) {
                 title = { Text("Termos de Uso e Política de Privacidade") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
+                        Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Voltar")
                     }
                 }
             )
@@ -36,6 +38,7 @@ fun TermsAndPrivacyPolicyScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .padding(padding)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {

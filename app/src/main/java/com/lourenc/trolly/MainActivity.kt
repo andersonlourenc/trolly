@@ -5,6 +5,7 @@ import TermsAndPrivacyPolicyScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
@@ -31,8 +32,8 @@ class MainActivity : ComponentActivity() {
 fun AppNavigator() {
     val navController = rememberNavController()
     val context = LocalContext.current
-
-    TrollyTheme {
+    val darkTheme = isSystemInDarkTheme()
+    TrollyTheme (darkTheme = darkTheme){
         NavHost(navController = navController, startDestination = "launch") {
             composable("launch") { LaunchScreen(navController) }
             composable("register") { RegisterScreen(navController, context) }
