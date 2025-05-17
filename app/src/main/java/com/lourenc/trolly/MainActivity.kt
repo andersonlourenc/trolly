@@ -34,7 +34,7 @@ fun AppNavigator() {
     val context = LocalContext.current
     val darkTheme = isSystemInDarkTheme()
     TrollyTheme (darkTheme = darkTheme){
-        NavHost(navController = navController, startDestination = "launch") {
+        NavHost(navController = navController, startDestination = "home") {
             composable("launch") { LaunchScreen(navController) }
             composable("register") { RegisterScreen(navController, context) }
             composable("login") { LoginScreen(navController, context) }
