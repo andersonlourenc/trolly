@@ -36,6 +36,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
 }
 
@@ -50,6 +51,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.material3)
+    implementation("androidx.room:room-common-jvm:2.7.1")
+    implementation("androidx.room:room-runtime-android:2.7.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -67,7 +71,7 @@ dependencies {
     implementation ("com.google.android.gms:play-services-auth:21.0.0")
     implementation ("com.google.firebase:firebase-auth-ktx:22.3.1")
 
-
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
 
 }
 android{

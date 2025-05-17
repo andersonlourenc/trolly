@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".TrollyApp"
+
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -14,7 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Trolly"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        tools:ignore="ExtraText">
+
+
 
         <!-- Meta-data do Google Play Services -->
         <meta-data
