@@ -42,6 +42,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 
+
+
+
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
@@ -55,122 +60,125 @@ fun LoginScreen(navController: NavController, context: Context) {
         topBar = {
             CenterAlignedTopAppBar(
 
-            title = {
-                Text ("Login", style = MaterialTheme.typography.titleMedium)
-            },
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Voltar")
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.background,
-                titleContentColor = MaterialTheme.colorScheme.onSurface,
-                navigationIconContentColor = MaterialTheme.colorScheme.onSurface
-            ),
-
-        )
-    },
-    content = { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 24.dp, vertical = 16.dp)
-                .background(MaterialTheme.colorScheme.background)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
-
-            ) {
-
-
-        Text("Bem-vindo de volta", style = MaterialTheme.typography.titleMedium)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-
-        OutlinedTextField(
-            value = emailState.value,
-            onValueChange = { emailState.value = it },
-            label = { Text("Email") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium
-
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-
-            value = passwordState.value,
-            onValueChange = { passwordState.value = it },
-            label = { Text("Senha") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                val image = if (passwordVisible.value)
-                    Icons.Filled.Visibility
-                else Icons.Filled.VisibilityOff
-
-                IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
-                    Icon(imageVector = image, contentDescription = null)
-                }
-            },
-            shape = MaterialTheme.shapes.medium
-
-        )
-
-        TextButton(onClick = { navController.navigate("forgot_password") },
-            modifier = Modifier.align(Alignment.Start),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onBackground
-            )) {
-            Text("Esqueceu a senha?")
-
-        }
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        Button(
-            onClick = {
-                loginWithEmail(emailState.value, passwordState.value, context, navController)
-            },
-            shape = MaterialTheme.shapes.medium,
-            modifier = Modifier.fillMaxWidth()
-                .height(48.dp)
-                .shadow(elevation = 8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
-        ) {
-            Text("Entrar")
-        }
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        TextButton(
-            onClick = { navController.navigate("register") },
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            colors = ButtonDefaults.textButtonColors(
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onBackground
-            )
-        ) {
-            Text(
-                buildAnnotatedString {
-                    append("Não tem uma conta? ")
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append("Cadastre-se agora")
+                title = {
+                    Text("Login", style = MaterialTheme.typography.titleMedium)
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Voltar")
                     }
-                }
-            )
-        }
-    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
+                ),
 
-    })
+            )
+    },
+        content = { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
+
+                ) {
+
+
+                Text("Bem-vindo de volta", style = MaterialTheme.typography.titleMedium)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+
+                OutlinedTextField(
+                    value = emailState.value,
+                    onValueChange = { emailState.value = it },
+                    label = { Text("Email") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium
+
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+
+                    value = passwordState.value,
+                    onValueChange = { passwordState.value = it },
+                    label = { Text("Senha") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (passwordVisible.value)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
+                            Icon(imageVector = image, contentDescription = null)
+                        }
+                    },
+                    shape = MaterialTheme.shapes.medium
+
+                )
+
+                TextButton(onClick = { navController.navigate("forgot_password") },
+                    modifier = Modifier.align(Alignment.Start),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    )) {
+                    Text("Esqueceu a senha?")
+
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Button(
+                    onClick = {
+                        loginWithEmail(emailState.value, passwordState.value, context, navController)
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth()
+                        .height(48.dp)
+                        .shadow(elevation = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text("Entrar")
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                TextButton(
+                    onClick = { navController.navigate("register") },
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    )
+                ) {
+                    Text(
+                        buildAnnotatedString {
+                            append("Não tem uma conta? ")
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append("Cadastre-se agora")
+                            }
+                        }
+                    )
+                }
+            }
+
+        }
+    )
+
 }
+
 
