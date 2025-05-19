@@ -16,10 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
@@ -39,11 +36,21 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.FirebaseAuth
 import com.lourenc.trolly.R
+import coil.compose.AsyncImage
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
+
+    val user = FirebaseAuth.getInstance().currentUser
+
+    val nomeCompleto = user?.displayName ?: "Usuário"
+    val primeiroNome = nomeCompleto.split(" ").firstOrNull() ?: "Usuário"
+    val photoUrl = user?.photoUrl?.toString()
+
     Box(modifier = Modifier.fillMaxSize()) {
 
 
@@ -87,36 +94,38 @@ fun HomeScreen() {
                 .padding(16.dp)
         ) {
 
-            GreetingSection(userName = "Anderson Lourenço")
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+
+                ) {
+
+                Text(
+                    text = "Oi, $primeiroNome!", style = MaterialTheme.typography.headlineMedium
+                )
+                if (photoUrl != null) {
+                    AsyncImage(
+                        model = photoUrl,
+                        contentDescription = "Foto do usuário",
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                    )
+                }
+
+            }
+
+
 
             SummaryLabel(month = "Maio")
 
             MonthlySummaryCards(expense = "400,00", lastListValue = "105,00")
 
         }
-    }
-}
-
-@Composable
-fun GreetingSection(userName: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-
-    ) {
-        Text("Oi, $userName 👋", style = MaterialTheme.typography.titleMedium)
-
-        Icon(
-            imageVector = Icons.Default.AccountCircle,
-            contentDescription = "Foto de perfil",
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }
 

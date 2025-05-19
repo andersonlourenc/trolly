@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="TrollyApp">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-05-17T03:07:28.804212917Z">
+        <DropdownSelection timestamp="2025-05-19T21:47:56.620065771Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/home/andersonl/.android/avd/Pixel_8.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=BY6HRS8XGIQGTOGQ" />
             </handle>
           </Target>
         </DropdownSelection>
