@@ -16,24 +16,32 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.lourenc.trolly.data.local.entity.ItemLista
 import com.lourenc.trolly.data.local.entity.ListaCompra
+import com.lourenc.trolly.data.repository.ProdutoMercado
 import com.lourenc.trolly.viewmodel.ListaCompraViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import java.text.NumberFormat
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompraViewModel, listaId: Int) {
     val coroutineScope = rememberCoroutineScope()
     var lista by remember { mutableStateOf<ListaCompra?>(null) }
-    var itens by remember { mutableStateOf<List<ItemLista>>(emptyList()) }
+    val itens by viewModel.itensLista.observeAsState(emptyList())
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showSearchDialog by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
-    // Carregar a lista pelo ID
+    // Carregar a lista e seus itens pelo ID
     LaunchedEffect(listaId) {
         coroutineScope.launch {
             lista = viewModel.getListaById(listaId)
+            viewModel.carregarItensLista(listaId)
         }
     }
 
@@ -65,11 +73,11 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                     IconButton(
-                        onClick = { showBottomSheet = true }
+                        onClick = { showSearchDialog = true }
                     ) {
                         Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Mais Opções",
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Adicionar Produtos",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
@@ -123,47 +131,76 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
                         Button(
-                            onClick = { /* Implementar adição de novo item */ },
+                            onClick = { showSearchDialog = true },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary
                             )
                         ) {
                             Icon(
-                                Icons.Default.Add,
-                                contentDescription = "Adicionar",
+                                Icons.Default.Search,
+                                contentDescription = "Buscar",
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Adicionar Primeiro Item")
+                            Text("Buscar Produtos")
                         }
                     }
                 }
             } else {
+                // Calculando total da lista
+                val total = itens.sumOf { it.quantidade * it.precoUnitario }
+                val currencyFormat = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Total: ${currencyFormat.format(total)}",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    
+                    Button(
+                        onClick = { showSearchDialog = true },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = "Adicionar Produto",
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Adicionar Produto")
+                    }
+                }
+
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(itens) { item ->
-                        // Renderizar cada item da lista (para ser implementado)
-                        Card(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(item.name)
-                                Text("${item.quantidade} ${item.unidade}")
+                        ItemCard(
+                            item = item,
+                            onToggleComprado = { 
+                                val itemAtualizado = item.copy(comprado = !item.comprado)
+                                viewModel.atualizarItemLista(itemAtualizado)
+                            },
+                            onDelete = {
+                                viewModel.removerItemLista(item)
                             }
-                        }
+                        )
                     }
                 }
             }
         }
     }
     
+    // Modal de opções da lista
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
@@ -229,6 +266,214 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
                         }
                     }
                 )
+            }
+        }
+    }
+    
+    // Diálogo de pesquisa/adicionar produtos
+    if (showSearchDialog) {
+        SearchProductDialog(
+            viewModel = viewModel,
+            listaId = listaId,
+            onDismiss = { showSearchDialog = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchProductDialog(
+    viewModel: ListaCompraViewModel,
+    listaId: Int,
+    onDismiss: () -> Unit
+) {
+    var searchTerm by remember { mutableStateOf("") }
+    val produtosFiltrados by viewModel.produtosFiltrados.observeAsState(emptyList())
+    
+    // Inicializar com alguns produtos sugeridos
+    LaunchedEffect(Unit) {
+        viewModel.pesquisarProdutos("")
+    }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("Buscar Produtos")
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = searchTerm,
+                    onValueChange = {
+                        searchTerm = it
+                        viewModel.pesquisarProdutos(it)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Buscar produto") },
+                    singleLine = true,
+                    leadingIcon = {
+                        Icon(Icons.Default.Search, contentDescription = "Buscar")
+                    },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        cursorColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Text(
+                    text = "Produtos sugeridos:",
+                    style = MaterialTheme.typography.titleSmall
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Lista de produtos
+                LazyColumn(
+                    modifier = Modifier.heightIn(max = 300.dp)
+                ) {
+                    items(produtosFiltrados) { produto ->
+                        ProductItemCard(
+                            produto = produto,
+                            onAdd = {
+                                val item = viewModel.converterProdutoParaItem(produto, listaId)
+                                viewModel.adicionarItemLista(item)
+                                onDismiss()
+                            }
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Fechar")
+            }
+        }
+    )
+}
+
+@Composable
+fun ProductItemCard(
+    produto: ProdutoMercado, 
+    onAdd: () -> Unit
+) {
+    val currencyFormat = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = produto.nome,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = currencyFormat.format(produto.preco),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            
+            IconButton(onClick = onAdd) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Adicionar",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ItemCard(
+    item: ItemLista,
+    onToggleComprado: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val currencyFormat = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+    val subtotal = item.quantidade * item.precoUnitario
+    
+    Card(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = item.comprado,
+                    onCheckedChange = { onToggleComprado() },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+                
+                Spacer(modifier = Modifier.width(8.dp))
+                
+                Column {
+                    Text(
+                        text = item.name,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (item.comprado) 
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        else 
+                            MaterialTheme.colorScheme.onSurface
+                    )
+                    
+                    Row {
+                        Text(
+                            text = "${item.quantidade} ${item.unidade}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                        
+                        Text(
+                            text = " • ${currencyFormat.format(item.precoUnitario)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+            
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = currencyFormat.format(subtotal),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Excluir",
+                        tint = Color(0xFFE53935),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }
