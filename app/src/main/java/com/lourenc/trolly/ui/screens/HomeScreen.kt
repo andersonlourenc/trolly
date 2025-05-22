@@ -413,7 +413,6 @@ fun ListaCompraCard(
         }
     }
 }
-
 private fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR"))
     return sdf.format(Date(timestamp))
