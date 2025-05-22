@@ -9,21 +9,30 @@ import com.lourenc.trolly.data.local.dao.ListaCompraDao
 import com.lourenc.trolly.data.local.entity.ItemLista
 import com.lourenc.trolly.data.local.entity.ListaCompra
 
-@Database(entities = [ListaCompra::class, ItemLista::class], version = 1)
+@Database(
+    entities = [ListaCompra::class, ItemLista::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun listaCompraDao(): ListaCompraDao
     abstract fun itemListaDao(): ItemListaDao
 
     companion object {
-        @Volatile private var INSTANCE: AppDatabase? = null
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
 
         fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(
+                val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "app_lista_compras.db"
-                ).build().also { INSTANCE = it }
+                    "trolly_database"
+                )
+                .fallbackToDestructiveMigration()
+                .build()
+                INSTANCE = instance
+                instance
             }
         }
     }
