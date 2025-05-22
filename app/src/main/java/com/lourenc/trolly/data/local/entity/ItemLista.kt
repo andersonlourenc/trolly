@@ -18,7 +18,7 @@ import androidx.room.PrimaryKey
 data class ItemLista(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val idLista: Int,
-    val nome: String,
+    val name: String,
     val quantidade: Int,
     val unidade: String,
     val precoUnitario: Double,

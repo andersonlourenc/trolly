@@ -22,4 +22,8 @@ class ListaCompraRepository(private val listaDao: ListaCompraDao) {
     suspend fun updateLista(lista: ListaCompra) {
         listaDao.update(lista)
     }
+
+    suspend fun getListaById(id: Int): ListaCompra? {
+        return listaDao.getListaById(id)
+    }
 }

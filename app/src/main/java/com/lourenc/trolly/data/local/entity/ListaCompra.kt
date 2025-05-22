@@ -6,9 +6,9 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "lista_compra")
 data class ListaCompra(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val nome: String,
-    val descricao: String,
+    val name: String,
+    val descricao: String = "",
     val dataCriacao: Long = System.currentTimeMillis(),
-    val totalEstimado: Double,
+    val totalEstimado: Double = 0.0,
     val fotoCapa: String? = null
 )

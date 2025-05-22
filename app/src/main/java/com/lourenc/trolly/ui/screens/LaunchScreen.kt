@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.lourenc.trolly.R
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -33,13 +34,22 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import com.lourenc.trolly.auth.firebaseAuthWithGoogle
-
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LaunchScreen(navController: NavController) {
-
-
     val context = LocalContext.current
+    val auth = FirebaseAuth.getInstance()
+
+    // Verifica se já existe um usuário logado
+    LaunchedEffect(Unit) {
+        if (auth.currentUser != null) {
+            navController.navigate("home") {
+                popUpTo("launch") { inclusive = true }
+            }
+            return@LaunchedEffect
+        }
+    }
 
     val googleSignInClient = remember {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -64,12 +74,10 @@ fun LaunchScreen(navController: NavController) {
         }
     }
 
-
     Box(
         modifier = Modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-
 
         Column(
             modifier = Modifier
@@ -77,7 +85,6 @@ fun LaunchScreen(navController: NavController) {
                 .padding(24.dp),
 
             ) {
-
 
             Box(
                 modifier = Modifier

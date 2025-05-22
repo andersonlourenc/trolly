@@ -21,7 +21,6 @@ interface ListaCompraDao {
     @Query("SELECT * FROM lista_compra ORDER BY dataCriacao DESC")
     fun getAll(): kotlinx.coroutines.flow.Flow<List<ListaCompra>>
 
-
     @Query("SELECT * FROM lista_compra WHERE id = :id")
-    suspend fun getId(id: Int): ListaCompra?
+    suspend fun getListaById(id: Int): ListaCompra?
 }
