@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.lourenc.trolly.data.local.db.AppDatabase
+import com.lourenc.trolly.data.repository.ItemListaRepository
 import com.lourenc.trolly.data.repository.ListaCompraRepository
 
 class TrollyApp : Application() {
@@ -13,6 +14,9 @@ class TrollyApp : Application() {
         private set
         
     lateinit var repository: ListaCompraRepository
+        private set
+        
+    lateinit var itemRepository: ItemListaRepository
         private set
 
     override fun onCreate() {
@@ -26,6 +30,7 @@ class TrollyApp : Application() {
             // Inicializa o banco de dados
             database = AppDatabase.getInstance(this)
             repository = ListaCompraRepository(database.listaCompraDao())
+            itemRepository = ItemListaRepository(database.itemListaDao())
             Log.d("TrollyApp", "Banco de dados e repositório inicializados com sucesso")
         } catch (e: Exception) {
             Log.e("TrollyApp", "Erro ao inicializar o app", e)

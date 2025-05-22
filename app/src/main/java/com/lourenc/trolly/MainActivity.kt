@@ -40,7 +40,7 @@ fun AppNavigator() {
     val context = LocalContext.current
     val darkTheme = isSystemInDarkTheme()
     val trollyApp = context.applicationContext as TrollyApp
-    val factory = ListaCompraViewModelFactory(trollyApp.repository)
+    val factory = ListaCompraViewModelFactory(trollyApp.repository, trollyApp.itemRepository)
     
     TrollyTheme(darkTheme = darkTheme) {
         NavHost(navController = navController, startDestination = "launch") {
