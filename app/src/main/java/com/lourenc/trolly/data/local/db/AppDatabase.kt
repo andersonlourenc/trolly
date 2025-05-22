@@ -14,7 +14,7 @@ import com.lourenc.trolly.data.local.entity.ListaCompra
     version = 1,
     exportSchema = false
 )
-abstract class AppDatabase : RoomDatabase() {
+abstract class  AppDatabase : RoomDatabase() {
     abstract fun listaCompraDao(): ListaCompraDao
     abstract fun itemListaDao(): ItemListaDao
 
