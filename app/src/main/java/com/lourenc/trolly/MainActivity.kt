@@ -9,11 +9,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.lourenc.trolly.ui.screens.ForgotPasswordScreen
 import com.lourenc.trolly.ui.screens.HomeScreen
 import com.lourenc.trolly.ui.screens.LaunchScreen
