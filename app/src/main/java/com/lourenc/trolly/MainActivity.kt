@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.lourenc.trolly.ui.screens.ForgotPasswordScreen
 import com.lourenc.trolly.ui.screens.HomeScreen
 import com.lourenc.trolly.ui.screens.LaunchScreen
+import com.lourenc.trolly.ui.screens.ListaCompraDetailScreen
 import com.lourenc.trolly.ui.screens.LoginScreen
 import com.lourenc.trolly.ui.screens.RegisterScreen
 import com.lourenc.trolly.viewmodel.ListaCompraViewModel
@@ -55,6 +56,11 @@ fun AppNavigator() {
             composable("addList") { 
                 val viewModel = viewModel<ListaCompraViewModel>(factory = factory)
                 AddListsScreen(navController, viewModel)
+            }
+            composable("listaDetail/{listaId}") { backStackEntry ->
+                val viewModel = viewModel<ListaCompraViewModel>(factory = factory)
+                val listaId = backStackEntry.arguments?.getString("listaId")?.toIntOrNull() ?: 0
+                ListaCompraDetailScreen(navController, viewModel, listaId)
             }
         }
     }

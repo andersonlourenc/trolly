@@ -35,18 +35,17 @@ fun AddListsScreen(navController: NavController, viewModel: ListaCompraViewModel
                         onClick = { navController.popBackStack() }
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBackIosNew,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Voltar",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
-                        Text(
-                            text = "Nova Lista",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onPrimary,
-
-                            )
                     }
-
+                    Text(
+                        text = "Nova Lista",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Box(modifier = Modifier.size(48.dp))
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
