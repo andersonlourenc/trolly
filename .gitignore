@@ -1,0 +1,56 @@
+# Arquivos específicos do Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Propriedades locais
+local.properties
+
+# Arquivos de log
+*.log
+
+# Arquivos específicos do Android Studio
+.idea/
+*.iml
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+*.iws
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Arquivos específicos do Kotlin
+*.class
+*.dex
+
+# Arquivos específicos do Android
+.navigation/
+gen/
+out/
+app/release/
+app/debug/
+*.apk
+*.aab
+*.ap_
+*.jks
+*.keystore
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos diversos
+.kotlin/
+bin/
+obj/
+tmp/
+.classpath
+.project
+.settings/
+*.hprof 
