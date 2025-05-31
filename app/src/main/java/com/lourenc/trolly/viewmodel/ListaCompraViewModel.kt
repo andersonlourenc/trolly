@@ -11,6 +11,7 @@ import com.lourenc.trolly.data.local.entity.ListaCompra
 import com.lourenc.trolly.data.repository.ItemListaRepository
 import com.lourenc.trolly.data.repository.ListaCompraRepository
 import com.lourenc.trolly.data.repository.ProdutoMercado
+import java.util.Calendar
 
 class ListaCompraViewModel(
     private val repository: ListaCompraRepository,
@@ -26,6 +27,14 @@ class ListaCompraViewModel(
     // LiveData para produtos filtrados na pesquisa
     private val _produtosFiltrados = MutableLiveData<List<ProdutoMercado>>(emptyList())
     val produtosFiltrados: LiveData<List<ProdutoMercado>> = _produtosFiltrados
+    
+    // LiveData para o gasto mensal
+    private val _gastoMensal = MutableLiveData<Double>(0.0)
+    val gastoMensal: LiveData<Double> = _gastoMensal
+    
+    // LiveData para o valor da última lista
+    private val _valorUltimaLista = MutableLiveData<Double>(0.0)
+    val valorUltimaLista: LiveData<Double> = _valorUltimaLista
 
     fun addLista(lista: ListaCompra) {
         viewModelScope.launch {
@@ -106,5 +115,68 @@ class ListaCompraViewModel(
             precoUnitario = produto.preco,
             comprado = false
         )
+    }
+    
+    // Calcular o gasto mensal
+    fun calcularGastoMensal() {
+        viewModelScope.launch {
+            val todasListasValue = todasListas.value ?: emptyList()
+            if (todasListasValue.isEmpty()) {
+                _gastoMensal.value = 0.0
+                return@launch
+            }
+            
+            val calendar = Calendar.getInstance()
+            val mesAtual = calendar.get(Calendar.MONTH)
+            val anoAtual = calendar.get(Calendar.YEAR)
+            
+            var gastoTotal = 0.0
+            
+            for (lista in todasListasValue) {
+                val dataLista = Calendar.getInstance()
+                dataLista.timeInMillis = lista.dataCriacao
+                
+                // Verificar se a lista é do mês atual
+                if (dataLista.get(Calendar.MONTH) == mesAtual && 
+                    dataLista.get(Calendar.YEAR) == anoAtual) {
+                    
+                    itemRepository?.let { repo ->
+                        val itens = repo.getItensPorLista(lista.id)
+                        for (item in itens) {
+                            gastoTotal += item.precoUnitario * item.quantidade
+                        }
+                    }
+                }
+            }
+            
+            _gastoMensal.value = gastoTotal
+        }
+    }
+    
+    // Calcular o valor da última lista
+    fun calcularValorUltimaLista() {
+        viewModelScope.launch {
+            val todasListasValue = todasListas.value ?: emptyList()
+            if (todasListasValue.isEmpty()) {
+                _valorUltimaLista.value = 0.0
+                return@launch
+            }
+            
+            // Encontrar a lista mais recente
+            val listaRecente = todasListasValue.maxByOrNull { it.dataCriacao }
+            
+            if (listaRecente != null) {
+                itemRepository?.let { repo ->
+                    val itens = repo.getItensPorLista(listaRecente.id)
+                    var valorTotal = 0.0
+                    
+                    for (item in itens) {
+                        valorTotal += item.precoUnitario * item.quantidade
+                    }
+                    
+                    _valorUltimaLista.value = valorTotal
+                }
+            }
+        }
     }
 }

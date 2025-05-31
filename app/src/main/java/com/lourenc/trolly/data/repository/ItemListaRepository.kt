@@ -24,7 +24,7 @@ class ItemListaRepository(private val itemDao: ItemListaDao) {
     // Produtos predefinidos para demonstração
     fun getProdutosPredefinidos(): List<ProdutoMercado> {
         return listOf(
-            ProdutoMercado("Arroz Integral", "kg", 8.99),
+            ProdutoMercado("Arroz Integral", "kg", 6.99),
             ProdutoMercado("Feijão Carioca", "kg", 7.50),
             ProdutoMercado("Leite Integral", "L", 4.99),
             ProdutoMercado("Café em Pó", "pacote", 15.90),

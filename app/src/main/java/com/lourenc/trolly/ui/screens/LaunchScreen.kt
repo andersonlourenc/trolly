@@ -35,6 +35,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import com.lourenc.trolly.auth.firebaseAuthWithGoogle
 import com.google.firebase.auth.FirebaseAuth
+import com.lourenc.trolly.auth.getGoogleSignInClient
+import android.util.Log
+import android.widget.Toast
 
 @Composable
 fun LaunchScreen(navController: NavController) {
@@ -52,11 +55,7 @@ fun LaunchScreen(navController: NavController) {
     }
 
     val googleSignInClient = remember {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("741353373161-9bh6d8me3nq3knrmo1couq94ui2ioeid.apps.googleusercontent.com")
-            .requestEmail()
-            .build()
-        GoogleSignIn.getClient(context, gso)
+        getGoogleSignInClient(context)
     }
 
     val launcher = rememberLauncherForActivityResult(
@@ -66,10 +65,16 @@ fun LaunchScreen(navController: NavController) {
         try {
             val account = task.result
             val idToken = account.idToken
+            Log.d("LaunchScreen", "Google Sign In resultado: ${account.email}, token: ${idToken?.take(10)}...")
             if (idToken != null) {
                 firebaseAuthWithGoogle(idToken, context, navController)
+            } else {
+                Log.e("LaunchScreen", "ID Token é nulo")
+                Toast.makeText(context, "Erro: Token do Google nulo", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
+            Log.e("LaunchScreen", "Erro ao fazer login com Google", e)
+            Toast.makeText(context, "Erro ao fazer login com Google: ${e.message}", Toast.LENGTH_SHORT).show()
             e.printStackTrace()
         }
     }

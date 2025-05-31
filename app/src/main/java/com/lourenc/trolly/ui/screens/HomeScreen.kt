@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalPharmacy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Card
@@ -57,6 +58,7 @@ import androidx.compose.foundation.layout.Spacer as Spacer
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.Calendar
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextOverflow
@@ -65,6 +67,10 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
@@ -81,6 +87,15 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
         val nomeCompleto = user.displayName ?: "Usuário"
         val photoUrl = user.photoUrl?.toString()
         val listas by viewModel.todasListas.observeAsState(emptyList())
+        val mesAtual = getMesAtualEmPortugues()
+        val gastoMensal by viewModel.gastoMensal.observeAsState(0.0)
+        val valorUltimaLista by viewModel.valorUltimaLista.observeAsState(0.0)
+        
+        // Calcular os valores quando a tela for carregada
+        LaunchedEffect(listas) {
+            viewModel.calcularGastoMensal()
+            viewModel.calcularValorUltimaLista()
+        }
 
         Scaffold(
             topBar = {
@@ -101,12 +116,12 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                     ) {
                         Column {
                             Text(
-                                text = "Hi, $nomeCompleto",
+                                text = "Olá, $nomeCompleto",
                                 style = MaterialTheme.typography.titleLarge,
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
                             Text(
-                                text = "April month summary",
+                                text = "Resumo do mês de $mesAtual",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                             )
@@ -160,12 +175,12 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
-                                        "Monthly expense",
+                                        "Gasto mensal",
                                         style = MaterialTheme.typography.labelSmall
                                     )
                                 }
                                 Text(
-                                    "R$ 655,65",
+                                    "R$ ${formatarValor(gastoMensal)}",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -195,12 +210,12 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
-                                        "Latest list",
+                                        "Última lista",
                                         style = MaterialTheme.typography.labelSmall
                                     )
                                 }
                                 Text(
-                                    "R$ 165,65",
+                                    "R$ ${formatarValor(valorUltimaLista)}",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -221,14 +236,14 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
             bottomBar = {
                 NavigationBar {
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                        label = { Text("Home") },
+                        icon = { Icon(Icons.Default.Home, contentDescription = "Início") },
+                        label = { Text("Início") },
                         selected = true,
                         onClick = { }
                     )
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.History, contentDescription = "History") },
-                        label = { Text("History") },
+                        icon = { Icon(Icons.Default.History, contentDescription = "Histórico") },
+                        label = { Text("Histórico") },
                         selected = false,
                         onClick = { }
                     )
@@ -239,10 +254,10 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                         onClick = { }
                     )
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.Notifications, contentDescription = "Notifications") },
-                        label = { Text("Notifications") },
+                        icon = { Icon(Icons.Default.Person, contentDescription = "Perfil") },
+                        label = { Text("Perfil") },
                         selected = false,
-                        onClick = { }
+                        onClick = { navController.navigate("profile") }
                     )
                 }
 
@@ -256,7 +271,7 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
             ) {
                 item {
                     Text(
-                        text = "Lists",
+                        text = "Listas",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
@@ -279,6 +294,17 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
     }
 }
 
+// Função para obter o nome do mês atual em português
+@Composable
+fun getMesAtualEmPortugues(): String {
+    val calendar = Calendar.getInstance()
+    val meses = listOf(
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    )
+    return meses[calendar.get(Calendar.MONTH)]
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListaCompraCard(
@@ -288,8 +314,11 @@ fun ListaCompraCard(
     onDelete: (ListaCompra) -> Unit = {}
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showEditSheet by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf(lista.name) }
+    var editedDescricao by remember { mutableStateOf(lista.descricao) }
     val sheetState = rememberModalBottomSheetState()
+    val editSheetState = rememberModalBottomSheetState()
 
     Card(
         modifier = Modifier
@@ -313,8 +342,8 @@ fun ListaCompraCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = when {
-                            lista.name.contains("Market", ignoreCase = true) -> Icons.Default.Store
-                            lista.name.contains("Pharmacy", ignoreCase = true) -> Icons.Default.LocalPharmacy
+                            lista.name.contains("Mercado", ignoreCase = true) -> Icons.Default.Store
+                            lista.name.contains("Farmácia", ignoreCase = true) -> Icons.Default.LocalPharmacy
                             else -> Icons.Default.ShoppingCart
                         },
                         contentDescription = null,
@@ -395,7 +424,9 @@ fun ListaCompraCard(
                     },
                     modifier = Modifier.clickable {
                         showBottomSheet = false
-                        onEdit(lista)
+                        editedName = lista.name
+                        editedDescricao = lista.descricao
+                        showEditSheet = true
                     }
                 )
 
@@ -416,8 +447,100 @@ fun ListaCompraCard(
             }
         }
     }
+    
+    // Modal de edição no estilo BottomSheet
+    if (showEditSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showEditSheet = false },
+            sheetState = editSheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Editar Lista",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    IconButton(onClick = { showEditSheet = false }) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Fechar"
+                        )
+                    }
+                }
+
+                Divider()
+                
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    OutlinedTextField(
+                        value = editedName,
+                        onValueChange = { editedName = it },
+                        label = { Text("Nome da lista") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                    
+                    OutlinedTextField(
+                        value = editedDescricao,
+                        onValueChange = { editedDescricao = it },
+                        label = { Text("Descrição (opcional)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = { showEditSheet = false }) {
+                            Text("Cancelar")
+                        }
+                        TextButton(
+                            onClick = {
+                                showEditSheet = false
+                                if (editedName.isNotBlank()) {
+                                    val updatedLista = lista.copy(
+                                        name = editedName,
+                                        descricao = editedDescricao
+                                    )
+                                    onEdit(updatedLista)
+                                }
+                            }
+                        ) {
+                            Text("Salvar")
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 private fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR"))
     return sdf.format(Date(timestamp))
+}
+
+// Função para formatar valores monetários
+private fun formatarValor(valor: Double): String {
+    return String.format(Locale("pt", "BR"), "%.2f", valor).replace(".", ",")
 }
