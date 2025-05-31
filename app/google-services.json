@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "741353373161",
-    "project_id": "lourenc-ae374",
-    "storage_bucket": "lourenc-ae374.firebasestorage.app"
+    "project_number": "697988202593",
+    "project_id": "trolly-e1755",
+    "storage_bucket": "trolly-e1755.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:741353373161:android:6cab06f6183cb88c145f78",
+        "mobilesdk_app_id": "1:697988202593:android:c29963e700c8d62c24ea20",
         "android_client_info": {
           "package_name": "com.lourenc.trolly"
         }
@@ -15,30 +15,25 @@
       "oauth_client": [
         {
           "client_id": "741353373161-gkhm582ibc88qn8e723p96nu0oogl9oa.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "697988202593-jfe3ukqfjh9nbmv10ldgdvc82fkisg63.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.lourenc.trolly",
-            "certificate_hash": "8dd295eaa8da157ba172333d024ccb2cd9ac28ac"
+            "certificate_hash": "0c589e705ca562ed566d9fc8a3694d13713688ea"
           }
-        },
-        {
-          "client_id": "741353373161-9bh6d8me3nq3knrmo1couq94ui2ioeid.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDRlwbIVi-Ov8zi1i8OUBFmKC9ZT2kBl_8"
+          "current_key": "AIzaSyCJO9wFwYi-4FNA96u1f8rloxxCVoWdzJM"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "741353373161-9bh6d8me3nq3knrmo1couq94ui2ioeid.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

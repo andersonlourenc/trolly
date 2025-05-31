@@ -17,6 +17,7 @@ import com.lourenc.trolly.ui.screens.HomeScreen
 import com.lourenc.trolly.ui.screens.LaunchScreen
 import com.lourenc.trolly.ui.screens.ListaCompraDetailScreen
 import com.lourenc.trolly.ui.screens.LoginScreen
+import com.lourenc.trolly.ui.screens.ProfileScreen
 import com.lourenc.trolly.ui.screens.RegisterScreen
 import com.lourenc.trolly.viewmodel.ListaCompraViewModel
 import com.lourenc.trolly.viewmodel.ListaCompraViewModelFactory
@@ -61,6 +62,9 @@ fun AppNavigator() {
                 val viewModel = viewModel<ListaCompraViewModel>(factory = factory)
                 val listaId = backStackEntry.arguments?.getString("listaId")?.toIntOrNull() ?: 0
                 ListaCompraDetailScreen(navController, viewModel, listaId)
+            }
+            composable("profile") {
+                ProfileScreen(navController)
             }
         }
     }

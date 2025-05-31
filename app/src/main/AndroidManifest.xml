@@ -27,7 +27,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.gms.client_id"
-            android:value="@string/default_web_client_id" />
+            android:value="697988202593-ekjcc2g1j617njtlrbuuk4p4t258bmhj.apps.googleusercontent.com" />
 
 
 
