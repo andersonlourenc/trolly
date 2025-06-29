@@ -117,9 +117,6 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
 
         LaunchedEffect(Unit) {
             viewModel.carregarListasAtivas()
-            viewModel.carregarListasConcluidas()
-            viewModel.calcularGastoMensal()
-            viewModel.calcularValorUltimaLista()
         }
 
         Scaffold(
@@ -211,7 +208,7 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                                     )
                                 }
                                 Text(
-                                    viewModel.formatarValorComTraco(gastoMensal),
+                                    viewModel.formatarValor(gastoMensal),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -243,7 +240,7 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                                     )
                                 }
                                 Text(
-                                    viewModel.formatarValorComTraco(valorUltimaLista),
+                                    viewModel.formatarValor(valorUltimaLista),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -316,8 +313,7 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                             onConcluir = { listaToConcluir: ListaCompra ->
                                 viewModel.marcarListaComoConcluida(listaToConcluir.id)
                             },
-                            showConcluirButton = true,
-                            viewModel = viewModel
+                            showConcluirButton = true
                         )
                     }
                 }
@@ -345,28 +341,15 @@ fun HomeListaCard(
     onDelete: (ListaCompra) -> Unit,
     onNavigate: (Int) -> Unit,
     onConcluir: (ListaCompra) -> Unit,
-    showConcluirButton: Boolean,
-    viewModel: ListaCompraViewModel
+    showConcluirButton: Boolean
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var showEditSheet by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf(lista.name) }
-    var valorLista by remember { mutableStateOf("") }
     
     val sheetState = rememberModalBottomSheetState()
     val editSheetState = rememberModalBottomSheetState()
-    
-    // Calcular valor da lista baseado no status
-    LaunchedEffect(lista) {
-        if (lista.status == "CONCLUIDA") {
-            viewModel.calcularValorRealListaAsync(lista.id) { valorReal ->
-                valorLista = ListaCompraFormatter.formatarValorComTraco(valorReal)
-            }
-        } else {
-            valorLista = ""
-        }
-    }
     
     TrollyCard(
         modifier = Modifier.fillMaxWidth()
@@ -387,26 +370,14 @@ fun HomeListaCard(
                 )
             },
             trailingContent = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(TrollySpacing.xs)
+                IconButton(
+                    onClick = { showBottomSheet = true }
                 ) {
-                    if (valorLista.isNotEmpty()) {
-                        Text(
-                            text = valorLista,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    IconButton(
-                        onClick = { showBottomSheet = true }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Mais opções",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Mais opções",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             },
             modifier = Modifier.clickable { onNavigate(lista.id) }
