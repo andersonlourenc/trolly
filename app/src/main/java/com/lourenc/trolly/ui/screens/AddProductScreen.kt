@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import com.lourenc.trolly.data.local.entity.ItemLista
 import com.lourenc.trolly.data.repository.ProdutoMercado
 import com.lourenc.trolly.viewmodel.ListaCompraViewModel
+import com.lourenc.trolly.ui.theme.*
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.*
@@ -41,13 +42,10 @@ fun AddProductScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Adicionar Produtos") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
-                    }
-                }
+            TrollyTopBar(
+                title = "Adicionar Produtos",
+                showBackButton = true,
+                onBackClick = { navController.popBackStack() }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -56,21 +54,24 @@ fun AddProductScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(horizontal = TrollySpacing.lg)
         ) {
-            OutlinedTextField(
+            Spacer(modifier = Modifier.height(TrollySpacing.md))
+            
+            TrollyTextField(
                 value = searchTerm,
                 onValueChange = {
                     searchTerm = it
                     viewModel.pesquisarProdutos(it)
                 },
-                label = { Text("Buscar produto") },
-                modifier = Modifier.fillMaxWidth(),
+                label = "Buscar produto",
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            
+            Spacer(modifier = Modifier.height(TrollySpacing.md))
+            
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(TrollySpacing.sm),
                 modifier = Modifier.weight(1f)
             ) {
                 items(produtosFiltrados) { produto ->
@@ -106,15 +107,13 @@ fun ProductItemCard(
     onAdd: () -> Unit
 ) {
     val currencyFormat = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
+    TrollyCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(TrollySpacing.md),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

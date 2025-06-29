@@ -154,10 +154,25 @@ class ListaCompraUseCaseImpl(
 
     override suspend fun calcularGastoMensal(month: Int, year: Int): ListaCompraResult {
         return try {
-            val listas = listaRepository.getListasByMonth(month, year)
+            // Buscar apenas listas concluídas do mês
+            val listas = listaRepository.getListasConcluidas().first()
+            val calendar = Calendar.getInstance()
+            calendar.set(year, month, 1, 0, 0, 0)
+            calendar.set(Calendar.MILLISECOND, 0)
+            val startDate = calendar.timeInMillis
+            
+            calendar.add(Calendar.MONTH, 1)
+            calendar.add(Calendar.MILLISECOND, -1)
+            val endDate = calendar.timeInMillis
+            
+            // Filtrar listas concluídas do mês específico
+            val listasConcluidasDoMes = listas.filter { lista ->
+                lista.dataCriacao in startDate..endDate
+            }
+            
             var gastoTotal = 0.0
             
-            for (lista in listas) {
+            for (lista in listasConcluidasDoMes) {
                 val total = itemRepository.calcularTotalLista(lista.id)
                 gastoTotal += total
             }
@@ -170,17 +185,14 @@ class ListaCompraUseCaseImpl(
 
     override suspend fun calcularValorUltimaLista(): ListaCompraResult {
         return try {
-            val calendar = Calendar.getInstance()
-            val month = calendar.get(Calendar.MONTH)
-            val year = calendar.get(Calendar.YEAR)
+            // Buscar apenas listas concluídas
+            val listasConcluidas = listaRepository.getListasConcluidas().first()
             
-            val listas = listaRepository.getListasByMonth(month, year)
-            if (listas.isEmpty()) {
-                return ListaCompraResult.ValorUltimaListaSuccess(0.0)
-            }
+            // Encontrar a lista concluída mais recente
+            val listaRecente = if (listasConcluidas.isNotEmpty()) {
+                listasConcluidas.maxBy { it.dataCriacao }
+            } else null
             
-            // Encontrar a lista mais recente
-            val listaRecente = listas.maxByOrNull { it.dataCriacao }
             if (listaRecente != null) {
                 val valor = itemRepository.calcularTotalLista(listaRecente.id)
                 ListaCompraResult.ValorUltimaListaSuccess(valor)

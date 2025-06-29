@@ -395,8 +395,11 @@ class ListaCompraViewModel(
             _isLoading.value = true
             _errorMessage.value = null
             
-            // Como getAllListas() retorna Flow, precisamos de uma abordagem diferente
-            // Por enquanto, vamos usar uma implementação simplificada
+            // Carregar listas ativas e concluídas
+            carregarListasAtivas()
+            carregarListasConcluidas()
+            
+            // Calcular gasto mensal e valor da última lista
             calcularGastoMensal()
             calcularValorUltimaLista()
             
@@ -516,11 +519,66 @@ class ListaCompraViewModel(
         return ListaCompraFormatter.formatarValor(valor)
     }
     
+    fun formatarValorComTraco(valor: Double): String {
+        return ListaCompraFormatter.formatarValorComTraco(valor)
+    }
+    
     fun formatarData(timestamp: Long): String {
         return ListaCompraFormatter.formatDate(timestamp)
     }
     
     fun getMesAtualEmPortugues(): String {
         return ListaCompraFormatter.getMesAtualEmPortugues()
+    }
+    
+    // Verificar se há listas concluídas
+    fun temListasConcluidas(): Boolean {
+        return _listasConcluidas.value?.isNotEmpty() == true
+    }
+    
+    // Verificar se há gasto mensal
+    fun temGastoMensal(): Boolean {
+        return _gastoMensal.value != null && _gastoMensal.value!! > 0.0
+    }
+    
+    // Verificar se há valor da última lista
+    fun temValorUltimaLista(): Boolean {
+        return _valorUltimaLista.value != null && _valorUltimaLista.value!! > 0.0
+    }
+    
+    // Calcular valor real de uma lista
+    suspend fun calcularValorRealLista(listaId: Int): Double {
+        return try {
+            when (val result = itemUseCase.calcularTotalLista(listaId)) {
+                is ItemListaResult.TotalListaSuccess -> result.total
+                is ItemListaResult.Error -> 0.0
+                else -> 0.0
+            }
+        } catch (e: Exception) {
+            0.0
+        }
+    }
+    
+    // Verificar se uma lista está concluída
+    fun isListaConcluida(lista: ListaCompra): Boolean {
+        return lista.status == "CONCLUIDA"
+    }
+    
+    // Formatar valor da lista baseado no status
+    suspend fun formatarValorLista(lista: ListaCompra): String {
+        return if (isListaConcluida(lista)) {
+            val valorReal = calcularValorRealLista(lista.id)
+            ListaCompraFormatter.formatarValorComTraco(valorReal)
+        } else {
+            "—"
+        }
+    }
+    
+    // Calcular valor real de uma lista (versão não-suspend para UI)
+    fun calcularValorRealListaAsync(listaId: Int, onResult: (Double) -> Unit) {
+        viewModelScope.launch {
+            val valor = calcularValorRealLista(listaId)
+            onResult(valor)
+        }
     }
 }

@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lourenc.trolly.ui.screens.ForgotPasswordScreen
 import com.lourenc.trolly.ui.screens.HomeScreen
+import com.lourenc.trolly.ui.screens.InsightsScreen
 import com.lourenc.trolly.ui.screens.LaunchScreen
 import com.lourenc.trolly.ui.screens.ListaCompraDetailScreen
 import com.lourenc.trolly.ui.screens.ListasScreen
@@ -59,6 +60,9 @@ fun AppNavigator() {
             composable("listas") { 
                 val viewModel = viewModel<ListaCompraViewModel>(factory = factory)
                 ListasScreen(navController, viewModel)
+            }
+            composable("insights") {
+                InsightsScreen(navController)
             }
             composable("listaDetail/{listaId}") { backStackEntry ->
                 val viewModel = viewModel<ListaCompraViewModel>(factory = factory)

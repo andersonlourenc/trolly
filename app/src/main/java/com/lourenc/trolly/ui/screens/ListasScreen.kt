@@ -162,7 +162,8 @@ fun ListasScreen(navController: NavController, viewModel: ListaCompraViewModel) 
                         onEdit = { viewModel.updateLista(it) },
                         onDelete = { viewModel.deleteLista(it) },
                         onConcluir = { viewModel.marcarListaComoConcluida(it.id) },
-                        showConcluirButton = true
+                        showConcluirButton = true,
+                        viewModel = viewModel
                     )
                     1 -> ListasTabContent(
                         listas = listasConcluidas,
@@ -171,7 +172,8 @@ fun ListasScreen(navController: NavController, viewModel: ListaCompraViewModel) 
                         onEdit = { viewModel.updateLista(it) },
                         onDelete = { viewModel.deleteLista(it) },
                         onConcluir = { viewModel.marcarListaComoAtiva(it.id) },
-                        showConcluirButton = false
+                        showConcluirButton = false,
+                        viewModel = viewModel
                     )
                 }
             }
@@ -198,7 +200,8 @@ fun ListasTabContent(
     onEdit: (ListaCompra) -> Unit,
     onDelete: (ListaCompra) -> Unit,
     onConcluir: (ListaCompra) -> Unit,
-    showConcluirButton: Boolean
+    showConcluirButton: Boolean,
+    viewModel: ListaCompraViewModel
 ) {
     LazyColumn(
         modifier = Modifier
@@ -260,7 +263,8 @@ fun ListasTabContent(
                     onDelete = onDelete,
                     onNavigate = onNavigate,
                     onConcluir = onConcluir,
-                    showConcluirButton = showConcluirButton
+                    showConcluirButton = showConcluirButton,
+                    viewModel = viewModel
                 )
             }
         }
@@ -275,15 +279,28 @@ fun ListaCard(
     onDelete: (ListaCompra) -> Unit,
     onNavigate: (Int) -> Unit,
     onConcluir: (ListaCompra) -> Unit,
-    showConcluirButton: Boolean
+    showConcluirButton: Boolean,
+    viewModel: ListaCompraViewModel
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var showEditSheet by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf(lista.name) }
+    var valorLista by remember { mutableStateOf("") }
     
     val sheetState = rememberModalBottomSheetState()
     val editSheetState = rememberModalBottomSheetState()
+    
+    // Calcular valor da lista baseado no status
+    LaunchedEffect(lista) {
+        if (lista.status == "CONCLUIDA") {
+            viewModel.calcularValorRealListaAsync(lista.id) { valorReal ->
+                valorLista = ListaCompraFormatter.formatarValorComTraco(valorReal)
+            }
+        } else {
+            valorLista = ""
+        }
+    }
     
     TrollyCard(
         modifier = Modifier.fillMaxWidth()
@@ -308,11 +325,13 @@ fun ListaCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(TrollySpacing.xs)
                 ) {
-                    Text(
-                        text = ListaCompraFormatter.formatarValor(lista.totalEstimado),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    if (valorLista.isNotEmpty()) {
+                        Text(
+                            text = valorLista,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     IconButton(
                         onClick = { showBottomSheet = true }
                     ) {

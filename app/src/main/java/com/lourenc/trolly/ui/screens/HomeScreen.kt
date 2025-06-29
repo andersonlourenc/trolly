@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.filled.LocalPharmacy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Card
@@ -60,7 +62,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextButton
@@ -73,6 +74,7 @@ import kotlinx.coroutines.launch
 import com.lourenc.trolly.utils.ListaCompraFormatter
 import com.lourenc.trolly.ui.theme.*
 import java.util.*
+import androidx.compose.material3.ListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,7 +101,7 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
         val isLoading by viewModel.isLoading.observeAsState(false)
         val errorMessage by viewModel.errorMessage.observeAsState(null)
         
-        // Observar mensagens de erro
+
         LaunchedEffect(errorMessage) {
             errorMessage?.let { message ->
                 val result = snackbarHostState.showSnackbar(
@@ -112,9 +114,12 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
             }
         }
         
-        // Calcular os valores quando a tela for carregada
+
         LaunchedEffect(Unit) {
             viewModel.carregarListasAtivas()
+            viewModel.carregarListasConcluidas()
+            viewModel.calcularGastoMensal()
+            viewModel.calcularValorUltimaLista()
         }
 
         Scaffold(
@@ -176,7 +181,7 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                 item {
                     Spacer(modifier = Modifier.height(TrollySpacing.md))
                     
-                    // Cards de resumo
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
@@ -206,7 +211,7 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                                     )
                                 }
                                 Text(
-                                    viewModel.formatarValor(gastoMensal),
+                                    viewModel.formatarValorComTraco(gastoMensal),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -238,7 +243,7 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                                     )
                                 }
                                 Text(
-                                    viewModel.formatarValor(valorUltimaLista),
+                                    viewModel.formatarValorComTraco(valorUltimaLista),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -297,42 +302,29 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                     }
                 } else {
                     items(listas) { lista ->
-                        TrollyCard(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            ListItem(
-                                headlineContent = {
-                                    Text(
-                                        text = lista.name,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                },
-                                supportingContent = {
-                                    Text(
-                                        text = "Criada em ${ListaCompraFormatter.formatDate(lista.dataCriacao)}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                                    )
-                                },
-                                trailingContent = {
-                                    Text(
-                                        text = viewModel.formatarValor(lista.totalEstimado),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                },
-                                modifier = Modifier.clickable {
-                                    navController.navigate("listaDetail/${lista.id}")
-                                }
-                            )
-                        }
+                        HomeListaCard(
+                            lista = lista,
+                            onEdit = { updatedLista: ListaCompra ->
+                                viewModel.updateLista(updatedLista)
+                            },
+                            onDelete = { listaToDelete: ListaCompra ->
+                                viewModel.deleteLista(listaToDelete)
+                            },
+                            onNavigate = { listaId: Int ->
+                                navController.navigate("listaDetail/$listaId")
+                            },
+                            onConcluir = { listaToConcluir: ListaCompra ->
+                                viewModel.marcarListaComoConcluida(listaToConcluir.id)
+                            },
+                            showConcluirButton = true,
+                            viewModel = viewModel
+                        )
                     }
                 }
             }
         }
         
-        // Modal de adicionar lista
+
         if (showAddListModal) {
             AddListModal(
                 onDismiss = { showAddListModal = false },
@@ -342,6 +334,258 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                 }
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeListaCard(
+    lista: ListaCompra,
+    onEdit: (ListaCompra) -> Unit,
+    onDelete: (ListaCompra) -> Unit,
+    onNavigate: (Int) -> Unit,
+    onConcluir: (ListaCompra) -> Unit,
+    showConcluirButton: Boolean,
+    viewModel: ListaCompraViewModel
+) {
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var showEditSheet by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var editedName by remember { mutableStateOf(lista.name) }
+    var valorLista by remember { mutableStateOf("") }
+    
+    val sheetState = rememberModalBottomSheetState()
+    val editSheetState = rememberModalBottomSheetState()
+    
+    // Calcular valor da lista baseado no status
+    LaunchedEffect(lista) {
+        if (lista.status == "CONCLUIDA") {
+            viewModel.calcularValorRealListaAsync(lista.id) { valorReal ->
+                valorLista = ListaCompraFormatter.formatarValorComTraco(valorReal)
+            }
+        } else {
+            valorLista = ""
+        }
+    }
+    
+    TrollyCard(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        ListItem(
+            headlineContent = {
+                Text(
+                    text = lista.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            },
+            supportingContent = {
+                Text(
+                    text = "Criada em ${ListaCompraFormatter.formatDate(lista.dataCriacao)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+            },
+            trailingContent = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(TrollySpacing.xs)
+                ) {
+                    if (valorLista.isNotEmpty()) {
+                        Text(
+                            text = valorLista,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    IconButton(
+                        onClick = { showBottomSheet = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Mais opções",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            },
+            modifier = Modifier.clickable { onNavigate(lista.id) }
+        )
+    }
+
+    // Bottom Sheet de opções
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(TrollySpacing.lg)
+            ) {
+                Text(
+                    text = "Opções da Lista",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                
+                Spacer(modifier = Modifier.height(TrollySpacing.md))
+                
+                ListItem(
+                    headlineContent = { Text("Editar") },
+                    leadingContent = {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    modifier = Modifier.clickable {
+                        showBottomSheet = false
+                        editedName = lista.name
+                        showEditSheet = true
+                    }
+                )
+                
+                if (showConcluirButton) {
+                    ListItem(
+                        headlineContent = { Text("Marcar como concluída") },
+                        leadingContent = {
+                            Icon(
+                                Icons.Default.Check,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        modifier = Modifier.clickable {
+                            showBottomSheet = false
+                            onConcluir(lista)
+                        }
+                    )
+                } else {
+                    ListItem(
+                        headlineContent = { Text("Marcar como ativa") },
+                        leadingContent = {
+                            Icon(
+                                Icons.Default.Refresh,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        modifier = Modifier.clickable {
+                            showBottomSheet = false
+                            onConcluir(lista)
+                        }
+                    )
+                }
+                
+                ListItem(
+                    headlineContent = { 
+                        Text(
+                            "Excluir",
+                            color = MaterialTheme.colorScheme.error
+                        ) 
+                    },
+                    leadingContent = {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    },
+                    modifier = Modifier.clickable {
+                        showBottomSheet = false
+                        showDeleteDialog = true
+                    }
+                )
+                
+                Spacer(modifier = Modifier.height(TrollySpacing.md))
+            }
+        }
+    }
+    
+
+    if (showEditSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showEditSheet = false },
+            sheetState = editSheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(TrollySpacing.lg)
+            ) {
+                Text(
+                    text = "Editar Lista",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                
+                Spacer(modifier = Modifier.height(TrollySpacing.md))
+                
+                TrollyTextField(
+                    value = editedName,
+                    onValueChange = { editedName = it },
+                    label = "Nome da lista"
+                )
+                
+                Spacer(modifier = Modifier.height(TrollySpacing.lg))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
+                ) {
+                    TrollySecondaryButton(
+                        text = "Cancelar",
+                        onClick = { showEditSheet = false },
+                        modifier = Modifier.weight(1f)
+                    )
+                    
+                    TrollyPrimaryButton(
+                        text = "Salvar",
+                        onClick = {
+                            if (editedName.isNotBlank()) {
+                                val updatedLista = lista.copy(name = editedName)
+                                onEdit(updatedLista)
+                                showEditSheet = false
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        enabled = editedName.isNotBlank()
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(TrollySpacing.md))
+            }
+        }
+    }
+    
+    // Dialog de confirmação de exclusão
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Excluir Lista") },
+            text = { Text("Tem certeza que deseja excluir a lista \"${lista.name}\"? Esta ação não pode ser desfeita.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDelete(lista)
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text(
+                        "Excluir",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }
 
@@ -406,7 +650,7 @@ fun AddListModal(
     }
 }
 
-// Função para obter o nome do mês atual em português
+
 @Composable
 fun getMesAtualEmPortugues(): String {
     val calendar = Calendar.getInstance()
@@ -417,7 +661,7 @@ fun getMesAtualEmPortugues(): String {
     return meses[Calendar.getInstance().get(Calendar.MONTH)]
 }
 
-// Função para formatar valores monetários
+
 private fun formatarValor(valor: Double): String {
     return String.format(Locale("pt", "BR"), "%.2f", valor).replace(".", ",")
 }

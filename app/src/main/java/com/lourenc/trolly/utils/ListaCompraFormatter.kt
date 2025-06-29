@@ -29,6 +29,15 @@ class ListaCompraFormatter {
         }
         
 
+        fun formatarValorComTraco(valor: Double): String {
+            return if (valor > 0.0) {
+                currencyFormat.format(valor)
+            } else {
+                "—"
+            }
+        }
+        
+
         fun formatarValorSemSimbolo(valor: Double): String {
             return String.format(Locale("pt", "BR"), "%.2f", valor)
         }
