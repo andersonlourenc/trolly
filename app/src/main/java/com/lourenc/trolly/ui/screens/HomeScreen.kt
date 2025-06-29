@@ -257,7 +257,7 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                         onClick = { navController.navigate("listas") }
                     )
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.Store, contentDescription = "Insights") },
+                        icon = { Icon(Icons.Default.BarChart, contentDescription = "Insights") },
                         label = { Text("Insights") },
                         selected = false,
                         onClick = { }
@@ -337,19 +337,19 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                                     text = "Toque no botão + para criar sua primeira lista",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                                )
-                            }
+                    )
+                }
                         }
                     }
                 } else {
-                    items(listas) { lista ->
+                items(listas) { lista ->
                         ListaCard(
-                            lista = lista,
+                        lista = lista,
                             onEdit = { updatedLista ->
                                 viewModel.updateLista(updatedLista)
-                            },
-                            onDelete = { listaToDelete ->
-                                viewModel.deleteLista(listaToDelete)
+                        },
+                        onDelete = { listaToDelete ->
+                            viewModel.deleteLista(listaToDelete)
                             },
                             onNavigate = { listaId ->
                                 navController.navigate("listaDetail/$listaId")
@@ -395,42 +395,42 @@ fun ListaCard(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = when {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                    Icon(
+                        imageVector = when {
                     lista.name.contains("casa", ignoreCase = true) -> Icons.Default.Home
                     lista.name.contains("farmacia", ignoreCase = true) -> Icons.Default.LocalPharmacy
-                    else -> Icons.Default.ShoppingCart
-                },
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .size(24.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        shape = CircleShape
+                            else -> Icons.Default.ShoppingCart
+                        },
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                shape = CircleShape
+                            )
+                            .padding(4.dp)
                     )
-                    .padding(4.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Column {
-                Text(
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
                     text = ListaCompraFormatter.formatarNomeLista(lista.name),
-                    style = MaterialTheme.typography.titleSmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
+                            style = MaterialTheme.typography.titleSmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
                     text = "Criada em ${ListaCompraFormatter.formatDate(lista.dataCriacao)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
                 if (lista.descricao.isNotBlank()) {
                     Text(
                         text = ListaCompraFormatter.formatarDescricao(lista.descricao),
@@ -439,15 +439,15 @@ fun ListaCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
+                    }
                 }
-            }
             Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = { showBottomSheet = true }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Mais opções",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
+                IconButton(onClick = { showBottomSheet = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Mais opções",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
             }
         }
     }

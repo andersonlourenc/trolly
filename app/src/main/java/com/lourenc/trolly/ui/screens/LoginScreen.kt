@@ -100,7 +100,7 @@ fun LoginScreen(navController: NavController, context: Context) {
                     navigationIconContentColor = MaterialTheme.colorScheme.onSurface
                 ),
             )
-        },
+    },
         content = { innerPadding ->
             Column(
                 modifier = Modifier
@@ -111,7 +111,7 @@ fun LoginScreen(navController: NavController, context: Context) {
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
+                ) {
                 Text("Bem-vindo de volta", style = MaterialTheme.typography.titleMedium)
 
                 Spacer(modifier = Modifier.height(16.dp))

@@ -26,17 +26,17 @@ fun AddListModal(
         onDismissRequest = onDismiss,
         sheetState = sheetState
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
                 .padding(16.dp)
-        ) {
-            // Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
             ) {
+            // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                 Text(
                     text = "Nova Lista",
                     style = MaterialTheme.typography.titleLarge
@@ -46,7 +46,7 @@ fun AddListModal(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Fechar"
                     )
-                }
+            }
             }
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -63,7 +63,7 @@ fun AddListModal(
                 ),
                 singleLine = true
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
             
             // Campo descrição
@@ -79,9 +79,9 @@ fun AddListModal(
                 minLines = 2,
                 maxLines = 3
             )
-            
+
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             // Botões
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -91,23 +91,23 @@ fun AddListModal(
                     Text("Cancelar")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = {
-                        if (name.isNotBlank()) {
-                            viewModel.addLista(
-                                ListaCompra(
+            Button(
+                onClick = {
+                    if (name.isNotBlank()) {
+                        viewModel.addLista(
+                            ListaCompra(
                                     name = name.trim(),
                                     descricao = description.trim()
-                                )
                             )
+                        )
                             onDismiss()
-                        }
-                    },
+                    }
+                },
                     enabled = name.isNotBlank()
-                ) {
-                    Text("Criar Lista")
-                }
+            ) {
+                Text("Criar Lista")
             }
+        }
             
             Spacer(modifier = Modifier.height(16.dp))
         }

@@ -20,9 +20,13 @@ import com.lourenc.trolly.ui.screens.ListasScreen
 import com.lourenc.trolly.ui.screens.LoginScreen
 import com.lourenc.trolly.ui.screens.ProfileScreen
 import com.lourenc.trolly.ui.screens.RegisterScreen
+import com.lourenc.trolly.ui.screens.AddListsScreen
 import com.lourenc.trolly.viewmodel.ListaCompraViewModel
 import com.lourenc.trolly.viewmodel.ListaCompraViewModelFactory
 import com.lourenc.trolly.ui.theme.TrollyTheme
+import com.lourenc.trolly.ui.screens.EditItemScreen
+import com.lourenc.trolly.ui.screens.AddProductScreen
+import com.lourenc.trolly.ui.screens.EditProfileScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +67,23 @@ fun AppNavigator() {
             }
             composable("profile") {
                 ProfileScreen(navController)
+            }
+            composable("addList") { 
+                val viewModel = viewModel<ListaCompraViewModel>(factory = factory)
+                AddListsScreen(navController, viewModel)
+            }
+            composable("editItem/{itemId}") { backStackEntry ->
+                val viewModel = viewModel<ListaCompraViewModel>(factory = factory)
+                val itemId = backStackEntry.arguments?.getString("itemId")?.toIntOrNull() ?: 0
+                EditItemScreen(navController, viewModel, itemId)
+            }
+            composable("addProduct/{listaId}") { backStackEntry ->
+                val viewModel = viewModel<ListaCompraViewModel>(factory = factory)
+                val listaId = backStackEntry.arguments?.getString("listaId")?.toIntOrNull() ?: 0
+                AddProductScreen(navController, viewModel, listaId)
+            }
+            composable("editProfile") {
+                EditProfileScreen(navController)
             }
         }
     }

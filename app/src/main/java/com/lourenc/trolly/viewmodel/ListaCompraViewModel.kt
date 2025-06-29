@@ -51,7 +51,7 @@ class ListaCompraViewModel(
     // LiveData para o valor da última lista
     private val _valorUltimaLista = MutableLiveData<Double>(0.0)
     val valorUltimaLista: LiveData<Double> = _valorUltimaLista
-    
+
     // LiveData para estados de loading e erro
     private val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -253,14 +253,14 @@ class ListaCompraViewModel(
     
     // Método usando Strategy Pattern para ordenação
     fun carregarItensListaOrdenados(listaId: Int, strategy: ItemSortingStrategy) {
-        viewModelScope.launch {
+            viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
             
             when (val result = itemUseCase.getItensPorListaOrdenados(listaId, strategy)) {
                 is ItemListaResult.ItensSuccess -> {
                     _itensLista.value = result.itens
-                }
+            }
                 is ItemListaResult.Error -> {
                     _errorMessage.value = result.message
                 }
@@ -273,14 +273,14 @@ class ListaCompraViewModel(
     }
     
     fun adicionarItemLista(item: ItemLista) {
-        viewModelScope.launch {
+            viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
             
             when (val result = itemUseCase.adicionarItem(item)) {
                 is ItemListaResult.ItemSuccess -> {
                     carregarItensLista(item.idLista)
-                }
+            }
                 is ItemListaResult.Error -> {
                     _errorMessage.value = result.message
                 }
@@ -293,14 +293,14 @@ class ListaCompraViewModel(
     }
     
     fun atualizarItemLista(item: ItemLista) {
-        viewModelScope.launch {
+            viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
             
             when (val result = itemUseCase.atualizarItem(item)) {
                 is ItemListaResult.ItemSuccess -> {
                     carregarItensLista(item.idLista)
-                }
+            }
                 is ItemListaResult.Error -> {
                     _errorMessage.value = result.message
                 }
@@ -313,14 +313,14 @@ class ListaCompraViewModel(
     }
     
     fun removerItemLista(item: ItemLista) {
-        viewModelScope.launch {
+            viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
             
             when (val result = itemUseCase.removerItem(item)) {
                 is ItemListaResult.Success -> {
                     carregarItensLista(item.idLista)
-                }
+            }
                 is ItemListaResult.Error -> {
                     _errorMessage.value = result.message
                 }
@@ -362,8 +362,8 @@ class ListaCompraViewModel(
                 }
                 else -> {
                     _errorMessage.value = "Erro desconhecido ao calcular gasto mensal"
-                }
-            }
+                        }
+                    }
             _isLoading.value = false
         }
     }

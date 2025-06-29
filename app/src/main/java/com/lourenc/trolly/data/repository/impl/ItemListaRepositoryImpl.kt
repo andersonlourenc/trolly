@@ -77,9 +77,8 @@ class ItemListaRepositoryImpl(private val itemDao: ItemListaDao) : ItemListaRepo
     }
     
     override fun filtrarProdutos(termo: String): List<ProdutoMercado> {
-        if (termo.isBlank()) return getProdutosPredefinidos().take(5)
-        
-        return getProdutosPredefinidos().filter { 
+        if (termo.isBlank()) return getProdutosPredefinidos().take(20)
+        return getProdutosPredefinidos().filter {
             it.nome.contains(termo, ignoreCase = true)
         }
     }

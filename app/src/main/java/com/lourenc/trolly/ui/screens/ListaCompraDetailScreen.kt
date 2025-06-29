@@ -34,7 +34,6 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
     var lista by remember { mutableStateOf<ListaCompra?>(null) }
     val itens by viewModel.itensLista.observeAsState(emptyList())
     var showBottomSheet by remember { mutableStateOf(false) }
-    var showSearchDialog by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
     // Carregar a lista e seus itens pelo ID
@@ -53,13 +52,12 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
                     .background(MaterialTheme.colorScheme.primary)
                     .padding(start = 16.dp, end = 16.dp, top = 64.dp, bottom = 16.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier.align(Alignment.CenterStart)
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -70,28 +68,14 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
                     Text(
                         text = lista?.name ?: "Detalhes da Lista",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.align(Alignment.Center),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    IconButton(
-                        onClick = { showSearchDialog = true }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Adicionar Produtos",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = lista?.name ?: "",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-
                 if (!lista?.descricao.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = lista?.descricao ?: "",
                         style = MaterialTheme.typography.bodyMedium,
@@ -102,7 +86,34 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
                 }
             }
         },
-
+        bottomBar = {
+            if (itens.isNotEmpty() && itens.all { it.comprado }) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        onClick = {
+                            viewModel.marcarListaComoConcluida(listaId)
+                            navController.navigate("home") {
+                                popUpTo("home") { inclusive = true }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Concluir Lista",
+                            tint = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Concluir Lista", color = Color.White)
+                    }
+                }
+            }
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -131,18 +142,18 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
                         Button(
-                            onClick = { showSearchDialog = true },
+                            onClick = { navController.navigate("addProduct/$listaId") },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary
                             )
                         ) {
                             Icon(
-                                Icons.Default.Search,
-                                contentDescription = "Buscar",
+                                Icons.Default.Add,
+                                contentDescription = "Adicionar Produto",
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Buscar Produtos")
+                            Text("Adicionar Produto")
                         }
                     }
                 }
@@ -165,7 +176,7 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
                     )
                     
                     Button(
-                        onClick = { showSearchDialog = true },
+                        onClick = { navController.navigate("addProduct/$listaId") },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
                         )
@@ -186,12 +197,16 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
                     items(itens) { item ->
                         ItemCard(
                             item = item,
+                            navController = navController,
                             onToggleComprado = { 
                                 val itemAtualizado = item.copy(comprado = !item.comprado)
                                 viewModel.atualizarItemLista(itemAtualizado)
                             },
                             onDelete = {
                                 viewModel.removerItemLista(item)
+                            },
+                            onEdit = { itemAtualizado ->
+                                viewModel.atualizarItemLista(itemAtualizado)
                             }
                         )
                     }
@@ -269,211 +284,76 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
             }
         }
     }
-    
-    // Diálogo de pesquisa/adicionar produtos
-    if (showSearchDialog) {
-        SearchProductDialog(
-            viewModel = viewModel,
-            listaId = listaId,
-            onDismiss = { showSearchDialog = false }
-        )
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchProductDialog(
-    viewModel: ListaCompraViewModel,
-    listaId: Int,
-    onDismiss: () -> Unit
+fun ItemCard(
+    item: ItemLista,
+    navController: NavController,
+    onToggleComprado: () -> Unit,
+    onDelete: () -> Unit,
+    onEdit: (ItemLista) -> Unit
 ) {
-    var searchTerm by remember { mutableStateOf("") }
-    val produtosFiltrados by viewModel.produtosFiltrados.observeAsState(emptyList())
-    
-    // Inicializar com alguns produtos sugeridos
-    LaunchedEffect(Unit) {
-        viewModel.pesquisarProdutos("")
-    }
-    
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text("Buscar Produtos")
-        },
-        text = {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = searchTerm,
-                    onValueChange = {
-                        searchTerm = it
-                        viewModel.pesquisarProdutos(it)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Buscar produto") },
-                    singleLine = true,
-                    leadingIcon = {
-                        Icon(Icons.Default.Search, contentDescription = "Buscar")
-                    },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        cursorColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                Text(
-                    text = "Produtos sugeridos:",
-                    style = MaterialTheme.typography.titleSmall
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Lista de produtos
-                LazyColumn(
-                    modifier = Modifier.heightIn(max = 300.dp)
-                ) {
-                    items(produtosFiltrados) { produto ->
-                        ProductItemCard(
-                            produto = produto,
-                            onAdd = {
-                                val item = viewModel.converterProdutoParaItem(produto, listaId)
-                                viewModel.adicionarItemLista(item)
-                                onDismiss()
-                            }
-                        )
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Fechar")
-            }
-        }
-    )
-}
-
-@Composable
-fun ProductItemCard(
-    produto: ProdutoMercado, 
-    onAdd: () -> Unit
-) {
-    val currencyFormat = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-    
+    val currencyFormat = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("pt", "BR"))
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Text(
-                    text = produto.nome,
-                    style = MaterialTheme.typography.bodyMedium
+            Checkbox(
+                checked = item.comprado,
+                onCheckedChange = { onToggleComprado() },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = MaterialTheme.colorScheme.primary
                 )
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
-                    text = currencyFormat.format(produto.preco),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
+                    text = item.name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (item.comprado)
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    else
+                        MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
+                Spacer(modifier = Modifier.height(2.dp))
+                Row {
+                    Text(
+                        text = "${item.quantidade} ${item.unidade}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                    Text(
+                        text = "  ·  ${currencyFormat.format(item.precoUnitario)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
-            
-            IconButton(onClick = onAdd) {
+            IconButton(onClick = { 
+                navController.navigate("editItem/${item.id}")
+            }) {
                 Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Adicionar",
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "Editar/Excluir",
                     tint = MaterialTheme.colorScheme.primary
                 )
-            }
-        }
-    }
-}
-
-@Composable
-fun ItemCard(
-    item: ItemLista,
-    onToggleComprado: () -> Unit,
-    onDelete: () -> Unit
-) {
-    val currencyFormat = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-    val subtotal = item.quantidade * item.precoUnitario
-    
-    Card(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-                    checked = item.comprado,
-                    onCheckedChange = { onToggleComprado() },
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-                
-                Spacer(modifier = Modifier.width(8.dp))
-                
-                Column {
-                    Text(
-                        text = item.name,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = if (item.comprado) 
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        else 
-                            MaterialTheme.colorScheme.onSurface
-                    )
-                    
-                    Row {
-                        Text(
-                            text = "${item.quantidade} ${item.unidade}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                        
-                        Text(
-                            text = " • ${currencyFormat.format(item.precoUnitario)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-            }
-            
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = currencyFormat.format(subtotal),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Excluir",
-                        tint = Color(0xFFE53935),
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
             }
         }
     }

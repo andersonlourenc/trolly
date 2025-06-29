@@ -128,8 +128,8 @@ fun ListasScreen(navController: NavController, viewModel: ListaCompraViewModel) 
                         onClick = { }
                     )
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.Store, contentDescription = "Mercados") },
-                        label = { Text("Mercados") },
+                        icon = { Icon(Icons.Default.BarChart, contentDescription = "Insights") },
+                        label = { Text("Insights") },
                         selected = false,
                         onClick = { }
                     )
