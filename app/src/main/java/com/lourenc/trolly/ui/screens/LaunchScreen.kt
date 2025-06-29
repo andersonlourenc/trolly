@@ -179,42 +179,6 @@ fun LaunchScreen(navController: NavController) {
                     }
                 }
 
-                Button(
-                    onClick = {
-
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary
-                    )
-
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-
-                        Image(
-                            painter = painterResource(id = R.drawable.facebook),
-                            contentDescription = "Facebook logo",
-                            modifier = Modifier
-                                .padding(start = 0.dp)
-                                .size(24.dp)
-                        )
-
-                        Text(
-                            "Entrar com o Facebook",
-                            modifier = Modifier.align(Alignment.Center),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                }
-
-
-
             }
         }
     }

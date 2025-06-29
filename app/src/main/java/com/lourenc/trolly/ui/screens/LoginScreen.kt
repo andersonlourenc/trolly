@@ -61,6 +61,7 @@ import com.lourenc.trolly.auth.getGoogleSignInClient
 import com.lourenc.trolly.auth.loginWithEmail
 import android.widget.Toast
 import com.lourenc.trolly.ui.DividerWithText
+import android.util.Log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,12 +71,37 @@ fun LoginScreen(navController: NavController, context: Context) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.getResult(ApiException::class.java)
-            firebaseAuthWithGoogle(account.idToken ?: "", context, navController)
-        } catch (e: Exception) {
-            Toast.makeText(context, "Erro no login com Google", Toast.LENGTH_SHORT).show()
+        Log.d("GoogleAuth", "Resultado do Google Sign-In recebido")
+        
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                Log.d("GoogleAuth", "Conta Google obtida: ${account.email}")
+                
+                if (account.idToken != null) {
+                    firebaseAuthWithGoogle(account.idToken!!, context, navController)
+                } else {
+                    Log.e("GoogleAuth", "Token ID é null")
+                    Toast.makeText(context, "Erro: Não foi possível obter o token de autenticação", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: ApiException) {
+                Log.e("GoogleAuth", "Erro na API do Google Sign-In", e)
+                val errorMessage = when (e.statusCode) {
+                    12501 -> "Login cancelado pelo usuário"
+                    7 -> "Erro de conexão. Verifique sua internet"
+                    8 -> "Conta inválida"
+                    4 -> "Login necessário"
+                    else -> "Erro no login com Google: ${e.statusCode}"
+                }
+                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Log.e("GoogleAuth", "Erro inesperado no Google Sign-In", e)
+                Toast.makeText(context, "Erro inesperado: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            }
+        } else {
+            Log.d("GoogleAuth", "Google Sign-In cancelado ou falhou. Result code: ${result.resultCode}")
+            Toast.makeText(context, "Login com Google cancelado", Toast.LENGTH_SHORT).show()
         }
     }
 

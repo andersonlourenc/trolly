@@ -14,8 +14,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -83,12 +85,13 @@ fun EditProfileScreen(navController: NavController) {
         ) {
             Spacer(modifier = Modifier.height(TrollySpacing.xl))
             
-            // Avatar com lápis
+            // Avatar com overlay e ícone de câmera centralizado
             Box(
                 modifier = Modifier
                     .size(120.dp)
-                    .clip(CircleShape),
-                contentAlignment = Alignment.BottomEnd
+                    .clip(CircleShape)
+                    .clickable { imagePickerLauncher.launch("image/*") },
+                contentAlignment = Alignment.Center
             ) {
                 if (photoUri != null) {
                     Image(
@@ -124,18 +127,21 @@ fun EditProfileScreen(navController: NavController) {
                         )
                     }
                 }
-                
-                // Ícone de lápis pequeno e clicável
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Editar foto",
+                // Overlay escuro mais transparente
+                Box(
                     modifier = Modifier
-                        .size(36.dp)
-                        .background(Color.White, CircleShape)
-                        .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                        .clickable { imagePickerLauncher.launch("image/*") },
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                        .matchParentSize()
+                        .background(Color.Black.copy(alpha = 0.25f))
+                        .clip(CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.CameraAlt,
+                        contentDescription = "Editar foto",
+                        tint = Color.White,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
             }
             
             Spacer(modifier = Modifier.height(TrollySpacing.lg))
@@ -194,6 +200,7 @@ fun EditProfileScreen(navController: NavController) {
                         
                         try {
                             var hasChanges = false
+                            var uploadError = false
                             
                             // Se há uma nova foto, fazer upload
                             if (photoUri != null) {
@@ -206,19 +213,21 @@ fun EditProfileScreen(navController: NavController) {
                                         hasChanges = true
                                         Log.d("EditProfile", "Foto do perfil atualizada com sucesso")
                                     } else {
+                                        uploadError = true
                                         showError = true
                                         errorMessage = "Erro ao atualizar foto do perfil"
                                         Log.e("EditProfile", "Erro ao atualizar foto do perfil")
                                     }
                                 } else {
+                                    uploadError = true
                                     showError = true
                                     errorMessage = "Erro ao fazer upload da imagem"
                                     Log.e("EditProfile", "Erro no upload da imagem")
                                 }
                             }
                             
-                            // Atualizar nome se necessário
-                            if (name != initialName && name.isNotBlank()) {
+                            // Atualizar nome se necessário (apenas se não houve erro no upload)
+                            if (!uploadError && name != initialName && name.isNotBlank()) {
                                 Log.d("EditProfile", "Atualizando nome...")
                                 val success = imageUploadManager.updateUserProfileName(name)
                                 if (success) {
@@ -231,15 +240,20 @@ fun EditProfileScreen(navController: NavController) {
                                 }
                             }
                             
-                            if (hasChanges) {
+                            if (hasChanges && !showError) {
                                 showSuccess = true
                                 Log.d("EditProfile", "Perfil atualizado com sucesso")
+                            } else if (!hasChanges && !showError) {
+                                showError = true
+                                errorMessage = "Nenhuma alteração foi feita"
+                                Log.d("EditProfile", "Nenhuma alteração foi feita")
                             }
                             
                         } catch (e: Exception) {
                             showError = true
                             errorMessage = "Erro inesperado: ${e.message}"
                             Log.e("EditProfile", "Erro inesperado", e)
+                            e.printStackTrace()
                         } finally {
                             isUploading = false
                         }

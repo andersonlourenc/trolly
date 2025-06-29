@@ -20,10 +20,13 @@ class ImageUploadManager {
             }
             
             Log.d("ImageUploadManager", "Iniciando upload para usuário: $userId")
+            Log.d("ImageUploadManager", "URI da imagem: $imageUri")
+            
             val imageFileName = "profile_images/$userId/${UUID.randomUUID()}.jpg"
             val imageRef = storage.reference.child(imageFileName)
             
             Log.d("ImageUploadManager", "Fazendo upload para: $imageFileName")
+            
             // Upload da imagem
             val uploadTask = imageRef.putFile(imageUri).await()
             Log.d("ImageUploadManager", "Upload concluído: ${uploadTask.bytesTransferred} bytes")
@@ -31,9 +34,12 @@ class ImageUploadManager {
             // Obter URL de download
             val downloadUrl = imageRef.downloadUrl.await()
             Log.d("ImageUploadManager", "URL obtida: $downloadUrl")
+            
             downloadUrl.toString()
         } catch (e: Exception) {
             Log.e("ImageUploadManager", "Erro no upload da imagem", e)
+            Log.e("ImageUploadManager", "Mensagem de erro: ${e.message}")
+            Log.e("ImageUploadManager", "Causa: ${e.cause}")
             e.printStackTrace()
             null
         }
@@ -48,16 +54,26 @@ class ImageUploadManager {
             }
             
             Log.d("ImageUploadManager", "Atualizando foto do perfil para: $imageUrl")
+            Log.d("ImageUploadManager", "Usuário atual: ${user.uid}")
+            
             // Atualizar a foto do perfil no Firebase Auth
             val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
                 .setPhotoUri(Uri.parse(imageUrl))
                 .build()
             
+            Log.d("ImageUploadManager", "Executando updateProfile...")
             user.updateProfile(profileUpdates).await()
+            
+            // Verificar se a atualização foi bem-sucedida
+            val updatedUser = auth.currentUser
             Log.d("ImageUploadManager", "Foto do perfil atualizada com sucesso")
+            Log.d("ImageUploadManager", "Nova URL da foto: ${updatedUser?.photoUrl}")
+            
             true
         } catch (e: Exception) {
             Log.e("ImageUploadManager", "Erro ao atualizar foto do perfil", e)
+            Log.e("ImageUploadManager", "Mensagem de erro: ${e.message}")
+            Log.e("ImageUploadManager", "Causa: ${e.cause}")
             e.printStackTrace()
             false
         }
@@ -72,16 +88,26 @@ class ImageUploadManager {
             }
             
             Log.d("ImageUploadManager", "Atualizando nome do perfil para: $name")
+            Log.d("ImageUploadManager", "Usuário atual: ${user.uid}")
+            
             // Atualizar o nome do perfil no Firebase Auth
             val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
                 .setDisplayName(name)
                 .build()
             
+            Log.d("ImageUploadManager", "Executando updateProfile...")
             user.updateProfile(profileUpdates).await()
+            
+            // Verificar se a atualização foi bem-sucedida
+            val updatedUser = auth.currentUser
             Log.d("ImageUploadManager", "Nome do perfil atualizado com sucesso")
+            Log.d("ImageUploadManager", "Novo nome: ${updatedUser?.displayName}")
+            
             true
         } catch (e: Exception) {
             Log.e("ImageUploadManager", "Erro ao atualizar nome do perfil", e)
+            Log.e("ImageUploadManager", "Mensagem de erro: ${e.message}")
+            Log.e("ImageUploadManager", "Causa: ${e.cause}")
             e.printStackTrace()
             false
         }

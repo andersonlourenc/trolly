@@ -3,8 +3,7 @@ package com.lourenc.trolly
 import android.app.Application
 import android.util.Log
 import com.google.firebase.FirebaseApp
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.ktx.initialize
+import com.google.firebase.auth.FirebaseAuth
 import com.lourenc.trolly.data.local.db.AppDatabase
 import com.lourenc.trolly.data.repository.impl.ItemListaRepositoryImpl
 import com.lourenc.trolly.data.repository.impl.ListaCompraRepositoryImpl
@@ -39,6 +38,10 @@ class TrollyApp : Application() {
             // Inicializa o Firebase
             FirebaseApp.initializeApp(this)
             Log.d("TrollyApp", "Firebase inicializado com sucesso")
+            
+            // Verificar se o Firebase Auth está funcionando
+            val auth = FirebaseAuth.getInstance()
+            Log.d("TrollyApp", "Firebase Auth inicializado: ${auth.app.name}")
             
             // Inicializa o banco de dados
             Log.d("TrollyApp", "Iniciando criação do banco de dados...")
