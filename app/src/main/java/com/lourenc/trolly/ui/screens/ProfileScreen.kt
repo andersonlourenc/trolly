@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
+import com.lourenc.trolly.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,63 +40,111 @@ fun ProfileScreen(navController: NavController) {
     val photoUrl = user.photoUrl?.toString()
 
     Scaffold(
-        // Remova o topBar se quiser igual à imagem, ou mantenha se preferir
+        topBar = {
+            TrollyTopBar(
+                title = "Meu Perfil",
+                subtitle = "Gerencie suas informações pessoais"
+            )
+        },
         bottomBar = {
-            // Se quiser manter a navegação inferior, descomente abaixo
-            // NavigationBar { ... }
+            TrollyBottomNavigation(
+                currentRoute = "profile",
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        popUpTo("profile") { inclusive = true }
+                    }
+                }
+            )
         }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = TrollySpacing.lg),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(TrollySpacing.xl))
+            
             // Avatar
             if (photoUrl != null) {
                 AsyncImage(
                     model = photoUrl,
                     contentDescription = "Foto do usuário",
                     modifier = Modifier
-                        .size(90.dp)
+                        .size(120.dp)
                         .clip(CircleShape)
+                        .border(4.dp, MaterialTheme.colorScheme.primary, CircleShape)
                 )
             } else {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Avatar",
+                Box(
                     modifier = Modifier
-                        .size(90.dp)
-                        .clip(CircleShape),
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                        .size(120.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+                        .border(4.dp, MaterialTheme.colorScheme.primary, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Avatar",
+                        modifier = Modifier.size(60.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            
+            Spacer(modifier = Modifier.height(TrollySpacing.lg))
+            
             // Nome
-            Text(nomeCompleto, style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = nomeCompleto, 
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            
             // Email
-            Text(email, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = email, 
+                style = MaterialTheme.typography.bodyMedium, 
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
+            
+            Spacer(modifier = Modifier.height(TrollySpacing.xl))
+            
             // Botão editar perfil
-            Button(
-                onClick = { navController.navigate("editProfile") },
-                shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
-            ) {
-                Text("Editar perfil", color = Color.White)
-            }
-            Spacer(modifier = Modifier.height(32.dp))
+            TrollyPrimaryButton(
+                text = "Editar Perfil",
+                onClick = { navController.navigate("editProfile") }
+            )
+            
+            Spacer(modifier = Modifier.height(TrollySpacing.xl))
+            
             // Card de preferências (apenas logout)
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp)
+            TrollyCard(
+                modifier = Modifier.fillMaxWidth()
             ) {
                 ListItem(
-                    headlineContent = { Text("Logout", color = Color.Red) },
+                    headlineContent = { 
+                        Text(
+                            "Sair da Conta", 
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.error
+                        ) 
+                    },
+                    supportingContent = {
+                        Text(
+                            "Encerrar sessão atual",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    },
                     leadingContent = {
-                        Icon(Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.Red)
+                        Icon(
+                            Icons.Default.ExitToApp, 
+                            contentDescription = "Logout", 
+                            tint = MaterialTheme.colorScheme.error
+                        )
                     },
                     modifier = Modifier.clickable {
                         FirebaseAuth.getInstance().signOut()
@@ -105,6 +154,8 @@ fun ProfileScreen(navController: NavController) {
                     }
                 )
             }
+            
+            Spacer(modifier = Modifier.height(TrollySpacing.xl))
         }
     }
 } 

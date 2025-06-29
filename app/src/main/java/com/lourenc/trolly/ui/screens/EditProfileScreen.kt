@@ -32,6 +32,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.lourenc.trolly.utils.ImageUploadManager
+import com.lourenc.trolly.ui.theme.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -65,13 +66,11 @@ fun EditProfileScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Editar Perfil") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
-                    }
-                }
+            TrollyTopBar(
+                title = "Editar Perfil",
+                subtitle = "Atualize suas informações",
+                showBackButton = true,
+                onBackClick = { navController.popBackStack() }
             )
         }
     ) { innerPadding ->
@@ -79,14 +78,15 @@ fun EditProfileScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = TrollySpacing.lg),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(TrollySpacing.xl))
+            
             // Avatar com lápis
             Box(
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(120.dp)
                     .clip(CircleShape),
                 contentAlignment = Alignment.BottomEnd
             ) {
@@ -95,7 +95,7 @@ fun EditProfileScreen(navController: NavController) {
                         painter = rememberAsyncImagePainter(photoUri),
                         contentDescription = "Nova foto de perfil",
                         modifier = Modifier
-                            .size(100.dp)
+                            .size(120.dp)
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
@@ -104,33 +104,42 @@ fun EditProfileScreen(navController: NavController) {
                         model = initialPhotoUrl,
                         contentDescription = "Foto do usuário",
                         modifier = Modifier
-                            .size(100.dp)
+                            .size(120.dp)
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
                 } else {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Avatar",
+                    Box(
                         modifier = Modifier
-                            .size(100.dp)
-                            .clip(CircleShape),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Avatar",
+                            modifier = Modifier.size(60.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
+                
                 // Ícone de lápis pequeno e clicável
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = "Editar foto",
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(36.dp)
                         .background(Color.White, CircleShape)
                         .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
                         .clickable { imagePickerLauncher.launch("image/*") },
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
-            Spacer(modifier = Modifier.height(24.dp))
+            
+            Spacer(modifier = Modifier.height(TrollySpacing.lg))
+            
             // Campo de nome com suporte a caracteres especiais
             OutlinedTextField(
                 value = name,
@@ -140,14 +149,20 @@ fun EditProfileScreen(navController: NavController) {
                 },
                 label = { Text("Nome") },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = TrollyShapes.medium,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Done
                 ),
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                )
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            
+            Spacer(modifier = Modifier.height(TrollySpacing.md))
+            
             // Campo de email (apenas leitura)
             OutlinedTextField(
                 value = email,
@@ -155,12 +170,18 @@ fun EditProfileScreen(navController: NavController) {
                 label = { Text("E-mail") },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = false,
-                shape = RoundedCornerShape(16.dp)
+                shape = TrollyShapes.medium,
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                )
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            
+            Spacer(modifier = Modifier.height(TrollySpacing.xl))
             
             // Botão salvar
-            Button(
+            TrollyPrimaryButton(
+                text = if (isUploading) "Salvando..." else "Salvar Alterações",
                 onClick = {
                     Log.d("EditProfile", "Iniciando salvamento...")
                     Log.d("EditProfile", "Nome atual: $name, Nome inicial: $initialName")
@@ -198,66 +219,80 @@ fun EditProfileScreen(navController: NavController) {
                             
                             // Atualizar nome se necessário
                             if (name != initialName && name.isNotBlank()) {
-                                Log.d("EditProfile", "Atualizando nome para: $name")
-                                val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
-                                    .setDisplayName(name)
-                                    .build()
-                                user?.updateProfile(profileUpdates)?.await()
-                                hasChanges = true
-                                Log.d("EditProfile", "Nome atualizado com sucesso")
+                                Log.d("EditProfile", "Atualizando nome...")
+                                val success = imageUploadManager.updateUserProfileName(name)
+                                if (success) {
+                                    hasChanges = true
+                                    Log.d("EditProfile", "Nome atualizado com sucesso")
+                                } else {
+                                    showError = true
+                                    errorMessage = "Erro ao atualizar nome"
+                                    Log.e("EditProfile", "Erro ao atualizar nome")
+                                }
                             }
                             
-                            if (!showError) {
-                                if (hasChanges) {
-                                    showSuccess = true
-                                    Log.d("EditProfile", "Alterações salvas com sucesso")
-                                    // Aguardar um pouco para mostrar sucesso
-                                    kotlinx.coroutines.delay(1000)
-                                }
-                                navController.popBackStack()
+                            if (hasChanges) {
+                                showSuccess = true
+                                Log.d("EditProfile", "Perfil atualizado com sucesso")
                             }
+                            
                         } catch (e: Exception) {
                             showError = true
-                            errorMessage = "Erro ao salvar alterações: ${e.message}"
-                            Log.e("EditProfile", "Erro ao salvar alterações", e)
+                            errorMessage = "Erro inesperado: ${e.message}"
+                            Log.e("EditProfile", "Erro inesperado", e)
                         } finally {
                             isUploading = false
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
                 enabled = !isUploading
-            ) {
-                if (isUploading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
-                Text(if (isUploading) "Salvando..." else "Salvar")
-            }
+            )
             
-            // Mensagem de erro
-            if (showError) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = errorMessage,
-                    color = Color.Red,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+            Spacer(modifier = Modifier.height(TrollySpacing.md))
             
-            // Mensagem de sucesso
-            if (showSuccess) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Alterações salvas com sucesso!",
-                    color = Color.Green,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+            // Botão cancelar
+            TrollySecondaryButton(
+                text = "Cancelar",
+                onClick = { navController.popBackStack() },
+                enabled = !isUploading
+            )
+            
+            Spacer(modifier = Modifier.height(TrollySpacing.xl))
         }
+    }
+    
+    // Alertas
+    if (showError) {
+        AlertDialog(
+            onDismissRequest = { showError = false },
+            title = { Text("Erro") },
+            text = { Text(errorMessage) },
+            confirmButton = {
+                TextButton(onClick = { showError = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+    
+    if (showSuccess) {
+        AlertDialog(
+            onDismissRequest = { 
+                showSuccess = false
+                navController.popBackStack()
+            },
+            title = { Text("Sucesso") },
+            text = { Text("Perfil atualizado com sucesso!") },
+            confirmButton = {
+                TextButton(
+                    onClick = { 
+                        showSuccess = false
+                        navController.popBackStack()
+                    }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
     }
 } 

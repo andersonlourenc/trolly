@@ -24,6 +24,8 @@ import com.google.firebase.auth.FirebaseAuth
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 import com.lourenc.trolly.utils.ListaCompraFormatter
+import com.lourenc.trolly.ui.theme.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,30 +72,10 @@ fun ListasScreen(navController: NavController, viewModel: ListaCompraViewModel) 
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.primary)
-                        .padding(start = 16.dp, end = 16.dp, top = 64.dp, bottom = 16.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text(
-                                text = "Histórico de Listas",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
-                            Text(
-                                text = "Gerencie suas listas de compras",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                            )
-                        }
-                        
+                TrollyTopBar(
+                    title = "Minhas Listas",
+                    subtitle = "Gerencie suas listas de compras",
+                    actions = {
                         if (photoUrl != null) {
                             AsyncImage(
                                 model = photoUrl,
@@ -111,35 +93,17 @@ fun ListasScreen(navController: NavController, viewModel: ListaCompraViewModel) 
                             )
                         }
                     }
-                }
+                )
             },
             bottomBar = {
-                NavigationBar {
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                        label = { Text("Home") },
-                        selected = false,
-                        onClick = { navController.navigate("home") }
-                    )
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Listas") },
-                        label = { Text("Listas") },
-                        selected = true,
-                        onClick = { }
-                    )
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.BarChart, contentDescription = "Insights") },
-                        label = { Text("Insights") },
-                        selected = false,
-                        onClick = { }
-                    )
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.Person, contentDescription = "Perfil") },
-                        label = { Text("Perfil") },
-                        selected = false,
-                        onClick = { navController.navigate("profile") }
-                    )
-                }
+                TrollyBottomNavigation(
+                    currentRoute = "listas",
+                    onNavigate = { route ->
+                        navController.navigate(route) {
+                            popUpTo("listas") { inclusive = true }
+                        }
+                    }
+                )
             },
             floatingActionButton = {
                 FloatingActionButton(
@@ -160,17 +124,31 @@ fun ListasScreen(navController: NavController, viewModel: ListaCompraViewModel) 
                     .padding(paddingValues)
             ) {
                 // Tabs
-                TabRow(selectedTabIndex = selectedTab) {
+                TabRow(
+                    selectedTabIndex = selectedTab,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ) {
                     Tab(
                         selected = selectedTab == 0,
                         onClick = { selectedTab = 0 },
-                        text = { Text("Ativas (${listasAtivas.size})") },
+                        text = { 
+                            Text(
+                                "Ativas (${listasAtivas.size})",
+                                style = MaterialTheme.typography.labelMedium
+                            ) 
+                        },
                         icon = { Icon(Icons.Default.ShoppingCart, contentDescription = null) }
                     )
                     Tab(
                         selected = selectedTab == 1,
                         onClick = { selectedTab = 1 },
-                        text = { Text("Concluídas (${listasConcluidas.size})") },
+                        text = { 
+                            Text(
+                                "Concluídas (${listasConcluidas.size})",
+                                style = MaterialTheme.typography.labelMedium
+                            ) 
+                        },
                         icon = { Icon(Icons.Default.History, contentDescription = null) }
                     )
                 }
@@ -198,12 +176,15 @@ fun ListasScreen(navController: NavController, viewModel: ListaCompraViewModel) 
                 }
             }
         }
-
+        
         // Modal de adicionar lista
         if (showAddListModal) {
             AddListModal(
                 onDismiss = { showAddListModal = false },
-                viewModel = viewModel
+                onAddList = { nome ->
+                    viewModel.addLista(ListaCompra(name = nome))
+                    showAddListModal = false
+                }
             )
         }
     }
@@ -222,11 +203,11 @@ fun ListasTabContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = TrollySpacing.md),
+        verticalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
     ) {
         item {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(TrollySpacing.md))
         }
         
         if (isLoading) {
@@ -239,25 +220,22 @@ fun ListasTabContent(
             }
         } else if (listas.isEmpty()) {
             item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    )
+                TrollyCard(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(24.dp),
+                            .padding(TrollySpacing.lg),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
-                            imageVector = if (showConcluirButton) Icons.Default.ShoppingCart else Icons.Default.History,
+                            imageVector = Icons.Default.ShoppingCart,
                             contentDescription = null,
                             modifier = Modifier.size(48.dp),
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(TrollySpacing.md))
                         Text(
                             text = if (showConcluirButton) "Nenhuma lista ativa" else "Nenhuma lista concluída",
                             style = MaterialTheme.typography.titleMedium,
@@ -265,9 +243,9 @@ fun ListasTabContent(
                         )
                         Text(
                             text = if (showConcluirButton) 
-                                "Toque no botão + para criar sua primeira lista" 
+                                "Crie sua primeira lista de compras" 
                             else 
-                                "Complete suas listas para vê-las aqui",
+                                "Nenhuma lista concluída ainda",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                         )
@@ -303,77 +281,54 @@ fun ListaCard(
     var showEditSheet by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf(lista.name) }
-    var editedDescricao by remember { mutableStateOf(lista.descricao) }
     
     val sheetState = rememberModalBottomSheetState()
     val editSheetState = rememberModalBottomSheetState()
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onNavigate(lista.id) },
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    
+    TrollyCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = when {
-                    lista.name.contains("casa", ignoreCase = true) -> Icons.Default.Home
-                    lista.name.contains("farmacia", ignoreCase = true) -> Icons.Default.LocalPharmacy
-                    else -> Icons.Default.ShoppingCart
-                },
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp)
-            )
-            
-            Spacer(modifier = Modifier.width(12.dp))
-            
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+        ListItem(
+            headlineContent = {
                 Text(
                     text = lista.name,
                     style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                if (lista.descricao.isNotEmpty()) {
-                    Text(
-                        text = lista.descricao,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+            },
+            supportingContent = {
                 Text(
                     text = "Criada em ${ListaCompraFormatter.formatDate(lista.dataCriacao)}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
-            }
-            
-            IconButton(
-                onClick = { showBottomSheet = true }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Mais opções",
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            }
-        }
+            },
+            trailingContent = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(TrollySpacing.xs)
+                ) {
+                    Text(
+                        text = ListaCompraFormatter.formatarValor(lista.totalEstimado),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    IconButton(
+                        onClick = { showBottomSheet = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Mais opções",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            },
+            modifier = Modifier.clickable { onNavigate(lista.id) }
+        )
     }
-    
-    // Bottom Sheet com opções
+
+    // Bottom Sheet de opções
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
@@ -382,13 +337,28 @@ fun ListaCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(TrollySpacing.lg)
             ) {
+                Text(
+                    text = "Opções da Lista",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                
+                Spacer(modifier = Modifier.height(TrollySpacing.md))
+                
                 ListItem(
-                    headlineContent = { Text("Editar lista") },
-                    leadingContent = { Icon(Icons.Default.Edit, contentDescription = null) },
+                    headlineContent = { Text("Editar") },
+                    leadingContent = {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
                     modifier = Modifier.clickable {
                         showBottomSheet = false
+                        editedName = lista.name
                         showEditSheet = true
                     }
                 )
@@ -396,7 +366,28 @@ fun ListaCard(
                 if (showConcluirButton) {
                     ListItem(
                         headlineContent = { Text("Marcar como concluída") },
-                        leadingContent = { Icon(Icons.Default.Check, contentDescription = null) },
+                        leadingContent = {
+                            Icon(
+                                Icons.Default.Check,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        modifier = Modifier.clickable {
+                            showBottomSheet = false
+                            onConcluir(lista)
+                        }
+                    )
+                } else {
+                    ListItem(
+                        headlineContent = { Text("Marcar como ativa") },
+                        leadingContent = {
+                            Icon(
+                                Icons.Default.Refresh,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
                         modifier = Modifier.clickable {
                             showBottomSheet = false
                             onConcluir(lista)
@@ -405,20 +396,31 @@ fun ListaCard(
                 }
                 
                 ListItem(
-                    headlineContent = { Text("Excluir lista") },
-                    leadingContent = { Icon(Icons.Default.Delete, contentDescription = null) },
+                    headlineContent = { 
+                        Text(
+                            "Excluir",
+                            color = MaterialTheme.colorScheme.error
+                        ) 
+                    },
+                    leadingContent = {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    },
                     modifier = Modifier.clickable {
                         showBottomSheet = false
                         showDeleteDialog = true
                     }
                 )
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(TrollySpacing.md))
             }
         }
     }
     
-    // Bottom Sheet de edição
+    // Modal de edição
     if (showEditSheet) {
         ModalBottomSheet(
             onDismissRequest = { showEditSheet = false },
@@ -427,61 +429,55 @@ fun ListaCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(TrollySpacing.lg)
             ) {
                 Text(
                     text = "Editar Lista",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(TrollySpacing.md))
                 
                 OutlinedTextField(
                     value = editedName,
                     onValueChange = { editedName = it },
                     label = { Text("Nome da lista") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = TrollyShapes.medium,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
                     )
                 )
                 
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                OutlinedTextField(
-                    value = editedDescricao,
-                    onValueChange = { editedDescricao = it },
-                    label = { Text("Descrição (opcional)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-                    )
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(TrollySpacing.lg))
                 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
                 ) {
-                    TextButton(
-                        onClick = { showEditSheet = false }
-                    ) {
-                        Text("Cancelar")
-                    }
-                    TextButton(
+                    TrollySecondaryButton(
+                        text = "Cancelar",
+                        onClick = { showEditSheet = false },
+                        modifier = Modifier.weight(1f)
+                    )
+                    
+                    TrollyPrimaryButton(
+                        text = "Salvar",
                         onClick = {
-                            onEdit(lista.copy(name = editedName, descricao = editedDescricao))
-                            showEditSheet = false
-                        }
-                    ) {
-                        Text("Salvar")
-                    }
+                            if (editedName.isNotBlank()) {
+                                val updatedLista = lista.copy(name = editedName)
+                                onEdit(updatedLista)
+                                showEditSheet = false
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        enabled = editedName.isNotBlank()
+                    )
                 }
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(TrollySpacing.md))
             }
         }
     }
@@ -490,25 +486,49 @@ fun ListaCard(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Excluir lista") },
-            text = { Text("Tem certeza que deseja excluir a lista \"${lista.name}\"? Esta ação não pode ser desfeita.") },
+            title = { 
+                Text(
+                    "Excluir lista",
+                    style = MaterialTheme.typography.headlineSmall
+                ) 
+            },
+            text = { 
+                Text(
+                    "Tem certeza que deseja excluir a lista \"${lista.name}\"? Esta ação não pode ser desfeita.",
+                    style = MaterialTheme.typography.bodyMedium
+                ) 
+            },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        onDelete(lista)
                         showDeleteDialog = false
+                        onDelete(lista)
                     }
                 ) {
-                    Text("Excluir")
+                    Text(
+                        "Excluir",
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             },
             dismissButton = {
-                TextButton(
-                    onClick = { showDeleteDialog = false }
-                ) {
+                TextButton(onClick = { showDeleteDialog = false }) {
                     Text("Cancelar")
                 }
             }
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ListItemCard(
+    lista: ListaCompra,
+    onNavigate: (Int) -> Unit,
+    onEdit: (ListaCompra) -> Unit,
+    onDelete: (ListaCompra) -> Unit,
+    onConcluir: (ListaCompra) -> Unit,
+    showConcluirButton: Boolean
+) {
+    // ... existing code ...
 } 

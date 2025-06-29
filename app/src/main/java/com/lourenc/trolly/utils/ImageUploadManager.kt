@@ -62,4 +62,28 @@ class ImageUploadManager {
             false
         }
     }
+
+    suspend fun updateUserProfileName(name: String): Boolean {
+        return try {
+            val user = auth.currentUser
+            if (user == null) {
+                Log.e("ImageUploadManager", "Usuário não autenticado para atualizar nome")
+                return false
+            }
+            
+            Log.d("ImageUploadManager", "Atualizando nome do perfil para: $name")
+            // Atualizar o nome do perfil no Firebase Auth
+            val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build()
+            
+            user.updateProfile(profileUpdates).await()
+            Log.d("ImageUploadManager", "Nome do perfil atualizado com sucesso")
+            true
+        } catch (e: Exception) {
+            Log.e("ImageUploadManager", "Erro ao atualizar nome do perfil", e)
+            e.printStackTrace()
+            false
+        }
+    }
 } 
