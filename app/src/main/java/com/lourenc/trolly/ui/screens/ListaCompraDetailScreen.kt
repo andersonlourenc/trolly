@@ -85,6 +85,7 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = TrollySpacing.lg)
+                .padding(bottom = TrollySpacing.xl)
         ) {
             if (itens.isEmpty()) {
                 TrollyCard(
@@ -153,7 +154,10 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
                 }
 
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
+                    verticalArrangement = Arrangement.spacedBy(TrollySpacing.sm),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(bottom = TrollySpacing.xl)
                 ) {
                     items(itens) { item ->
                         ItemCard(
@@ -163,6 +167,11 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
                             onToggleComprado = { viewModel.atualizarItemLista(item.copy(comprado = !item.comprado)) },
                             onDelete = { viewModel.removerItemLista(item) }
                         )
+                    }
+                    
+                    // Espaço extra no final para evitar que o último item seja cortado
+                    item {
+                        Spacer(modifier = Modifier.height(TrollySpacing.xl))
                     }
                 }
             }
@@ -208,24 +217,33 @@ fun ItemCard(
                             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         } else {
                             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                        }
+                        },
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                     )
                     Text(
                         text = "Subtotal: ${NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(item.quantidade * item.precoUnitario)}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                     )
                 }
             },
             leadingContent = {
-                Checkbox(
-                    checked = item.comprado,
-                    onCheckedChange = { onToggleComprado() },
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = MaterialTheme.colorScheme.primary,
-                        uncheckedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                Box(
+                    modifier = Modifier.fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Checkbox(
+                        checked = item.comprado,
+                        onCheckedChange = { onToggleComprado() },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colorScheme.primary,
+                            uncheckedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        )
                     )
-                )
+                }
             },
             trailingContent = {
                 Row(

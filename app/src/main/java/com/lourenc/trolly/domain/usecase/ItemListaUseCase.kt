@@ -7,6 +7,7 @@ import com.lourenc.trolly.domain.strategy.ItemSortingStrategy
 
 interface ItemListaUseCase {
     suspend fun adicionarItem(item: ItemLista): ItemListaResult
+    suspend fun adicionarOuIncrementarItem(item: ItemLista): ItemListaResult
     suspend fun atualizarItem(item: ItemLista): ItemListaResult
     suspend fun removerItem(item: ItemLista): ItemListaResult
     suspend fun getItensPorLista(idLista: Int): ItemListaResult

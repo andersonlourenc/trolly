@@ -138,7 +138,7 @@ class ListaCompraViewModel(
                         // Adicionar itens se houver
                         if (itens.isNotEmpty()) {
                             for (item in itens) {
-                                itemUseCase.adicionarItem(item.copy(idLista = result.lista.id))
+                                itemUseCase.adicionarOuIncrementarItem(item.copy(idLista = result.lista.id))
                             }
                         }
                         carregarListas()
@@ -286,6 +286,26 @@ class ListaCompraViewModel(
                 }
                 else -> {
                     _errorMessage.value = "Erro desconhecido ao adicionar item"
+                }
+            }
+            _isLoading.value = false
+        }
+    }
+    
+    fun adicionarOuIncrementarItemLista(item: ItemLista) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+            
+            when (val result = itemUseCase.adicionarOuIncrementarItem(item)) {
+                is ItemListaResult.ItemSuccess -> {
+                    carregarItensLista(item.idLista)
+                }
+                is ItemListaResult.Error -> {
+                    _errorMessage.value = result.message
+                }
+                else -> {
+                    _errorMessage.value = "Erro desconhecido ao adicionar ou incrementar item"
                 }
             }
             _isLoading.value = false

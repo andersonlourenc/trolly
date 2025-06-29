@@ -20,4 +20,7 @@ interface ItemListaDao {
 
     @Query("SELECT * FROM item_lista WHERE idLista = :idLista")
     suspend fun getItensPorLista(idLista: Int): List<ItemLista>
+    
+    @Query("SELECT * FROM item_lista WHERE idLista = :idLista AND name = :nome LIMIT 1")
+    suspend fun getItemPorNome(idLista: Int, nome: String): ItemLista?
 }

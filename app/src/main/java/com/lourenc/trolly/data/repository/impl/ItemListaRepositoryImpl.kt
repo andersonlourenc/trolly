@@ -19,6 +19,24 @@ class ItemListaRepositoryImpl(private val itemDao: ItemListaDao) : ItemListaRepo
         itemDao.deletar(item)
     }
     
+    override suspend fun adicionarOuIncrementarItem(item: ItemLista): ItemLista {
+        // Verificar se o item já existe na lista
+        val itemExistente = itemDao.getItemPorNome(item.idLista, item.name)
+        
+        return if (itemExistente != null) {
+            // Se existe, incrementar a quantidade
+            val itemAtualizado = itemExistente.copy(
+                quantidade = itemExistente.quantidade + item.quantidade
+            )
+            itemDao.atualizar(itemAtualizado)
+            itemAtualizado
+        } else {
+            // Se não existe, adicionar novo item
+            itemDao.inserir(item)
+            item
+        }
+    }
+    
     override suspend fun getItensPorLista(idLista: Int): List<ItemLista> {
         return itemDao.getItensPorLista(idLista)
     }

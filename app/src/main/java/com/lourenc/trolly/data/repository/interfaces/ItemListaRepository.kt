@@ -12,6 +12,7 @@ interface ItemListaRepository {
     suspend fun getItensNaoComprados(idLista: Int): List<ItemLista>
     suspend fun marcarItemComoComprado(itemId: Int, comprado: Boolean)
     suspend fun calcularTotalLista(idLista: Int): Double
+    suspend fun adicionarOuIncrementarItem(item: ItemLista): ItemLista
     fun getProdutosPredefinidos(): List<ProdutoMercado>
     fun filtrarProdutos(termo: String): List<ProdutoMercado>
 } 

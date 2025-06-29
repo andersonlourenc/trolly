@@ -20,6 +20,15 @@ class ItemListaUseCaseImpl(
         }
     }
 
+    override suspend fun adicionarOuIncrementarItem(item: ItemLista): ItemListaResult {
+        return try {
+            val itemResultado = itemRepository.adicionarOuIncrementarItem(item)
+            ItemListaResult.ItemSuccess(itemResultado)
+        } catch (e: Exception) {
+            ItemListaResult.Error("Erro ao adicionar ou incrementar item: ${e.message}", e)
+        }
+    }
+
     override suspend fun atualizarItem(item: ItemLista): ItemListaResult {
         return try {
             itemRepository.atualizarItem(item)

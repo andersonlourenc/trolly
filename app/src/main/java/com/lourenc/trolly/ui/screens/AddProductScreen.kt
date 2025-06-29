@@ -72,7 +72,9 @@ fun AddProductScreen(
             
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(TrollySpacing.sm),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(bottom = TrollySpacing.lg)
             ) {
                 items(produtosFiltrados) { produto ->
                     ProductItemCard(
@@ -86,10 +88,10 @@ fun AddProductScreen(
                                 precoUnitario = produto.preco,
                                 comprado = false
                             )
-                            viewModel.adicionarItemLista(item)
+                            viewModel.adicionarOuIncrementarItemLista(item)
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar(
-                                    message = "${produto.nome} adicionado!",
+                                    message = "${produto.nome} adicionado à lista!",
                                     duration = SnackbarDuration.Short
                                 )
                             }
