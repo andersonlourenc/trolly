@@ -28,6 +28,8 @@ import java.text.NumberFormat
 import java.util.*
 import com.lourenc.trolly.ui.theme.*
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -168,6 +170,7 @@ fun ListaCompraDetailScreen(navController: NavController, viewModel: ListaCompra
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemCard(
     item: ItemLista,
@@ -176,9 +179,10 @@ fun ItemCard(
     onToggleComprado: () -> Unit,
     onDelete: () -> Unit
 ) {
-    var showEditDialog by remember { mutableStateOf(false) }
+    var showEditSheet by remember { mutableStateOf(false) }
     var editedQuantidade by remember { mutableStateOf(item.quantidade.toString()) }
     var editedPreco by remember { mutableStateOf(item.precoUnitario.toString()) }
+    val editSheetState = rememberModalBottomSheetState()
     
     TrollyCard(
         modifier = Modifier.fillMaxWidth()
@@ -229,7 +233,11 @@ fun ItemCard(
                     horizontalArrangement = Arrangement.spacedBy(TrollySpacing.xs)
                 ) {
                     IconButton(
-                        onClick = { showEditDialog = true }
+                        onClick = { 
+                            editedQuantidade = item.quantidade.toString()
+                            editedPreco = item.precoUnitario.toString()
+                            showEditSheet = true 
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
@@ -251,75 +259,81 @@ fun ItemCard(
         )
     }
     
-    // Dialog de edição
-    if (showEditDialog) {
-        AlertDialog(
-            onDismissRequest = { showEditDialog = false },
-            title = { 
+    // Modal de edição
+    if (showEditSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showEditSheet = false },
+            sheetState = editSheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(TrollySpacing.lg)
+            ) {
                 Text(
-                    "Editar Item",
-                    style = MaterialTheme.typography.headlineSmall
-                ) 
-            },
-            text = {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(TrollySpacing.md)
+                    text = "Editar Item",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                
+                Spacer(modifier = Modifier.height(TrollySpacing.md))
+                
+                TrollyTextField(
+                    value = editedQuantidade,
+                    onValueChange = { editedQuantidade = it },
+                    label = "Quantidade",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(TrollySpacing.md))
+                
+                TrollyTextField(
+                    value = editedPreco,
+                    onValueChange = { editedPreco = it },
+                    label = "Preço Unitário",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal,
+                        imeAction = ImeAction.Done
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(TrollySpacing.lg))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
                 ) {
-                    OutlinedTextField(
-                        value = editedQuantidade,
-                        onValueChange = { editedQuantidade = it },
-                        label = { Text("Quantidade") },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Next
-                        ),
-                        shape = TrollyShapes.medium,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
-                        )
+                    TrollySecondaryButton(
+                        text = "Cancelar",
+                        onClick = { showEditSheet = false },
+                        modifier = Modifier.weight(1f)
                     )
                     
-                    OutlinedTextField(
-                        value = editedPreco,
-                        onValueChange = { editedPreco = it },
-                        label = { Text("Preço Unitário") },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Decimal,
-                            imeAction = ImeAction.Done
-                        ),
-                        shape = TrollyShapes.medium,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
-                        )
+                    TrollyPrimaryButton(
+                        text = "Salvar",
+                        onClick = {
+                            val quantidade = editedQuantidade.toIntOrNull() ?: item.quantidade
+                            val preco = editedPreco.toDoubleOrNull() ?: item.precoUnitario
+                            
+                            if (quantidade > 0 && preco >= 0) {
+                                val updatedItem = item.copy(
+                                    quantidade = quantidade,
+                                    precoUnitario = preco
+                                )
+                                viewModel.atualizarItemLista(updatedItem)
+                                showEditSheet = false
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        enabled = editedQuantidade.isNotBlank() && editedPreco.isNotBlank()
                     )
                 }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val quantidade = editedQuantidade.toIntOrNull() ?: item.quantidade
-                        val preco = editedPreco.toDoubleOrNull() ?: item.precoUnitario
-                        
-                        if (quantidade > 0 && preco >= 0) {
-                            val updatedItem = item.copy(
-                                quantidade = quantidade,
-                                precoUnitario = preco
-                            )
-                            viewModel.atualizarItemLista(updatedItem)
-                            showEditDialog = false
-                        }
-                    }
-                ) {
-                    Text("Salvar")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showEditDialog = false }) {
-                    Text("Cancelar")
-                }
+                
+                Spacer(modifier = Modifier.height(TrollySpacing.md))
             }
-        )
+        }
     }
 } 
