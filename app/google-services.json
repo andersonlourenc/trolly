@@ -14,16 +14,16 @@
       },
       "oauth_client": [
         {
-          "client_id": "741353373161-gkhm582ibc88qn8e723p96nu0oogl9oa.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "697988202593-jfe3ukqfjh9nbmv10ldgdvc82fkisg63.apps.googleusercontent.com",
+          "client_id": "697988202593-f04c3eruqb3m1p2rgkdi1cqtpuabdsmu.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.lourenc.trolly",
             "certificate_hash": "0c589e705ca562ed566d9fc8a3694d13713688ea"
           }
+        },
+        {
+          "client_id": "697988202593-ekjcc2g1j617njtlrbuuk4p4t258bmhj.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
@@ -33,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "697988202593-ekjcc2g1j617njtlrbuuk4p4t258bmhj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

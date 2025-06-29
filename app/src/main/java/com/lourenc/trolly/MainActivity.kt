@@ -16,15 +16,13 @@ import com.lourenc.trolly.ui.screens.ForgotPasswordScreen
 import com.lourenc.trolly.ui.screens.HomeScreen
 import com.lourenc.trolly.ui.screens.LaunchScreen
 import com.lourenc.trolly.ui.screens.ListaCompraDetailScreen
+import com.lourenc.trolly.ui.screens.ListasScreen
 import com.lourenc.trolly.ui.screens.LoginScreen
 import com.lourenc.trolly.ui.screens.ProfileScreen
 import com.lourenc.trolly.ui.screens.RegisterScreen
 import com.lourenc.trolly.viewmodel.ListaCompraViewModel
 import com.lourenc.trolly.viewmodel.ListaCompraViewModelFactory
 import com.lourenc.trolly.ui.theme.TrollyTheme
-import com.lourenc.trolly.ui.screens.AddListsScreen
-
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +39,7 @@ fun AppNavigator() {
     val context = LocalContext.current
     val darkTheme = isSystemInDarkTheme()
     val trollyApp = context.applicationContext as TrollyApp
-    val factory = ListaCompraViewModelFactory(trollyApp.repository, trollyApp.itemRepository)
+    val factory = ListaCompraViewModelFactory(trollyApp.listaUseCase, trollyApp.itemUseCase)
     
     TrollyTheme(darkTheme = darkTheme) {
         NavHost(navController = navController, startDestination = "launch") {
@@ -54,9 +52,9 @@ fun AppNavigator() {
             }
             composable("forgot_password") { ForgotPasswordScreen(navController) }
             composable("terms_privacy") { TermsAndPrivacyPolicyScreen(navController = navController) }
-            composable("addList") { 
+            composable("listas") { 
                 val viewModel = viewModel<ListaCompraViewModel>(factory = factory)
-                AddListsScreen(navController, viewModel)
+                ListasScreen(navController, viewModel)
             }
             composable("listaDetail/{listaId}") { backStackEntry ->
                 val viewModel = viewModel<ListaCompraViewModel>(factory = factory)

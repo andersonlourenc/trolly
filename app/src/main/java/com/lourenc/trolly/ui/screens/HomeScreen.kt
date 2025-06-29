@@ -55,10 +55,6 @@ import com.lourenc.trolly.viewmodel.ListaCompraViewModel
 import androidx.compose.runtime.livedata.observeAsState
 import com.lourenc.trolly.data.local.entity.ListaCompra
 import androidx.compose.foundation.layout.Spacer as Spacer
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.Calendar
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextOverflow
@@ -71,11 +67,22 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import com.lourenc.trolly.utils.ListaCompraFormatter
+import java.util.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
     val user = FirebaseAuth.getInstance().currentUser
     var activeCardId by remember { mutableStateOf<Int?>(null) }
+    var showAddListModal by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
     
     if (user == null) {
         LaunchedEffect(Unit) {
@@ -86,18 +93,33 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
     } else {
         val nomeCompleto = user.displayName ?: "Usuário"
         val photoUrl = user.photoUrl?.toString()
-        val listas by viewModel.todasListas.observeAsState(emptyList())
-        val mesAtual = getMesAtualEmPortugues()
+        val listas by viewModel.listasAtivas.observeAsState(emptyList())
+        val mesAtual = viewModel.getMesAtualEmPortugues()
         val gastoMensal by viewModel.gastoMensal.observeAsState(0.0)
         val valorUltimaLista by viewModel.valorUltimaLista.observeAsState(0.0)
+        val isLoading by viewModel.isLoading.observeAsState(false)
+        val errorMessage by viewModel.errorMessage.observeAsState(null)
+        
+        // Observar mensagens de erro
+        LaunchedEffect(errorMessage) {
+            errorMessage?.let { message ->
+                val result = snackbarHostState.showSnackbar(
+                    message = message,
+                    duration = androidx.compose.material3.SnackbarDuration.Short
+                )
+                if (result == SnackbarResult.Dismissed) {
+                    viewModel.limparErro()
+                }
+            }
+        }
         
         // Calcular os valores quando a tela for carregada
-        LaunchedEffect(listas) {
-            viewModel.calcularGastoMensal()
-            viewModel.calcularValorUltimaLista()
+        LaunchedEffect(Unit) {
+            viewModel.carregarListasAtivas()
         }
 
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
                 Column(
                     modifier = Modifier
@@ -105,10 +127,6 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                         .background(MaterialTheme.colorScheme.primary)
                         .padding(start = 16.dp, end = 16.dp, top = 64.dp, bottom = 16.dp)
                 ) {
-
-
-
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -180,7 +198,7 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                                     )
                                 }
                                 Text(
-                                    "R$ ${formatarValor(gastoMensal)}",
+                                    viewModel.formatarValor(gastoMensal),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -215,7 +233,7 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                                     )
                                 }
                                 Text(
-                                    "R$ ${formatarValor(valorUltimaLista)}",
+                                    viewModel.formatarValor(valorUltimaLista),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -224,31 +242,22 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                     }
                 }
             },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { navController.navigate("addList") },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ) {
-                    Icon(Icons.Default.Add, "Adicionar lista")
-                }
-            },
             bottomBar = {
                 NavigationBar {
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.Home, contentDescription = "Início") },
-                        label = { Text("Início") },
+                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                        label = { Text("Home") },
                         selected = true,
                         onClick = { }
                     )
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.History, contentDescription = "Histórico") },
-                        label = { Text("Histórico") },
+                        icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Listas") },
+                        label = { Text("Listas") },
                         selected = false,
-                        onClick = { }
+                        onClick = { navController.navigate("listas") }
                     )
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.BarChart, contentDescription = "Insights") },
+                        icon = { Icon(Icons.Default.Store, contentDescription = "Insights") },
                         label = { Text("Insights") },
                         selected = false,
                         onClick = { }
@@ -260,124 +269,185 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                         onClick = { navController.navigate("profile") }
                     )
                 }
-
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { showAddListModal = true },
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Adicionar lista",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
             }
-        ) { innerPadding ->
+        ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(horizontal = 16.dp)
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 item {
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "Listas",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(vertical = 16.dp)
+                        text = "Suas Listas",
+                        style = MaterialTheme.typography.titleLarge
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
-
-                items(listas) { lista ->
-                    ListaCompraCard(
-                        lista = lista,
-                        navController = navController,
-                        onEdit = { listaToEdit ->
-                            viewModel.updateLista(listaToEdit)
-                        },
-                        onDelete = { listaToDelete ->
-                            viewModel.deleteLista(listaToDelete)
+                
+                if (isLoading) {
+                    item {
+                        Text(
+                            text = "Carregando...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    }
+                } else if (listas.isEmpty()) {
+                    item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            )
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(24.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ShoppingCart,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(48.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = "Nenhuma lista criada",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                )
+                                Text(
+                                    text = "Toque no botão + para criar sua primeira lista",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                )
+                            }
                         }
-                    )
+                    }
+                } else {
+                    items(listas) { lista ->
+                        ListaCard(
+                            lista = lista,
+                            onEdit = { updatedLista ->
+                                viewModel.updateLista(updatedLista)
+                            },
+                            onDelete = { listaToDelete ->
+                                viewModel.deleteLista(listaToDelete)
+                            },
+                            onNavigate = { listaId ->
+                                navController.navigate("listaDetail/$listaId")
+                            }
+                        )
+                    }
                 }
             }
+        }
+        
+        // Modal de adicionar lista
+        if (showAddListModal) {
+            AddListModal(
+                onDismiss = { showAddListModal = false },
+                viewModel = viewModel
+            )
         }
     }
 }
 
-// Função para obter o nome do mês atual em português
-@Composable
-fun getMesAtualEmPortugues(): String {
-    val calendar = Calendar.getInstance()
-    val meses = listOf(
-        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
-        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-    )
-    return meses[calendar.get(Calendar.MONTH)]
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListaCompraCard(
+fun ListaCard(
     lista: ListaCompra,
-    navController: NavController,
-    onEdit: (ListaCompra) -> Unit = {},
-    onDelete: (ListaCompra) -> Unit = {}
+    onEdit: (ListaCompra) -> Unit,
+    onDelete: (ListaCompra) -> Unit,
+    onNavigate: (Int) -> Unit
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var showEditSheet by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf(lista.name) }
     var editedDescricao by remember { mutableStateOf(lista.descricao) }
+    
     val sheetState = rememberModalBottomSheetState()
     val editSheetState = rememberModalBottomSheetState()
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable { 
-                navController.navigate("listaDetail/${lista.id}")
-            },
-        elevation = CardDefaults.cardElevation(4.dp)
+            .clickable { onNavigate(lista.id) },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
+            Icon(
+                imageVector = when {
+                    lista.name.contains("casa", ignoreCase = true) -> Icons.Default.Home
+                    lista.name.contains("farmacia", ignoreCase = true) -> Icons.Default.LocalPharmacy
+                    else -> Icons.Default.ShoppingCart
+                },
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = when {
-                            lista.name.contains("Mercado", ignoreCase = true) -> Icons.Default.Store
-                            lista.name.contains("Farmácia", ignoreCase = true) -> Icons.Default.LocalPharmacy
-                            else -> Icons.Default.ShoppingCart
-                        },
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                shape = CircleShape
-                            )
-                            .padding(4.dp)
+                    .size(24.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        shape = CircleShape
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = lista.name,
-                            style = MaterialTheme.typography.titleSmall,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = "Criada em ${formatDate(lista.dataCriacao)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                    }
-                }
-                IconButton(onClick = { showBottomSheet = true }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Mais opções",
-                        tint = MaterialTheme.colorScheme.onSurface
+                    .padding(4.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(
+                    text = ListaCompraFormatter.formatarNomeLista(lista.name),
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "Criada em ${ListaCompraFormatter.formatDate(lista.dataCriacao)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+                if (lista.descricao.isNotBlank()) {
+                    Text(
+                        text = ListaCompraFormatter.formatarDescricao(lista.descricao),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(onClick = { showBottomSheet = true }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "Mais opções",
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
     }
@@ -441,7 +511,7 @@ fun ListaCompraCard(
                     },
                     modifier = Modifier.clickable {
                         showBottomSheet = false
-                        onDelete(lista)
+                        showDeleteDialog = true
                     }
                 )
             }
@@ -534,10 +604,41 @@ fun ListaCompraCard(
             }
         }
     }
+    
+    // Dialog de confirmação de exclusão
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Excluir lista") },
+            text = { Text("Tem certeza que deseja excluir a lista \"${lista.name}\"? Esta ação não pode ser desfeita.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        onDelete(lista)
+                    }
+                ) {
+                    Text("Excluir", color = Color(0xFFE53935))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 }
-private fun formatDate(timestamp: Long): String {
-    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR"))
-    return sdf.format(Date(timestamp))
+
+// Função para obter o nome do mês atual em português
+@Composable
+fun getMesAtualEmPortugues(): String {
+    val calendar = Calendar.getInstance()
+    val meses = listOf(
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    )
+    return meses[Calendar.getInstance().get(Calendar.MONTH)]
 }
 
 // Função para formatar valores monetários

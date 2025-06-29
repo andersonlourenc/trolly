@@ -10,5 +10,6 @@ data class ListaCompra(
     val descricao: String = "",
     val dataCriacao: Long = System.currentTimeMillis(),
     val totalEstimado: Double = 0.0,
-    val fotoCapa: String? = null
+    val fotoCapa: String? = null,
+    val status: String = "ATIVA" // ATIVA ou CONCLUIDA
 )

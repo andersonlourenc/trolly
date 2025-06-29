@@ -1,4 +1,4 @@
-package com.lourenc.trolly.auth
+ package com.lourenc.trolly.auth
 
 import android.content.Context
 import android.util.Log

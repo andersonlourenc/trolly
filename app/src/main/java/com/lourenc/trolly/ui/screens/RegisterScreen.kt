@@ -60,6 +60,7 @@ import com.lourenc.trolly.R
 import com.lourenc.trolly.auth.createUserWithEmail
 import com.lourenc.trolly.auth.getGoogleSignInClient
 import com.lourenc.trolly.auth.firebaseAuthWithGoogle
+import com.lourenc.trolly.ui.DividerWithText
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -341,30 +342,5 @@ fun isValidPassword(password: String): Boolean {
     val isLongEnough = password.length >= 8
 
     return hasUppercase && hasDigit && isLongEnough
-}
-
-@Composable
-fun DividerWithText(text: String = "Ou") {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp)
-    ) {
-        Divider(
-            modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.secondary
-        )
-        Text(
-            text = text,
-            modifier = Modifier.padding(horizontal = 8.dp),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.secondary
-        )
-        Divider(
-            modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.secondary
-        )
-    }
 }
 
