@@ -351,7 +351,8 @@ fun ListaCard(
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
-            sheetState = sheetState
+            sheetState = sheetState,
+            containerColor = MaterialTheme.colorScheme.surface
         ) {
             Column(
                 modifier = Modifier
@@ -443,7 +444,8 @@ fun ListaCard(
     if (showEditSheet) {
         ModalBottomSheet(
             onDismissRequest = { showEditSheet = false },
-            sheetState = editSheetState
+            sheetState = editSheetState,
+            containerColor = MaterialTheme.colorScheme.surface
         ) {
             Column(
                 modifier = Modifier

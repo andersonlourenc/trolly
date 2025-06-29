@@ -194,17 +194,17 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
+                        horizontalArrangement = Arrangement.spacedBy(TrollySpacing.md)
                     ) {
                         TrollyCard(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(80.dp)
+                                .height(85.dp)
                         ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(TrollySpacing.sm),
+                                    .padding(TrollySpacing.md),
                                 verticalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -212,17 +212,18 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                                         imageVector = Icons.Default.BarChart,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(16.dp)
+                                        modifier = Modifier.size(20.dp)
                                     )
                                     Spacer(modifier = Modifier.width(TrollySpacing.xs))
                                     Text(
                                         "Gasto mensal",
-                                        style = MaterialTheme.typography.labelMedium
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                                     )
                                 }
                                 Text(
                                     viewModel.formatarValor(gastoMensal),
-                                    style = MaterialTheme.typography.titleMedium,
+                                    style = MaterialTheme.typography.titleLarge,
                                     color = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -231,12 +232,12 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                         TrollyCard(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(80.dp)
+                                .height(85.dp)
                         ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(TrollySpacing.sm),
+                                    .padding(TrollySpacing.md),
                                 verticalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -244,17 +245,18 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
                                         imageVector = Icons.Default.ShoppingCart,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(16.dp)
+                                        modifier = Modifier.size(20.dp)
                                     )
                                     Spacer(modifier = Modifier.width(TrollySpacing.xs))
                                     Text(
                                         "Última lista",
-                                        style = MaterialTheme.typography.labelMedium
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                                     )
                                 }
                                 Text(
                                     viewModel.formatarValor(valorUltimaLista),
-                                    style = MaterialTheme.typography.titleMedium,
+                                    style = MaterialTheme.typography.titleLarge,
                                     color = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -401,7 +403,8 @@ fun HomeListaCard(
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
-            sheetState = sheetState
+            sheetState = sheetState,
+            containerColor = MaterialTheme.colorScheme.surface
         ) {
             Column(
                 modifier = Modifier
@@ -493,7 +496,8 @@ fun HomeListaCard(
     if (showEditSheet) {
         ModalBottomSheet(
             onDismissRequest = { showEditSheet = false },
-            sheetState = editSheetState
+            sheetState = editSheetState,
+            containerColor = MaterialTheme.colorScheme.surface
         ) {
             Column(
                 modifier = Modifier
@@ -584,7 +588,8 @@ fun AddListModal(
     
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = modalState
+        sheetState = modalState,
+        containerColor = MaterialTheme.colorScheme.surface
     ) {
         Column(
             modifier = Modifier
