@@ -101,7 +101,15 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
         val isLoading by viewModel.isLoading.observeAsState(false)
         val errorMessage by viewModel.errorMessage.observeAsState(null)
         
-
+        // Logs para debug
+        LaunchedEffect(gastoMensal) {
+            println("DEBUG: HomeScreen - Gasto mensal atualizado: R$ $gastoMensal")
+        }
+        
+        LaunchedEffect(valorUltimaLista) {
+            println("DEBUG: HomeScreen - Valor última lista atualizado: R$ $valorUltimaLista")
+        }
+        
         LaunchedEffect(errorMessage) {
             errorMessage?.let { message ->
                 val result = snackbarHostState.showSnackbar(
@@ -116,7 +124,12 @@ fun HomeScreen(navController: NavController, viewModel: ListaCompraViewModel) {
         
 
         LaunchedEffect(Unit) {
+            println("DEBUG: HomeScreen - Carregando dados...")
             viewModel.carregarListasAtivas()
+            viewModel.carregarListasConcluidas()
+            viewModel.calcularGastoMensal()
+            viewModel.calcularValorUltimaLista()
+            println("DEBUG: HomeScreen - Dados carregados")
         }
 
         Scaffold(

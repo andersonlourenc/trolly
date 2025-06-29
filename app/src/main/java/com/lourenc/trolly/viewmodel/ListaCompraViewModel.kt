@@ -346,6 +346,7 @@ class ListaCompraViewModel(
     // Calcular o gasto mensal
     fun calcularGastoMensal() {
         viewModelScope.launch {
+            println("DEBUG: ViewModel - Iniciando cálculo do gasto mensal")
             _isLoading.value = true
             _errorMessage.value = null
             
@@ -353,17 +354,22 @@ class ListaCompraViewModel(
             val mesAtual = calendar.get(Calendar.MONTH)
             val anoAtual = calendar.get(Calendar.YEAR)
             
+            println("DEBUG: ViewModel - Mês atual: $mesAtual, Ano atual: $anoAtual")
+            
             when (val result = listaUseCase.calcularGastoMensal(mesAtual, anoAtual)) {
                 is ListaCompraResult.GastoMensalSuccess -> {
+                    println("DEBUG: ViewModel - Gasto mensal calculado: R$ ${result.gasto}")
                     _gastoMensal.value = result.gasto
                 }
                 is ListaCompraResult.Error -> {
+                    println("DEBUG: ViewModel - Erro ao calcular gasto mensal: ${result.message}")
                     _errorMessage.value = result.message
                 }
                 else -> {
+                    println("DEBUG: ViewModel - Resultado inesperado ao calcular gasto mensal")
                     _errorMessage.value = "Erro desconhecido ao calcular gasto mensal"
-                        }
-                    }
+                }
+            }
             _isLoading.value = false
         }
     }
@@ -371,17 +377,21 @@ class ListaCompraViewModel(
     // Calcular o valor da última lista
     fun calcularValorUltimaLista() {
         viewModelScope.launch {
+            println("DEBUG: ViewModel - Iniciando cálculo do valor da última lista")
             _isLoading.value = true
             _errorMessage.value = null
             
             when (val result = listaUseCase.calcularValorUltimaLista()) {
                 is ListaCompraResult.ValorUltimaListaSuccess -> {
+                    println("DEBUG: ViewModel - Valor da última lista calculado: R$ ${result.valor}")
                     _valorUltimaLista.value = result.valor
                 }
                 is ListaCompraResult.Error -> {
+                    println("DEBUG: ViewModel - Erro ao calcular valor da última lista: ${result.message}")
                     _errorMessage.value = result.message
                 }
                 else -> {
+                    println("DEBUG: ViewModel - Resultado inesperado ao calcular valor da última lista")
                     _errorMessage.value = "Erro desconhecido ao calcular valor da última lista"
                 }
             }

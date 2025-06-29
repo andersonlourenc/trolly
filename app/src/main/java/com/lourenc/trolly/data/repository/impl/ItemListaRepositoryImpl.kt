@@ -37,8 +37,19 @@ class ItemListaRepositoryImpl(private val itemDao: ItemListaDao) : ItemListaRepo
     }
     
     override suspend fun calcularTotalLista(idLista: Int): Double {
+        println("DEBUG: Calculando total da lista ID: $idLista")
         val itens = getItensPorLista(idLista)
-        return itens.sumOf { it.precoUnitario * it.quantidade }
+        println("DEBUG: Itens encontrados na lista $idLista: ${itens.size}")
+        
+        var total = 0.0
+        for (item in itens) {
+            val subtotal = item.precoUnitario * item.quantidade
+            println("DEBUG: Item '${item.name}' - Preço: R$ ${item.precoUnitario}, Qtd: ${item.quantidade}, Subtotal: R$ $subtotal")
+            total += subtotal
+        }
+        
+        println("DEBUG: Total da lista $idLista: R$ $total")
+        return total
     }
     
     override fun getProdutosPredefinidos(): List<ProdutoMercado> {

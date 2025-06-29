@@ -154,8 +154,12 @@ class ListaCompraUseCaseImpl(
 
     override suspend fun calcularGastoMensal(month: Int, year: Int): ListaCompraResult {
         return try {
+            println("DEBUG: Iniciando cálculo do gasto mensal para mês $month/$year")
+            
             // Buscar apenas listas concluídas do mês
             val listas = listaRepository.getListasConcluidas().first()
+            println("DEBUG: Total de listas concluídas encontradas: ${listas.size}")
+            
             val calendar = Calendar.getInstance()
             calendar.set(year, month, 1, 0, 0, 0)
             calendar.set(Calendar.MILLISECOND, 0)
@@ -165,28 +169,45 @@ class ListaCompraUseCaseImpl(
             calendar.add(Calendar.MILLISECOND, -1)
             val endDate = calendar.timeInMillis
             
+            println("DEBUG: Período de busca: ${java.text.SimpleDateFormat("dd/MM/yyyy").format(java.util.Date(startDate))} até ${java.text.SimpleDateFormat("dd/MM/yyyy").format(java.util.Date(endDate))}")
+            
             // Filtrar listas concluídas do mês específico
             val listasConcluidasDoMes = listas.filter { lista ->
-                lista.dataCriacao in startDate..endDate
+                val dataCriacao = Calendar.getInstance().apply { timeInMillis = lista.dataCriacao }
+                val mesCriacao = dataCriacao.get(Calendar.MONTH)
+                val anoCriacao = dataCriacao.get(Calendar.YEAR)
+                
+                val estaNoMes = mesCriacao == month && anoCriacao == year
+                println("DEBUG: Lista '${lista.name}' criada em ${java.text.SimpleDateFormat("dd/MM/yyyy").format(java.util.Date(lista.dataCriacao))} (Mês: $mesCriacao, Ano: $anoCriacao) - Está no mês $month/$year: $estaNoMes")
+                estaNoMes
             }
+            
+            println("DEBUG: Listas concluídas do mês: ${listasConcluidasDoMes.size}")
             
             var gastoTotal = 0.0
             
             for (lista in listasConcluidasDoMes) {
                 val total = itemRepository.calcularTotalLista(lista.id)
+                println("DEBUG: Lista '${lista.name}' (ID: ${lista.id}) - Total: R$ $total")
                 gastoTotal += total
             }
             
+            println("DEBUG: Gasto total mensal: R$ $gastoTotal")
             ListaCompraResult.GastoMensalSuccess(gastoTotal)
         } catch (e: Exception) {
+            println("DEBUG: Erro ao calcular gasto mensal: ${e.message}")
+            e.printStackTrace()
             ListaCompraResult.Error("Erro ao calcular gasto mensal: ${e.message}", e)
         }
     }
 
     override suspend fun calcularValorUltimaLista(): ListaCompraResult {
         return try {
+            println("DEBUG: Iniciando cálculo do valor da última lista")
+            
             // Buscar apenas listas concluídas
             val listasConcluidas = listaRepository.getListasConcluidas().first()
+            println("DEBUG: Total de listas concluídas: ${listasConcluidas.size}")
             
             // Encontrar a lista concluída mais recente
             val listaRecente = if (listasConcluidas.isNotEmpty()) {
@@ -194,12 +215,17 @@ class ListaCompraUseCaseImpl(
             } else null
             
             if (listaRecente != null) {
+                println("DEBUG: Lista mais recente: '${listaRecente.name}' criada em ${java.text.SimpleDateFormat("dd/MM/yyyy").format(java.util.Date(listaRecente.dataCriacao))}")
                 val valor = itemRepository.calcularTotalLista(listaRecente.id)
+                println("DEBUG: Valor da última lista: R$ $valor")
                 ListaCompraResult.ValorUltimaListaSuccess(valor)
             } else {
+                println("DEBUG: Nenhuma lista concluída encontrada")
                 ListaCompraResult.ValorUltimaListaSuccess(0.0)
             }
         } catch (e: Exception) {
+            println("DEBUG: Erro ao calcular valor da última lista: ${e.message}")
+            e.printStackTrace()
             ListaCompraResult.Error("Erro ao calcular valor da última lista: ${e.message}", e)
         }
     }

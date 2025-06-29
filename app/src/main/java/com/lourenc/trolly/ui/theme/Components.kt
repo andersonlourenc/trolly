@@ -229,34 +229,86 @@ fun TrollyBottomNavigation(
     currentRoute: String,
     onNavigate: (String) -> Unit
 ) {
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = 8.dp
+    Column(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") },
-            selected = currentRoute == "home",
-            onClick = { onNavigate("home") }
+        Divider(
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            thickness = 1.dp
         )
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Listas") },
-            label = { Text("Listas") },
-            selected = currentRoute == "listas",
-            onClick = { onNavigate("listas") }
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.BarChart, contentDescription = "Insights") },
-            label = { Text("Insights") },
-            selected = currentRoute == "insights",
-            onClick = { onNavigate("insights") }
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Person, contentDescription = "Perfil") },
-            label = { Text("Perfil") },
-            selected = currentRoute == "profile",
-            onClick = { onNavigate("profile") }
-        )
+        NavigationBar(
+            containerColor = MaterialTheme.colorScheme.background,
+            tonalElevation = 8.dp
+        ) {
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        Icons.Default.Home,
+                        contentDescription = "Home",
+                        tint = if (currentRoute == "home") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                },
+                label = {
+                    Text(
+                        "Home",
+                        color = if (currentRoute == "home") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                },
+                selected = currentRoute == "home",
+                onClick = { onNavigate("home") }
+            )
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        Icons.Default.ShoppingCart,
+                        contentDescription = "Listas",
+                        tint = if (currentRoute == "listas") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                },
+                label = {
+                    Text(
+                        "Listas",
+                        color = if (currentRoute == "listas") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                },
+                selected = currentRoute == "listas",
+                onClick = { onNavigate("listas") }
+            )
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        Icons.Default.BarChart,
+                        contentDescription = "Insights",
+                        tint = if (currentRoute == "insights") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                },
+                label = {
+                    Text(
+                        "Insights",
+                        color = if (currentRoute == "insights") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                },
+                selected = currentRoute == "insights",
+                onClick = { onNavigate("insights") }
+            )
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = "Perfil",
+                        tint = if (currentRoute == "profile") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                },
+                label = {
+                    Text(
+                        "Perfil",
+                        color = if (currentRoute == "profile") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                },
+                selected = currentRoute == "profile",
+                onClick = { onNavigate("profile") }
+            )
+        }
     }
 }
 
