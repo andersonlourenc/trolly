@@ -255,7 +255,10 @@ fun TrollyBottomNavigation(
                     )
                 },
                 selected = currentRoute == "home",
-                onClick = { onNavigate("home") }
+                onClick = { onNavigate("home") },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.Transparent
+                )
             )
             NavigationBarItem(
                 icon = {
@@ -272,7 +275,10 @@ fun TrollyBottomNavigation(
                     )
                 },
                 selected = currentRoute == "shoppingLists",
-                onClick = { onNavigate("shoppingLists") }
+                onClick = { onNavigate("shoppingLists") },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.Transparent
+                )
             )
             NavigationBarItem(
                 icon = {
@@ -289,7 +295,10 @@ fun TrollyBottomNavigation(
                     )
                 },
                 selected = currentRoute == "insights",
-                onClick = { onNavigate("insights") }
+                onClick = { onNavigate("insights") },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.Transparent
+                )
             )
             NavigationBarItem(
                 icon = {
@@ -306,7 +315,10 @@ fun TrollyBottomNavigation(
                     )
                 },
                 selected = currentRoute == "profile",
-                onClick = { onNavigate("profile") }
+                onClick = { onNavigate("profile") },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.Transparent
+                )
             )
         }
     }

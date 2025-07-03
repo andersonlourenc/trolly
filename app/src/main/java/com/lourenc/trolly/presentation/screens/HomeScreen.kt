@@ -85,12 +85,13 @@ import androidx.compose.ui.layout.ContentScale
 import com.google.accompanist.pager.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.zIndex
 import com.lourenc.trolly.presentation.theme.CoralPrimary
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
-    val blue = MaterialTheme.colorScheme.primary
     val context = LocalContext.current
     
     SideEffect {
@@ -110,7 +111,8 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                 popUpTo("home") { inclusive = true }
             }
         }
-    } else {
+        return
+    }
         val name = user.displayName ?: "Usuário"
         val photoUrl = user.photoUrl?.toString()
         val activeLists by viewModel.activeLists.observeAsState(emptyList())
@@ -119,9 +121,13 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
         val lastListValue by viewModel.lastListValue.observeAsState(0.0)
         val isLoading by viewModel.isLoading.observeAsState(false)
         val errorMessage by viewModel.errorMessage.observeAsState(null)
+
+    val carouselImages = listOf(R.drawable.churras, R.drawable.niver, R.drawable.receita)
+    val pagerState = rememberPagerState()
+    val cardHeight = 200.dp
+    val cardOffset = -(cardHeight.value * 0.4).dp
         
 
-        
         LaunchedEffect(errorMessage) {
             errorMessage?.let { message ->
                 val result = snackbarHostState.showSnackbar(
@@ -133,84 +139,121 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                 }
             }
         }
-        
 
         LaunchedEffect(Unit) {
-            println("DEBUG: HomeScreen - Carregando dados...")
             viewModel.loadActiveLists()
             viewModel.loadCompletedLists()
             viewModel.calculateMonthlyExpense()
             viewModel.calculateLastListValue()
-            println("DEBUG: HomeScreen - Dados carregados")
+
         }
 
         val lists = activeLists
 
-        val configuration = LocalConfiguration.current
-        val screenWidth = configuration.screenWidthDp.dp
+    Box(modifier = Modifier.fillMaxSize()) {
 
-        val carouselImages = listOf(
-            R.drawable.churras,
-            R.drawable.receita,
-            R.drawable.niver
-        )
-        val pagerState = rememberPagerState()
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(240.dp),
+            color = CoralPrimary,
+            shadowElevation = 4.dp,
+            shape = RoundedCornerShape(bottomStart = 48.dp, bottomEnd = 48.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = TrollySpacing.md, vertical = 24.dp)
+                    .offset(y= -48.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (photoUrl != null) {
+                    AsyncImage(
+                        model = photoUrl,
+                        contentDescription = "Foto do usuário",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Foto do usuário",
+                        modifier = Modifier.size(40.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
 
-        val cardHeight = 220.dp
-        val cardOffset = -(cardHeight.value * 0.4f).dp // 40% do card para cima
+                Text(
+                    text = "Olá, $name",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.weight(1f)
+                )
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = "Notificações",
+                    modifier = Modifier.size(28.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
 
-        Scaffold(
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            topBar = {
-                Surface(
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .offset(y = 140.dp)
+                .zIndex(1f)
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(cardHeight),
+                shape = RoundedCornerShape(32.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                HorizontalPager(
+                    count = carouselImages.size,
+                    state = pagerState,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(240.dp),
-                    color = CoralPrimary,
-                    shadowElevation = 4.dp,
-                    shape = RoundedCornerShape(bottomStart = 48.dp, bottomEnd = 48.dp)
-                ) {
-                    Row(
+                        .height(cardHeight),
+                    itemSpacing = 16.dp
+                ) { page ->
+                    Image(
+                        painter = painterResource(id = carouselImages[page]),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .statusBarsPadding()
-                            .padding(start = TrollySpacing.md, end = TrollySpacing.md, bottom = 24.dp)
-                            .offset(y = -48.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (photoUrl != null) {
-                            AsyncImage(
-                                model = photoUrl,
-                                contentDescription = "Foto do usuário",
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.AccountCircle,
-                                contentDescription = "Foto do usuário",
-                                modifier = Modifier.size(40.dp),
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Olá, $name",
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "Notificações",
-                            modifier = Modifier.size(28.dp),
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
+                            .height(cardHeight)
+                            .clip(RoundedCornerShape(32.dp))
+                            .clickable { /* ação futura */ }
+                    )
                 }
-            },
+            }
+
+            HorizontalPagerIndicator(
+                pagerState = pagerState,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 12.dp),
+                activeColor = MaterialTheme.colorScheme.primary,
+                inactiveColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+            )
+        }
+
+
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(0f),
+            containerColor = Color.Transparent,
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             bottomBar = {
                 TrollyBottomNavigation(
                     currentRoute = "home",
@@ -227,6 +270,7 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     shape = CircleShape
                 ) {
+
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Adicionar lista",
@@ -235,68 +279,25 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                 }
             }
         ) { paddingValues ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-            ) {
-                // Carrossel encaixado na curva azul
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .offset(y = 0.dp)
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(cardHeight),
-                        shape = RoundedCornerShape(32.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                    ) {
-                        HorizontalPager(
-                            count = carouselImages.size,
-                            state = pagerState,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(cardHeight),
-                            itemSpacing = 16.dp
-                        ) { page ->
-                            Image(
-                                painter = painterResource(id = carouselImages[page]),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(cardHeight)
-                                    .clip(RoundedCornerShape(32.dp))
-                                    .clickable { /* ação futura */ }
-                            )
-                        }
-                    }
-                    HorizontalPagerIndicator(
-                        pagerState = pagerState,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(top = 12.dp),
-                        activeColor = MaterialTheme.colorScheme.primary,
-                        inactiveColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                    .padding(
+                        top = 350.dp,
+                        start = TrollySpacing.md,
+                        end = TrollySpacing.md
                     )
-                }
 
-                // Conteúdo da lista (abaixo do carrossel)
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 24.dp + cardHeight + 32.dp, start = TrollySpacing.md, end = TrollySpacing.md)
-                ) {
-                    Spacer(modifier = Modifier.height(TrollySpacing.lg))
-                    Text(
+            ) {
+                Text(
                         text = "Suas Listas",
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onSurface
                     )
+
                     Spacer(modifier = Modifier.height(TrollySpacing.sm))
+
                     if (isLoading) {
                         Text(
                             text = "Carregando...",
@@ -334,7 +335,9 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                         }
                     } else {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
                             verticalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
                         ) {
                             items(lists) { shoppingList ->
@@ -359,8 +362,7 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                     }
                 }
             }
-        }
-        
+
 
         if (showAddListModal) {
             AddShoppingListScreen(
@@ -422,7 +424,6 @@ fun HomeListCard(
         )
     }
 
-    // Bottom Sheet de opções
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
@@ -571,8 +572,7 @@ fun HomeListCard(
             }
         }
     }
-    
-    // Dialog de confirmação de exclusão
+
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -598,9 +598,4 @@ fun HomeListCard(
             }
         )
     }
-}
-
-
-private fun formatarValor(valor: Double): String {
-    return String.format(Locale("pt", "BR"), "%.2f", valor).replace(".", ",")
 }
