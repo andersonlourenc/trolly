@@ -121,13 +121,13 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
         val lastListValue by viewModel.lastListValue.observeAsState(0.0)
         val isLoading by viewModel.isLoading.observeAsState(false)
         val errorMessage by viewModel.errorMessage.observeAsState(null)
-
+        
     val carouselImages = listOf(R.drawable.churras, R.drawable.niver, R.drawable.receita)
     val pagerState = rememberPagerState()
     val cardHeight = 200.dp
     val cardOffset = -(cardHeight.value * 0.4).dp
         
-
+        
         LaunchedEffect(errorMessage) {
             errorMessage?.let { message ->
                 val result = snackbarHostState.showSnackbar(
@@ -277,7 +277,8 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
-            }
+            },
+
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -290,47 +291,47 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                     )
 
             ) {
-                Text(
-                        text = "Suas Listas",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                        Text(
+                            text = "Suas Listas",
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
 
-                    Spacer(modifier = Modifier.height(TrollySpacing.sm))
+                        Spacer(modifier = Modifier.height(TrollySpacing.sm))
 
                     if (isLoading) {
-                        Text(
-                            text = "Carregando...",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
+                            Text(
+                                text = "Carregando...",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
                     } else if (lists.isEmpty()) {
-                        TrollyCard(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(TrollySpacing.lg),
-                                horizontalAlignment = Alignment.CenterHorizontally
+                            TrollyCard(
+                                modifier = Modifier.fillMaxWidth()
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.ShoppingCart,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(48.dp),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                                )
-                                Spacer(modifier = Modifier.height(TrollySpacing.md))
-                                Text(
-                                    text = "Nenhuma lista criada",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                )
-                                Text(
-                                    text = "Toque no botão + para criar sua primeira lista",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                                )
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(TrollySpacing.lg),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ShoppingCart,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(48.dp),
+                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                    )
+                                    Spacer(modifier = Modifier.height(TrollySpacing.md))
+                                    Text(
+                                        text = "Nenhuma lista criada",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    )
+                                    Text(
+                                        text = "Toque no botão + para criar sua primeira lista",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                    )
                             }
                         }
                     } else {
@@ -340,29 +341,29 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                                 .weight(1f),
                             verticalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
                         ) {
-                            items(lists) { shoppingList ->
-                                HomeListCard(
-                                    shoppingList = shoppingList,
-                                    onEdit = { updatedList: ShoppingList ->
-                                        viewModel.updateShoppingList(updatedList)
-                                    },
-                                    onDelete = { listToDelete: ShoppingList ->
-                                        viewModel.deleteShoppingList(listToDelete)
-                                    },
-                                    onNavigate = { listId: Int ->
-                                        navController.navigate("shoppingListDetail/$listId")
-                                    },
-                                    onComplete = { listToComplete: ShoppingList ->
-                                        viewModel.markListAsCompleted(listToComplete.id)
-                                    },
-                                    showCompleteButton = true
-                                )
-                            }
+                        items(lists) { shoppingList ->
+                            HomeListCard(
+                                shoppingList = shoppingList,
+                                onEdit = { updatedList: ShoppingList ->
+                                    viewModel.updateShoppingList(updatedList)
+                                },
+                                onDelete = { listToDelete: ShoppingList ->
+                                    viewModel.deleteShoppingList(listToDelete)
+                                },
+                                onNavigate = { listId: Int ->
+                                    navController.navigate("shoppingListDetail/$listId")
+                                },
+                                onComplete = { listToComplete: ShoppingList ->
+                                    viewModel.markListAsCompleted(listToComplete.id)
+                                },
+                                showCompleteButton = true
+                            )
                         }
                     }
                 }
             }
-
+        }
+        
 
         if (showAddListModal) {
             AddShoppingListScreen(
@@ -572,7 +573,7 @@ fun HomeListCard(
             }
         }
     }
-
+    
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },

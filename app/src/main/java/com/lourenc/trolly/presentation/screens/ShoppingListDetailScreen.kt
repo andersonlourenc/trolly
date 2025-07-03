@@ -52,7 +52,6 @@ fun ShoppingListDetailScreen(navController: NavController, viewModel: ShoppingLi
         topBar = {
             TrollyTopBar(
                 title = shoppingList?.name ?: "Detalhes da Lista",
-                subtitle = shoppingList?.description,
                 showBackButton = true,
                 onBackClick = { navController.popBackStack() }
             )

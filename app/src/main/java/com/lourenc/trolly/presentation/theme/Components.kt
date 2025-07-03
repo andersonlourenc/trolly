@@ -24,66 +24,49 @@ import androidx.navigation.NavController
 @Composable
 fun TrollyTopBar(
     title: String,
-    subtitle: String? = null,
     showBackButton: Boolean = false,
     onBackClick: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    Column(
+
+    val topPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary)
-            .padding(start = 16.dp, end = 16.dp, top = 64.dp, bottom = 16.dp)
+            .padding(top = topPadding)
+
+
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        // Ícone de voltar à esquerda
+        if (showBackButton && onBackClick != null) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
             ) {
-                if (showBackButton && onBackClick != null) {
-                    IconButton(
-                        onClick = onBackClick,
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Voltar",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                }
-                
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            
-            actions()
-        }
-        
-        if (subtitle != null) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Spacer(
-                    modifier = Modifier.width(
-                        if (showBackButton) 56.dp else 0.dp
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Voltar",
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
-                )
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                )
+                }
             }
+        }
+        // Título centralizado
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.align(Alignment.Center),
+            textAlign = TextAlign.Center
+        )
+        // Ações à direita
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+        ) {
+            actions()
         }
     }
 }
@@ -175,7 +158,7 @@ fun TrollySecondaryButton(
         modifier = modifier.fillMaxWidth(),
         enabled = enabled,
         colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = MaterialTheme.colorScheme.primary
+            contentColor = MaterialTheme.colorScheme.secondary
         ),
         shape = RoundedCornerShape(12.dp),
         border = ButtonDefaults.outlinedButtonBorder(enabled = enabled).copy(
@@ -223,7 +206,6 @@ fun TrollyTextField(
     )
 }
 
-// Componente de navegação inferior padronizado
 @Composable
 fun TrollyBottomNavigation(
     currentRoute: String,

@@ -49,13 +49,13 @@ fun InsightsScreen(navController: NavController, viewModel: ShoppingListViewMode
     val photoUrl = user.photoUrl?.toString()
     val monthlyExpense by viewModel.monthlyExpense.observeAsState(0.0)
     val lastListValue by viewModel.lastListValue.observeAsState(0.0)
-
+    
     Scaffold(
         topBar = {
             TrollyTopBar(
                 title = "Insights",
-                subtitle = "Análises e statistics",
-
+                showBackButton = true,
+                onBackClick = { navController.popBackStack() }
             )
         },
         bottomBar = {

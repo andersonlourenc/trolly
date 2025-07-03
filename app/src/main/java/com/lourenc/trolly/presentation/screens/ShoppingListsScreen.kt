@@ -73,8 +73,8 @@ fun ShoppingListsScreen(navController: NavController, viewModel: ShoppingListVie
             topBar = {
                 TrollyTopBar(
                     title = "Minhas Listas",
-                    subtitle = "Gerencie suas listas de compras",
-
+                    showBackButton = true,
+                    onBackClick = { navController.popBackStack() }
                 )
             },
             bottomBar = {

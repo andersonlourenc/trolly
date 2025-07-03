@@ -27,6 +27,7 @@ val OnSuccess = Color(0xFFFFFFFF)
 val SuccessDark = Color(0xFF27AE60)
 val OnSuccessDark = Color(0xFFFFFFFF)
 val OnErrorDark = Color(0xFFFFFFFF)
+val Edit = Color(0xFF0F25AA)
 
 
 data class ExtraColors(

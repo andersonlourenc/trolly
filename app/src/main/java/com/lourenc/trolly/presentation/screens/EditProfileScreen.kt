@@ -70,7 +70,6 @@ fun EditProfileScreen(navController: NavController) {
         topBar = {
             TrollyTopBar(
                 title = "Editar Perfil",
-                subtitle = "Atualize suas informações",
                 showBackButton = true,
                 onBackClick = { navController.popBackStack() }
             )

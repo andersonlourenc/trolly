@@ -42,8 +42,11 @@ fun ProfileScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TrollyTopBar(
-                title = "My Profile",
-                subtitle = "Manage your personal information"
+                title = "Perfil",
+                showBackButton = true,
+                onBackClick = { navController.popBackStack() },
+
+
             )
         },
         bottomBar = {
