@@ -74,24 +74,7 @@ fun ShoppingListsScreen(navController: NavController, viewModel: ShoppingListVie
                 TrollyTopBar(
                     title = "Minhas Listas",
                     subtitle = "Gerencie suas listas de compras",
-                    actions = {
-                        if (photoUrl != null) {
-                            AsyncImage(
-                                model = photoUrl,
-                                contentDescription = "Foto do usuário",
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.AccountCircle,
-                                contentDescription = "Foto do usuário",
-                                modifier = Modifier.size(40.dp),
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
-                        }
-                    }
+
                 )
             },
             bottomBar = {

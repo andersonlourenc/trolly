@@ -1,4 +1,4 @@
-package com.lourenc.trolly.ui.screens
+package com.lourenc.trolly.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,17 +9,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.lourenc.trolly.data.local.entity.ListaCompra
-import com.lourenc.trolly.viewmodel.ListaCompraViewModel
+import com.lourenc.trolly.data.local.entity.ShoppingList
+import com.lourenc.trolly.presentation.viewmodel.ShoppingListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddListModal(
     onDismiss: () -> Unit,
-    viewModel: ListaCompraViewModel
+    viewModel: ShoppingListViewModel
 ) {
     var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
@@ -64,49 +63,24 @@ fun AddListModal(
                 singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            // Campo descrição
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Descrição (opcional)") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-                ),
-                minLines = 2,
-                maxLines = 3
-            )
-
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Botões
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(onClick = onDismiss) {
-                    Text("Cancelar")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
+            // Botão criar
             Button(
                 onClick = {
                     if (name.isNotBlank()) {
-                        viewModel.addLista(
-                            ListaCompra(
-                                    name = name.trim(),
-                                    descricao = description.trim()
+                        viewModel.addShoppingList(
+                            ShoppingList(
+                                    name = name.trim()
                             )
                         )
                             onDismiss()
                     }
                 },
-                    enabled = name.isNotBlank()
+                enabled = name.isNotBlank(),
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Criar Lista")
-            }
         }
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -117,7 +91,17 @@ fun AddListModal(
 // Mantendo a função original para compatibilidade
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddListsScreen(navController: androidx.navigation.NavController, viewModel: ListaCompraViewModel) {
+fun AddListsScreen(navController: androidx.navigation.NavController, viewModel: ShoppingListViewModel) {
+    AddListModal(
+        onDismiss = { navController.popBackStack() },
+        viewModel = viewModel
+    )
+}
+
+// Função esperada pelo MainActivity
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddShoppingListScreen(navController: androidx.navigation.NavController, viewModel: ShoppingListViewModel) {
     AddListModal(
         onDismiss = { navController.popBackStack() },
         viewModel = viewModel

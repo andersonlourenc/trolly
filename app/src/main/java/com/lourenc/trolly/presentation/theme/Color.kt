@@ -3,49 +3,30 @@ package com.lourenc.trolly.presentation.theme
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 
+// Cores principais (comuns aos temas claro e escuro)
+val CoralPrimary = Color(0xFFF77564)
+val CoralVariant = Color(0xFFFFA091) // Tom mais claro da primária
+val PeachSecondary = Color(0xFFF8D082)
+val PeachSecondaryVariant = Color(0xFFFFE3AC) // Variante mais clara
+val SandBackground = Color(0xFFFAFAFA)
+val TextDark = Color(0xFF111111)
+val TextLight = Color(0xFFFFFFFF)
+val Error = Color(0xFFE74C3C)
 
-// 🎨 MODO CLARO
+val CoralPrimaryDark = CoralPrimary // Usar mesma primária clara no dark
+val CoralVariantDark = CoralVariant // Variante clara também
+val PeachSecondaryDark = PeachSecondary
+val PeachSecondaryVariantDark = PeachSecondaryVariant
+val DarkBackground = Color(0xFF1C1C1E)
+val DarkSurface = Color(0xFF2C2C2E)
+val ErrorDark = Color(0xFFC0392B)
 
-val BluePrimary = Color(0xFF246BFD)          // Azul médio elegante
-val BluePrimaryVariant = Color(0xFF1A4FCC)   // Azul mais escuro
-val BlueSecondary = Color(0xFFDDE9FF)        // Azul claro (destaque)
-val BlueBackground = Color(0xFFF7F9FC)       // Fundo claro suave
-val BlueSurface = Color(0xFFFFFFFF)          // Branco puro
-
-val OnPrimary = Color(0xFFFFFFFF)            // Texto sobre azul
-
-
-val OnSecondary = Color(0xFF1A4FCC)          // Texto sobre azul claro
-val OnBackground = Color(0xFF1C1C1E)         // Azul grafiteado
-val OnSurface = Color(0xFF1C1C1E)            // Azul escuro
-
+// Mantendo o que não existe no novo padrão
 val Success = Color(0xFF2ECC71)
 val OnSuccess = Color(0xFFFFFFFF)
-
-
-val Error = Color(0xFFE74C3C)
-val OnError = Color(0xFFFFFFFF)
-
-// 🌙 MODO ESCURO
-
-val BluePrimaryDark = Color(0xFF246BFD)           // Mesmo azul
-val BluePrimaryVariantDark = Color(0xFF123D9B)    // Azul ainda mais escuro
-val BlueSecondaryDark = Color(0xFF2C3E50)         // Azul escuro suave
-val BlueBackgroundDark = Color(0xFF0E1116)        // Fundo quase preto
-val BlueSurfaceDark = Color(0xFF1A1D23)           // Cinza-azulado escuro
-
-val OnPrimaryDark = Color(0xFFFFFFFF)
-val OnSecondaryDark = Color(0xFFDDE9FF)
-val OnBackgroundDark = Color(0xFFE2EAFB)
-val OnSurfaceDark = Color(0xFFCBD6EA)
-
 val SuccessDark = Color(0xFF27AE60)
 val OnSuccessDark = Color(0xFFFFFFFF)
-val ErrorDark = Color(0xFFC0392B)
 val OnErrorDark = Color(0xFFFFFFFF)
-
-
-
 
 
 data class ExtraColors(

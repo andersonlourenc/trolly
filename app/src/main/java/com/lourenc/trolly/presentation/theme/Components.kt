@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.BarChart
@@ -50,7 +50,7 @@ fun TrollyTopBar(
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Voltar",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
@@ -178,7 +178,7 @@ fun TrollySecondaryButton(
             contentColor = MaterialTheme.colorScheme.primary
         ),
         shape = RoundedCornerShape(12.dp),
-        border = ButtonDefaults.outlinedButtonBorder.copy(
+        border = ButtonDefaults.outlinedButtonBorder(enabled = enabled).copy(
             brush = androidx.compose.ui.graphics.Brush.linearGradient(
                 colors = listOf(
                     MaterialTheme.colorScheme.primary,
@@ -232,7 +232,7 @@ fun TrollyBottomNavigation(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Divider(
+        HorizontalDivider(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
             thickness = 1.dp
         )
@@ -262,17 +262,17 @@ fun TrollyBottomNavigation(
                     Icon(
                         Icons.Default.ShoppingCart,
                         contentDescription = "Listas",
-                        tint = if (currentRoute == "listas") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        tint = if (currentRoute == "shoppingLists") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 },
                 label = {
                     Text(
                         "Listas",
-                        color = if (currentRoute == "listas") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = if (currentRoute == "shoppingLists") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 },
-                selected = currentRoute == "listas",
-                onClick = { onNavigate("listas") }
+                selected = currentRoute == "shoppingLists",
+                onClick = { onNavigate("shoppingLists") }
             )
             NavigationBarItem(
                 icon = {

@@ -1,6 +1,6 @@
 package com.lourenc.trolly.presentation.screens
 
-import androidx.compose.foundation.background
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,27 +17,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.LocalPharmacy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Store
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
@@ -58,13 +49,10 @@ import com.lourenc.trolly.data.local.entity.ShoppingList
 import androidx.compose.foundation.layout.Spacer as Spacer
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.SnackbarHost
@@ -79,24 +67,36 @@ import androidx.compose.material3.ListItem
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.toArgb
 import android.app.Activity
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.SideEffect
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.ui.res.painterResource
+import com.lourenc.trolly.R
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.ContentScale
+import com.google.accompanist.pager.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import com.lourenc.trolly.presentation.theme.CoralPrimary
 
-
-
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
     val blue = MaterialTheme.colorScheme.primary
     val context = LocalContext.current
     
     SideEffect {
-        // Controle nativo da cor da status bar
         val window = (context as? Activity)?.window
-        window?.statusBarColor = blue.toArgb()
+        @Suppress("DEPRECATION")
+        window?.statusBarColor = CoralPrimary.toArgb()
     }
     val user = FirebaseAuth.getInstance().currentUser
     var activeCardId by remember { mutableStateOf<Int?>(null) }
@@ -120,14 +120,7 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
         val isLoading by viewModel.isLoading.observeAsState(false)
         val errorMessage by viewModel.errorMessage.observeAsState(null)
         
-        // Logs para debug
-        LaunchedEffect(monthlyExpense) {
-            println("DEBUG: HomeScreen - Gasto mensal atualizado: R$ $monthlyExpense")
-        }
-        
-        LaunchedEffect(lastListValue) {
-            println("DEBUG: HomeScreen - Valor última lista atualizado: R$ $lastListValue")
-        }
+
         
         LaunchedEffect(errorMessage) {
             errorMessage?.let { message ->
@@ -152,12 +145,72 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
         }
 
         val lists = activeLists
-        val month = currentMonth
-        val expense = monthlyExpense
-        val lastValue = lastListValue
+
+        val configuration = LocalConfiguration.current
+        val screenWidth = configuration.screenWidthDp.dp
+
+        val carouselImages = listOf(
+            R.drawable.churras,
+            R.drawable.receita,
+            R.drawable.niver
+        )
+        val pagerState = rememberPagerState()
+
+        val cardHeight = 220.dp
+        val cardOffset = -(cardHeight.value * 0.4f).dp // 40% do card para cima
 
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
+            topBar = {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(240.dp),
+                    color = CoralPrimary,
+                    shadowElevation = 4.dp,
+                    shape = RoundedCornerShape(bottomStart = 48.dp, bottomEnd = 48.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .statusBarsPadding()
+                            .padding(start = TrollySpacing.md, end = TrollySpacing.md, bottom = 24.dp)
+                            .offset(y = -48.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (photoUrl != null) {
+                            AsyncImage(
+                                model = photoUrl,
+                                contentDescription = "Foto do usuário",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = "Foto do usuário",
+                                modifier = Modifier.size(40.dp),
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "Olá, $name",
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notificações",
+                            modifier = Modifier.size(28.dp),
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+            },
             bottomBar = {
                 TrollyBottomNavigation(
                     currentRoute = "home",
@@ -171,7 +224,8 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = { showAddListModal = true },
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -181,210 +235,126 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                 }
             }
         ) { paddingValues ->
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // Painel azul com TopBar e cards
-                Box(
+                // Carrossel encaixado na curva azul
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.primary)
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .padding(bottom = 56.dp)
+                        .padding(horizontal = 16.dp)
+                        .offset(y = 0.dp)
                 ) {
-                    Column(
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = TrollySpacing.md)
-                            .padding(top = 0.dp, bottom = 0.dp)
+                            .height(cardHeight),
+                        shape = RoundedCornerShape(32.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
-                        // TopBar customizada
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text(
-                                    text = "Olá, $name",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                                Text(
-                                    text = "Resumo do mês de $month",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                                )
-                            }
-                            if (photoUrl != null) {
-                                AsyncImage(
-                                    model = photoUrl,
-                                    contentDescription = "Foto do usuário",
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(CircleShape)
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Default.AccountCircle,
-                                    contentDescription = "Foto do usuário",
-                                    modifier = Modifier.size(40.dp),
-                                    tint = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-                        }
-                    }
-                }
-                // Cards de resumo sobrepostos à barra azul
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = TrollySpacing.md)
-                        .offset(y = (0).dp),
-                    horizontalArrangement = Arrangement.spacedBy(TrollySpacing.md)
-                ) {
-                    TrollyCard(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(85.dp)
-                    ) {
-                        Column(
+                        HorizontalPager(
+                            count = carouselImages.size,
+                            state = pagerState,
                             modifier = Modifier
-                                .fillMaxSize()
-                                .padding(TrollySpacing.md),
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = Icons.Default.BarChart,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(modifier = Modifier.width(TrollySpacing.xs))
-                                Text(
-                                    "Gasto mensal",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                                )
-                            }
-                            Text(
-                                ShoppingListFormatter.formatValue(expense),
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.primary
+                                .fillMaxWidth()
+                                .height(cardHeight),
+                            itemSpacing = 16.dp
+                        ) { page ->
+                            Image(
+                                painter = painterResource(id = carouselImages[page]),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(cardHeight)
+                                    .clip(RoundedCornerShape(32.dp))
+                                    .clickable { /* ação futura */ }
                             )
                         }
                     }
-                    TrollyCard(
+                    HorizontalPagerIndicator(
+                        pagerState = pagerState,
                         modifier = Modifier
-                            .weight(1f)
-                            .height(85.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(TrollySpacing.md),
-                            verticalArrangement = Arrangement.SpaceBetween
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 12.dp),
+                        activeColor = MaterialTheme.colorScheme.primary,
+                        inactiveColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                    )
+                }
+
+                // Conteúdo da lista (abaixo do carrossel)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 24.dp + cardHeight + 32.dp, start = TrollySpacing.md, end = TrollySpacing.md)
+                ) {
+                    Spacer(modifier = Modifier.height(TrollySpacing.lg))
+                    Text(
+                        text = "Suas Listas",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(TrollySpacing.sm))
+                    if (isLoading) {
+                        Text(
+                            text = "Carregando...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    } else if (lists.isEmpty()) {
+                        TrollyCard(
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(TrollySpacing.lg),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.ShoppingCart,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
+                                    modifier = Modifier.size(48.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                                 )
-                                Spacer(modifier = Modifier.width(TrollySpacing.xs))
+                                Spacer(modifier = Modifier.height(TrollySpacing.md))
                                 Text(
-                                    "Última lista",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                                    text = "Nenhuma lista criada",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                 )
-                            }
-                            Text(
-                                ShoppingListFormatter.formatValue(lastValue),
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-                }
-                // Lista de listas logo após o painel azul
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = TrollySpacing.md),
-                    verticalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
-                ) {
-                    item {
-                        Spacer(modifier = Modifier.height(TrollySpacing.lg))
-                        Text(
-                            text = "Suas Listas",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(modifier = Modifier.height(TrollySpacing.sm))
-                    }
-                    if (isLoading) {
-                        item {
-                            Text(
-                                text = "Carregando...",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                            )
-                        }
-                    } else if (lists.isEmpty()) {
-                        item {
-                            TrollyCard(
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(TrollySpacing.lg),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.ShoppingCart,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(48.dp),
-                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                                    )
-                                    Spacer(modifier = Modifier.height(TrollySpacing.md))
-                                    Text(
-                                        text = "Nenhuma lista criada",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                    )
-                                    Text(
-                                        text = "Toque no botão + para criar sua primeira lista",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                                    )
-                                }
+                                Text(
+                                    text = "Toque no botão + para criar sua primeira lista",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                )
                             }
                         }
                     } else {
-                        items(lists) { shoppingList ->
-                            HomeListCard(
-                                shoppingList = shoppingList,
-                                onEdit = { updatedList: ShoppingList ->
-                                    viewModel.updateShoppingList(updatedList)
-                                },
-                                onDelete = { listToDelete: ShoppingList ->
-                                    viewModel.deleteShoppingList(listToDelete)
-                                },
-                                onNavigate = { listId: Int ->
-                                    navController.navigate("shoppingListDetail/$listId")
-                                },
-                                onComplete = { listToComplete: ShoppingList ->
-                                    viewModel.markListAsCompleted(listToComplete.id)
-                                },
-                                showCompleteButton = true
-                            )
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
+                        ) {
+                            items(lists) { shoppingList ->
+                                HomeListCard(
+                                    shoppingList = shoppingList,
+                                    onEdit = { updatedList: ShoppingList ->
+                                        viewModel.updateShoppingList(updatedList)
+                                    },
+                                    onDelete = { listToDelete: ShoppingList ->
+                                        viewModel.deleteShoppingList(listToDelete)
+                                    },
+                                    onNavigate = { listId: Int ->
+                                        navController.navigate("shoppingListDetail/$listId")
+                                    },
+                                    onComplete = { listToComplete: ShoppingList ->
+                                        viewModel.markListAsCompleted(listToComplete.id)
+                                    },
+                                    showCompleteButton = true
+                                )
+                            }
                         }
                     }
                 }
@@ -628,16 +598,6 @@ fun HomeListCard(
             }
         )
     }
-}
-
-@Composable
-fun getCurrentMonthInPortuguese(): String {
-    val calendar = Calendar.getInstance()
-    val meses = listOf(
-        "January", "February", "March", "April", "May", "June", 
-        "July", "August", "September", "October", "November", "December"
-    )
-    return meses[Calendar.getInstance().get(Calendar.MONTH)]
 }
 
 

@@ -10,46 +10,44 @@ import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
 
-
-private val LightColorScheme = lightColorScheme(
-    primary = BluePrimary,
-    onPrimary = OnPrimary,
-    primaryContainer = BluePrimaryVariant,
-    secondary = BlueSecondary,
-    onSecondary = OnSecondary,
-    background = BlueBackground,
-    onBackground = OnBackground,
-    surface = BlueSurface,
-    onSurface = OnSurface,
+private val LightColors = lightColorScheme(
+    primary = CoralPrimary,
+    onPrimary = TextLight,
+    primaryContainer = CoralVariant,
+    secondary = PeachSecondary,
+    onSecondary = TextDark,
+    background = SandBackground,
+    onBackground = TextDark,
+    surface = Color.White,
+    onSurface = TextDark,
     error = Error,
-    onError = OnError
+    onError = TextLight
 )
 
-private val DarkColorScheme = darkColorScheme(
-    primary = BluePrimaryDark,
-    onPrimary = OnPrimaryDark,
-    primaryContainer = BluePrimaryVariantDark,
-    secondary = BlueSecondaryDark,
-    onSecondary = OnSecondaryDark,
-    background = BlueBackgroundDark,
-    onBackground = OnBackgroundDark,
-    surface = BlueSurfaceDark,
-    onSurface = OnSurfaceDark,
+private val DarkColors = darkColorScheme(
+    primary = CoralPrimaryDark,
+    onPrimary = TextLight,
+    primaryContainer = CoralVariantDark,
+    secondary = PeachSecondaryDark,
+    onSecondary = TextDark,
+    background = DarkBackground,
+    onBackground = TextLight,
+    surface = DarkSurface,
+    onSurface = TextLight,
     error = ErrorDark,
-    onError = OnErrorDark
+    onError = TextLight
 )
-
 
 @Composable
 fun TrollyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) DarkColorScheme else LightColorScheme
+    val colors = if (darkTheme) DarkColors else LightColors
     val extraColors = if (darkTheme) {
-        ExtraColors(success = Success)
-    } else {
         ExtraColors(success = SuccessDark)
+    } else {
+        ExtraColors(success = Success)
     }
 
     CompositionLocalProvider(LocalExtraColors provides extraColors) {
@@ -64,5 +62,4 @@ fun TrollyTheme(
             content = content
         )
     }
-
 }

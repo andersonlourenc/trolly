@@ -24,7 +24,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        window.statusBarColor = ContextCompat.getColor(this, R.color.azul_status_bar)
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = false
         setContent {
             AppNavigator()
         }
@@ -61,7 +62,8 @@ fun AppNavigator() {
                 ShoppingListsScreen(navController, viewModel)
             }
             composable("insights") {
-                InsightsScreen(navController)
+                val viewModel = viewModel<ShoppingListViewModel>(factory = factory)
+                InsightsScreen(navController, viewModel)
             }
             composable("shoppingListDetail/{listId}") { backStackEntry ->
                 val viewModel = viewModel<ShoppingListViewModel>(factory = factory)
