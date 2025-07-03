@@ -350,8 +350,7 @@ fun ShoppingListCard(
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
-            sheetState = sheetState,
-            containerColor = MaterialTheme.colorScheme.surface
+            sheetState = sheetState
         ) {
             Column(
                 modifier = Modifier
@@ -443,8 +442,7 @@ fun ShoppingListCard(
     if (showEditSheet) {
         ModalBottomSheet(
             onDismissRequest = { showEditSheet = false },
-            sheetState = editSheetState,
-            containerColor = MaterialTheme.colorScheme.surface
+            sheetState = editSheetState
         ) {
             Column(
                 modifier = Modifier

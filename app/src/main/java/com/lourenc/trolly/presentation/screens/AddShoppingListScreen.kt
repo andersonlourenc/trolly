@@ -1,4 +1,4 @@
-package com.lourenc.trolly.presentation.screens
+package com.lourenc.trolly.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,49 +9,48 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.lourenc.trolly.data.local.entity.ShoppingList
-import com.lourenc.trolly.presentation.viewmodel.ShoppingListViewModel
+import com.lourenc.trolly.data.local.entity.ListaCompra
+import com.lourenc.trolly.viewmodel.ListaCompraViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddShoppingListScreen(
-    navController: androidx.navigation.NavController,
-    viewModel: ShoppingListViewModel
+fun AddListModal(
+    onDismiss: () -> Unit,
+    viewModel: ListaCompraViewModel
 ) {
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
-        onDismissRequest = { navController.popBackStack() },
-        sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface
+        onDismissRequest = onDismiss,
+        sheetState = sheetState
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
                 .padding(16.dp)
-        ) {
-            // Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
             ) {
+            // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                 Text(
                     text = "Nova Lista",
                     style = MaterialTheme.typography.titleLarge
                 )
-                IconButton(onClick = { navController.popBackStack() }) {
+                IconButton(onClick = onDismiss) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Fechar"
                     )
-                }
             }
-
+            }
+            
             Spacer(modifier = Modifier.height(16.dp))
-
+            
             // Campo nome
             OutlinedTextField(
                 value = name,
@@ -66,7 +65,7 @@ fun AddShoppingListScreen(
             )
 
             Spacer(modifier = Modifier.height(8.dp))
-
+            
             // Campo descrição
             OutlinedTextField(
                 value = description,
@@ -88,29 +87,39 @@ fun AddShoppingListScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                TextButton(onClick = { navController.popBackStack() }) {
+                TextButton(onClick = onDismiss) {
                     Text("Cancelar")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = {
-                        if (name.isNotBlank()) {
-                            viewModel.addShoppingList(
-                                ShoppingList(
+            Button(
+                onClick = {
+                    if (name.isNotBlank()) {
+                        viewModel.addLista(
+                            ListaCompra(
                                     name = name.trim(),
-                                    description = description.trim()
-                                )
+                                    descricao = description.trim()
                             )
-                            navController.popBackStack()
-                        }
-                    },
+                        )
+                            onDismiss()
+                    }
+                },
                     enabled = name.isNotBlank()
-                ) {
-                    Text("Criar Lista")
-                }
+            ) {
+                Text("Criar Lista")
             }
-
+        }
+            
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+
+// Mantendo a função original para compatibilidade
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddListsScreen(navController: androidx.navigation.NavController, viewModel: ListaCompraViewModel) {
+    AddListModal(
+        onDismiss = { navController.popBackStack() },
+        viewModel = viewModel
+    )
 } 

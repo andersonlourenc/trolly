@@ -281,8 +281,7 @@ fun ItemCard(
     if (showEditSheet) {
         ModalBottomSheet(
             onDismissRequest = { showEditSheet = false },
-            sheetState = editSheetState,
-            containerColor = MaterialTheme.colorScheme.surface
+            sheetState = editSheetState
         ) {
             Column(
                 modifier = Modifier

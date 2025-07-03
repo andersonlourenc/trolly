@@ -255,14 +255,7 @@ fun TrollyBottomNavigation(
                     )
                 },
                 selected = currentRoute == "home",
-                onClick = { onNavigate("home") },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    indicatorColor = Color.Transparent
-                )
+                onClick = { onNavigate("home") }
             )
             NavigationBarItem(
                 icon = {
@@ -279,14 +272,7 @@ fun TrollyBottomNavigation(
                     )
                 },
                 selected = currentRoute == "listas",
-                onClick = { onNavigate("listas") },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    indicatorColor = Color.Transparent
-                )
+                onClick = { onNavigate("listas") }
             )
             NavigationBarItem(
                 icon = {
@@ -303,14 +289,7 @@ fun TrollyBottomNavigation(
                     )
                 },
                 selected = currentRoute == "insights",
-                onClick = { onNavigate("insights") },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    indicatorColor = Color.Transparent
-                )
+                onClick = { onNavigate("insights") }
             )
             NavigationBarItem(
                 icon = {
@@ -327,14 +306,7 @@ fun TrollyBottomNavigation(
                     )
                 },
                 selected = currentRoute == "profile",
-                onClick = { onNavigate("profile") },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    indicatorColor = Color.Transparent
-                )
+                onClick = { onNavigate("profile") }
             )
         }
     }
