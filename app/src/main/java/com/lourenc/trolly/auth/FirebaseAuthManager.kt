@@ -8,31 +8,30 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 fun createUserWithEmail(
-    nome: String,
-    sobrenome: String,
+    name: String,
     email: String,
-    senha: String,
+    password: String,
     context: Context,
     navController: NavController
 ) {
-    Firebase.auth.createUserWithEmailAndPassword(email, senha)
+    Firebase.auth.createUserWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val user = Firebase.auth.currentUser
                 user?.updateProfile(
                     UserProfileChangeRequest.Builder()
-                        .setDisplayName("$nome $sobrenome")
+                        .setDisplayName(name)
                         .build()
                 )
-                Toast.makeText(context, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Account created successfully!", Toast.LENGTH_SHORT).show()
                 navController.navigate("home")
             } else {
                 val exception = task.exception
                 val errorMessage = when (exception) {
-                    is FirebaseAuthUserCollisionException -> "Esse email já está em uso."
-                    is FirebaseAuthWeakPasswordException -> "A senha é muito fraca. Use 6 ou mais caracteres."
-                    is FirebaseAuthInvalidCredentialsException -> "Email inválido. Verifique e tente novamente."
-                    else -> "Erro: ${exception?.localizedMessage}"
+                    is FirebaseAuthUserCollisionException -> "That email is already in use."
+                    is FirebaseAuthWeakPasswordException -> "The password is too weak. Use 6 or more characters."
+                    is FirebaseAuthInvalidCredentialsException -> "Invalid email. Please check and try again."
+                    else -> "Error: ${exception?.localizedMessage}"
                 }
                 Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
             }
@@ -41,20 +40,20 @@ fun createUserWithEmail(
 
 fun loginWithEmail(
     email: String,
-    senha: String,
+    password: String,
     context: Context,
     navController: NavController
 ) {
-    Firebase.auth.signInWithEmailAndPassword(email, senha)
+    Firebase.auth.signInWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                Toast.makeText(context, "Login feito com sucesso!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
                 navController.navigate("home")
             } else {
                 val errorMessage = when (val exception = task.exception) {
-                    is FirebaseAuthInvalidUserException -> "Usuário não encontrado."
-                    is FirebaseAuthInvalidCredentialsException -> "Email ou senha inválidos."
-                    else -> "Erro: ${exception?.localizedMessage}"
+                    is FirebaseAuthInvalidUserException -> "User not found."
+                    is FirebaseAuthInvalidCredentialsException -> "Invalid email or password."
+                    else -> "Error: ${exception?.localizedMessage}"
                 }
                 Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
             }

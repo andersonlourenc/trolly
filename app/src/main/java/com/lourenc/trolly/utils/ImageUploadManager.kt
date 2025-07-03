@@ -15,31 +15,31 @@ class ImageUploadManager {
         return try {
             val userId = auth.currentUser?.uid
             if (userId == null) {
-                Log.e("ImageUploadManager", "Usuário não autenticado")
+                Log.e("ImageUploadManager", "User not authenticated")
                 return null
             }
             
-            Log.d("ImageUploadManager", "Iniciando upload para usuário: $userId")
-            Log.d("ImageUploadManager", "URI da imagem: $imageUri")
+            Log.d("ImageUploadManager", "Starting upload for user: $userId")
+            Log.d("ImageUploadManager", "Image URI: $imageUri")
             
             val imageFileName = "profile_images/$userId/${UUID.randomUUID()}.jpg"
             val imageRef = storage.reference.child(imageFileName)
             
-            Log.d("ImageUploadManager", "Fazendo upload para: $imageFileName")
+            Log.d("ImageUploadManager", "Uploading to: $imageFileName")
             
-            // Upload da imagem
+            // Upload the image
             val uploadTask = imageRef.putFile(imageUri).await()
-            Log.d("ImageUploadManager", "Upload concluído: ${uploadTask.bytesTransferred} bytes")
+            Log.d("ImageUploadManager", "Upload completed: ${uploadTask.bytesTransferred} bytes")
             
-            // Obter URL de download
+            // Get download URL
             val downloadUrl = imageRef.downloadUrl.await()
-            Log.d("ImageUploadManager", "URL obtida: $downloadUrl")
+            Log.d("ImageUploadManager", "URL obtained: $downloadUrl")
             
             downloadUrl.toString()
         } catch (e: Exception) {
-            Log.e("ImageUploadManager", "Erro no upload da imagem", e)
-            Log.e("ImageUploadManager", "Mensagem de erro: ${e.message}")
-            Log.e("ImageUploadManager", "Causa: ${e.cause}")
+            Log.e("ImageUploadManager", "Error in image upload", e)
+            Log.e("ImageUploadManager", "Error message: ${e.message}")
+            Log.e("ImageUploadManager", "Cause: ${e.cause}")
             e.printStackTrace()
             null
         }
@@ -49,31 +49,31 @@ class ImageUploadManager {
         return try {
             val user = auth.currentUser
             if (user == null) {
-                Log.e("ImageUploadManager", "Usuário não autenticado para atualizar foto")
+                Log.e("ImageUploadManager", "User not authenticated to update profile photo")
                 return false
             }
             
-            Log.d("ImageUploadManager", "Atualizando foto do perfil para: $imageUrl")
-            Log.d("ImageUploadManager", "Usuário atual: ${user.uid}")
+            Log.d("ImageUploadManager", "Updating profile photo for: $imageUrl")
+            Log.d("ImageUploadManager", "Current user: ${user.uid}")
             
-            // Atualizar a foto do perfil no Firebase Auth
+            // Update profile photo in Firebase Auth
             val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
                 .setPhotoUri(Uri.parse(imageUrl))
                 .build()
             
-            Log.d("ImageUploadManager", "Executando updateProfile...")
+            Log.d("ImageUploadManager", "Executing updateProfile...")
             user.updateProfile(profileUpdates).await()
             
-            // Verificar se a atualização foi bem-sucedida
+            // Verify if the update was successful
             val updatedUser = auth.currentUser
-            Log.d("ImageUploadManager", "Foto do perfil atualizada com sucesso")
-            Log.d("ImageUploadManager", "Nova URL da foto: ${updatedUser?.photoUrl}")
+            Log.d("ImageUploadManager", "Profile photo updated successfully")
+            Log.d("ImageUploadManager", "New photo URL: ${updatedUser?.photoUrl}")
             
             true
         } catch (e: Exception) {
-            Log.e("ImageUploadManager", "Erro ao atualizar foto do perfil", e)
-            Log.e("ImageUploadManager", "Mensagem de erro: ${e.message}")
-            Log.e("ImageUploadManager", "Causa: ${e.cause}")
+            Log.e("ImageUploadManager", "Error updating profile photo", e)
+            Log.e("ImageUploadManager", "Error message: ${e.message}")
+            Log.e("ImageUploadManager", "Cause: ${e.cause}")
             e.printStackTrace()
             false
         }
@@ -83,31 +83,31 @@ class ImageUploadManager {
         return try {
             val user = auth.currentUser
             if (user == null) {
-                Log.e("ImageUploadManager", "Usuário não autenticado para atualizar nome")
+                Log.e("ImageUploadManager", "User not authenticated to update profile name")
                 return false
             }
             
-            Log.d("ImageUploadManager", "Atualizando nome do perfil para: $name")
-            Log.d("ImageUploadManager", "Usuário atual: ${user.uid}")
+            Log.d("ImageUploadManager", "Updating profile name for: $name")
+            Log.d("ImageUploadManager", "Current user: ${user.uid}")
             
-            // Atualizar o nome do perfil no Firebase Auth
+            // Update profile name in Firebase Auth
             val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
                 .setDisplayName(name)
                 .build()
             
-            Log.d("ImageUploadManager", "Executando updateProfile...")
+            Log.d("ImageUploadManager", "Executing updateProfile...")
             user.updateProfile(profileUpdates).await()
             
-            // Verificar se a atualização foi bem-sucedida
+            // Verify if the update was successful
             val updatedUser = auth.currentUser
-            Log.d("ImageUploadManager", "Nome do perfil atualizado com sucesso")
-            Log.d("ImageUploadManager", "Novo nome: ${updatedUser?.displayName}")
+            Log.d("ImageUploadManager", "Profile name updated successfully")
+            Log.d("ImageUploadManager", "New name: ${updatedUser?.displayName}")
             
             true
         } catch (e: Exception) {
-            Log.e("ImageUploadManager", "Erro ao atualizar nome do perfil", e)
-            Log.e("ImageUploadManager", "Mensagem de erro: ${e.message}")
-            Log.e("ImageUploadManager", "Causa: ${e.cause}")
+            Log.e("ImageUploadManager", "Error updating profile name", e)
+            Log.e("ImageUploadManager", "Error message: ${e.message}")
+            Log.e("ImageUploadManager", "Cause: ${e.cause}")
             e.printStackTrace()
             false
         }

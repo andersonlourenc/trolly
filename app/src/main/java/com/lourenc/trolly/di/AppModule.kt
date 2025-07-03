@@ -1,104 +1,56 @@
 package com.lourenc.trolly.di
 
-import com.lourenc.trolly.data.local.dao.ItemListaDao
-import com.lourenc.trolly.data.local.dao.ListaCompraDao
-import com.lourenc.trolly.data.repository.impl.ItemListaRepositoryImpl
-import com.lourenc.trolly.data.repository.impl.ListaCompraRepositoryImpl
-import com.lourenc.trolly.data.repository.interfaces.ItemListaRepository
-import com.lourenc.trolly.data.repository.interfaces.ListaCompraRepository
-import com.lourenc.trolly.domain.factory.ListaCompraFactory
-import com.lourenc.trolly.domain.factory.ListaCompraFactoryImpl
-import com.lourenc.trolly.domain.strategy.*
-import com.lourenc.trolly.domain.usecase.ItemListaUseCase
-import com.lourenc.trolly.domain.usecase.ListaCompraUseCase
-import com.lourenc.trolly.domain.usecase.impl.ItemListaUseCaseImpl
-import com.lourenc.trolly.domain.usecase.impl.ListaCompraUseCaseImpl
-import com.lourenc.trolly.viewmodel.ListaCompraViewModel
-import com.lourenc.trolly.viewmodel.ListaCompraViewModelFactory
+import com.lourenc.trolly.data.local.dao.ListItemDao
+import com.lourenc.trolly.data.local.dao.ShoppingListDao
+import com.lourenc.trolly.data.repository.ListItemRepositoryImpl
+import com.lourenc.trolly.data.repository.ShoppingListRepositoryImpl
+import com.lourenc.trolly.domain.repository.ListItemRepository
+import com.lourenc.trolly.domain.repository.ShoppingListRepository
+import com.lourenc.trolly.domain.usecase.ListItemUseCase
+import com.lourenc.trolly.domain.usecase.ShoppingListUseCase
+import com.lourenc.trolly.domain.usecase.ListItemUseCaseImpl
+import com.lourenc.trolly.domain.usecase.ShoppingListUseCaseImpl
+import com.lourenc.trolly.presentation.viewmodel.ShoppingListViewModel
+import com.lourenc.trolly.presentation.viewmodel.ShoppingListViewModelFactory
 
 object AppModule {
     
-    // Repositórios
-    fun provideListaCompraRepository(listaDao: ListaCompraDao): ListaCompraRepository {
-        return ListaCompraRepositoryImpl(listaDao)
+    // Repositories
+    fun provideShoppingListRepository(shoppingListDao: ShoppingListDao): ShoppingListRepository {
+        return ShoppingListRepositoryImpl(shoppingListDao)
     }
     
-    fun provideItemListaRepository(itemDao: ItemListaDao): ItemListaRepository {
-        return ItemListaRepositoryImpl(itemDao)
+    fun provideListItemRepository(listItemDao: ListItemDao): ListItemRepository {
+        return ListItemRepositoryImpl(listItemDao)
     }
     
-    // Factory
-    fun provideListaCompraFactory(): ListaCompraFactory {
-        return ListaCompraFactoryImpl()
-    }
-    
-    // Strategies
-    fun provideAlphabeticalSortStrategy(): AlphabeticalSortStrategy {
-        return AlphabeticalSortStrategy()
-    }
-    
-    fun providePriceSortStrategy(): PriceSortStrategy {
-        return PriceSortStrategy()
-    }
-    
-    fun providePriceDescendingSortStrategy(): PriceDescendingSortStrategy {
-        return PriceDescendingSortStrategy()
-    }
-    
-    fun provideQuantitySortStrategy(): QuantitySortStrategy {
-        return QuantitySortStrategy()
-    }
-    
-    fun provideTotalPriceSortStrategy(): TotalPriceSortStrategy {
-        return TotalPriceSortStrategy()
-    }
-    
-    fun provideStatusSortStrategy(): StatusSortStrategy {
-        return StatusSortStrategy()
-    }
-    
-    fun provideCategorySortStrategy(): CategorySortStrategy {
-        return CategorySortStrategy()
-    }
-    
-    fun provideAllSortStrategies(): List<ItemSortingStrategy> {
-        return listOf(
-            provideAlphabeticalSortStrategy(),
-            providePriceSortStrategy(),
-            providePriceDescendingSortStrategy(),
-            provideQuantitySortStrategy(),
-            provideTotalPriceSortStrategy(),
-            provideStatusSortStrategy(),
-            provideCategorySortStrategy()
-        )
-    }
+
     
     // Use Cases
-    fun provideListaCompraUseCase(
-        listaRepository: ListaCompraRepository,
-        itemRepository: ItemListaRepository,
-        factory: ListaCompraFactory = provideListaCompraFactory()
-    ): ListaCompraUseCase {
-        return ListaCompraUseCaseImpl(listaRepository, itemRepository, factory)
+    fun provideShoppingListUseCase(
+        shoppingListRepository: ShoppingListRepository,
+        listItemRepository: ListItemRepository
+    ): ShoppingListUseCase {
+        return ShoppingListUseCaseImpl(shoppingListRepository, listItemRepository)
     }
     
-    fun provideItemListaUseCase(itemRepository: ItemListaRepository): ItemListaUseCase {
-        return ItemListaUseCaseImpl(itemRepository)
+    fun provideListItemUseCase(listItemRepository: ListItemRepository): ListItemUseCase {
+        return ListItemUseCaseImpl(listItemRepository)
     }
     
     // ViewModel Factory
-    fun provideListaCompraViewModelFactory(
-        listaUseCase: ListaCompraUseCase,
-        itemUseCase: ItemListaUseCase
-    ): ListaCompraViewModelFactory {
-        return ListaCompraViewModelFactory(listaUseCase, itemUseCase)
+    fun provideShoppingListViewModelFactory(
+        shoppingListUseCase: ShoppingListUseCase,
+        listItemUseCase: ListItemUseCase
+    ): ShoppingListViewModelFactory {
+        return ShoppingListViewModelFactory(shoppingListUseCase, listItemUseCase)
     }
     
     // ViewModel
-    fun provideListaCompraViewModel(
-        listaUseCase: ListaCompraUseCase,
-        itemUseCase: ItemListaUseCase
-    ): ListaCompraViewModel {
-        return ListaCompraViewModel(listaUseCase, itemUseCase)
+    fun provideShoppingListViewModel(
+        shoppingListUseCase: ShoppingListUseCase,
+        listItemUseCase: ListItemUseCase
+    ): ShoppingListViewModel {
+        return ShoppingListViewModel(shoppingListUseCase, listItemUseCase)
     }
 } 
