@@ -85,9 +85,13 @@ import androidx.compose.ui.layout.ContentScale
 import com.google.accompanist.pager.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.zIndex
+import androidx.compose.ui.graphics.Color
 import com.lourenc.trolly.presentation.theme.CoralPrimary
+import com.lourenc.trolly.presentation.theme.EditBlue
+import com.lourenc.trolly.presentation.theme.CompleteGreen
+import com.lourenc.trolly.presentation.screens.AddShoppingListModal
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -366,8 +370,8 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
         
 
         if (showAddListModal) {
-            AddShoppingListScreen(
-                navController = navController,
+            AddShoppingListModal(
+                onDismiss = { showAddListModal = false },
                 viewModel = viewModel
             )
         }
@@ -450,7 +454,7 @@ fun HomeListCard(
                         Icon(
                             Icons.Default.Edit,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = EditBlue
                         )
                     },
                     modifier = Modifier.clickable {
@@ -467,7 +471,7 @@ fun HomeListCard(
                             Icon(
                                 Icons.Default.Check,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = CompleteGreen
                             )
                         },
                         modifier = Modifier.clickable {

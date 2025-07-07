@@ -12,7 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -24,6 +24,8 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 import com.lourenc.trolly.utils.ShoppingListFormatter
 import com.lourenc.trolly.presentation.theme.*
+import com.lourenc.trolly.presentation.theme.EditBlue
+import com.lourenc.trolly.presentation.theme.CompleteGreen
 import androidx.compose.material3.ExperimentalMaterial3Api
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,7 +92,8 @@ fun ShoppingListsScreen(navController: NavController, viewModel: ShoppingListVie
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = { showAddListModal = true },
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -354,7 +357,7 @@ fun ShoppingListCard(
                         Icon(
                             Icons.Default.Edit,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = EditBlue
                         )
                     },
                     modifier = Modifier.clickable {
@@ -371,7 +374,7 @@ fun ShoppingListCard(
                             Icon(
                                 Icons.Default.Check,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = CompleteGreen
                             )
                         },
                         modifier = Modifier.clickable {

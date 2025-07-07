@@ -21,12 +21,13 @@ import com.lourenc.trolly.presentation.viewmodel.ShoppingListViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import java.text.NumberFormat
 import java.util.*
 import com.lourenc.trolly.presentation.theme.*
+import com.lourenc.trolly.presentation.theme.EditBlue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -259,7 +260,7 @@ fun ItemCard(
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "Editar",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = EditBlue
                         )
                     }
                     IconButton(

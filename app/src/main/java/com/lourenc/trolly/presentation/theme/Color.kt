@@ -27,16 +27,14 @@ val OnSuccess = Color(0xFFFFFFFF)
 val SuccessDark = Color(0xFF27AE60)
 val OnSuccessDark = Color(0xFFFFFFFF)
 val OnErrorDark = Color(0xFFFFFFFF)
-val Edit = Color(0xFF0F25AA)
+
+// Cores para ícones de ação (mesmas para ambos os temas)
+val EditBlue = Color(0xFF2196F3) // Azul para ícone de editar
+val CompleteGreen = Color(0xFF4CAF50) // Verde para ícone de concluído
+val EditBlueDark = EditBlue // Mesma cor para dark
+val CompleteGreenDark = CompleteGreen // Mesma cor para dark
 
 
-data class ExtraColors(
-    val success: Color
-)
 
-// Crie uma CompositionLocal para acesso
-val LocalExtraColors = compositionLocalOf {
-    ExtraColors(
-        success = Success // fallback
-    )
-}
+
+
