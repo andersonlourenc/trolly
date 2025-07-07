@@ -288,11 +288,26 @@ fun ItemCard(
                     .fillMaxWidth()
                     .padding(TrollySpacing.lg)
             ) {
-                Text(
-                    text = "Editar Item",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Editar Item",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    IconButton(
+                        onClick = { showEditSheet = false }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Fechar",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
                 
                 Spacer(modifier = Modifier.height(TrollySpacing.md))
                 
