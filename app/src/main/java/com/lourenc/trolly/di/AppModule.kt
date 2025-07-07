@@ -1,11 +1,16 @@
 package com.lourenc.trolly.di
 
 import com.lourenc.trolly.data.local.dao.ListItemDao
+import com.lourenc.trolly.data.local.dao.MarketProductDao
 import com.lourenc.trolly.data.local.dao.ShoppingListDao
 import com.lourenc.trolly.data.repository.ListItemRepositoryImpl
+import com.lourenc.trolly.data.repository.MarketProductRepositoryImpl
 import com.lourenc.trolly.data.repository.ShoppingListRepositoryImpl
 import com.lourenc.trolly.domain.repository.ListItemRepository
+import com.lourenc.trolly.domain.repository.MarketProductRepository
 import com.lourenc.trolly.domain.repository.ShoppingListRepository
+import com.lourenc.trolly.domain.usecase.BulkListUseCase
+import com.lourenc.trolly.domain.usecase.BulkListUseCaseImpl
 import com.lourenc.trolly.domain.usecase.ListItemUseCase
 import com.lourenc.trolly.domain.usecase.ShoppingListUseCase
 import com.lourenc.trolly.domain.usecase.ListItemUseCaseImpl
@@ -20,8 +25,15 @@ object AppModule {
         return ShoppingListRepositoryImpl(shoppingListDao)
     }
     
-    fun provideListItemRepository(listItemDao: ListItemDao): ListItemRepository {
-        return ListItemRepositoryImpl(listItemDao)
+    fun provideMarketProductRepository(marketProductDao: MarketProductDao): MarketProductRepository {
+        return MarketProductRepositoryImpl(marketProductDao)
+    }
+    
+    fun provideListItemRepository(
+        listItemDao: ListItemDao,
+        marketProductRepository: MarketProductRepository
+    ): ListItemRepository {
+        return ListItemRepositoryImpl(listItemDao, marketProductRepository)
     }
     
 
@@ -36,6 +48,13 @@ object AppModule {
     
     fun provideListItemUseCase(listItemRepository: ListItemRepository): ListItemUseCase {
         return ListItemUseCaseImpl(listItemRepository)
+    }
+    
+    fun provideBulkListUseCase(
+        shoppingListRepository: ShoppingListRepository,
+        listItemRepository: ListItemRepository
+    ): BulkListUseCase {
+        return BulkListUseCaseImpl(shoppingListRepository, listItemRepository)
     }
     
     // ViewModel Factory

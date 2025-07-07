@@ -251,8 +251,14 @@ class ShoppingListViewModel(
     
     // Pesquisar produtos
     fun searchProducts(term: String) {
-        val products = listItemUseCase.searchProducts(term)
-        _filteredProducts.value = products
+        viewModelScope.launch {
+            try {
+                val products = listItemUseCase.searchProducts(term)
+                _filteredProducts.value = products
+            } catch (e: Exception) {
+                _errorMessage.value = "Erro ao buscar produtos: ${e.message}"
+            }
+        }
     }
     
     // Converter produto para item de lista

@@ -91,7 +91,7 @@ class ListItemUseCaseImpl(
         }
     }
 
-    override fun searchProducts(term: String): List<MarketProduct> {
+    override suspend fun searchProducts(term: String): List<MarketProduct> {
         return itemRepository.filterProducts(term)
     }
 

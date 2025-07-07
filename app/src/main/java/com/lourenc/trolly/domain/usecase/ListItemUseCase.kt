@@ -14,6 +14,6 @@ interface ListItemUseCase {
     suspend fun calculateListTotal(listId: Int): ListItemResult
     suspend fun getPurchasedItems(listId: Int): ListItemResult
     suspend fun getUnpurchasedItems(listId: Int): ListItemResult
-    fun searchProducts(term: String): List<MarketProduct>
+    suspend fun searchProducts(term: String): List<MarketProduct>
     fun convertProductToItem(product: MarketProduct, listId: Int, quantity: Int = 1): ListItem
 } 

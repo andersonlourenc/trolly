@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.lourenc.trolly.presentation.screens.*
 import com.lourenc.trolly.presentation.viewmodel.ShoppingListViewModel
 import com.lourenc.trolly.presentation.viewmodel.ShoppingListViewModelFactory
+import com.lourenc.trolly.domain.usecase.BulkListUseCase
 import com.lourenc.trolly.presentation.theme.TrollyTheme
 import androidx.core.view.WindowCompat
 import android.os.Build
@@ -89,6 +90,10 @@ fun AppNavigator() {
             }
             composable("editProfile") {
                 EditProfileScreen(navController)
+            }
+            composable("bulkList") {
+                val trollyApp = context.applicationContext as TrollyApp
+                BulkListScreen(navController, trollyApp.bulkListUseCase)
             }
         }
     }

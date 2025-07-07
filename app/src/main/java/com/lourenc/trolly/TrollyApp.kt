@@ -6,20 +6,29 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.lourenc.trolly.data.local.db.AppDatabase
 import com.lourenc.trolly.data.repository.ListItemRepositoryImpl
+import com.lourenc.trolly.data.repository.MarketProductRepositoryImpl
 import com.lourenc.trolly.data.repository.ShoppingListRepositoryImpl
 import com.lourenc.trolly.domain.repository.ListItemRepository
+import com.lourenc.trolly.domain.repository.MarketProductRepository
 import com.lourenc.trolly.domain.repository.ShoppingListRepository
+import com.lourenc.trolly.domain.usecase.BulkListUseCase
 import com.lourenc.trolly.domain.usecase.ListItemUseCase
 import com.lourenc.trolly.domain.usecase.ShoppingListUseCase
 import com.lourenc.trolly.domain.usecase.ListItemUseCaseImpl
 import com.lourenc.trolly.domain.usecase.ShoppingListUseCaseImpl
 import com.lourenc.trolly.di.AppModule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class TrollyApp : Application() {
     lateinit var database: AppDatabase
         private set
         
     lateinit var shoppingListRepository: ShoppingListRepository
+        private set
+        
+    lateinit var marketProductRepository: MarketProductRepository
         private set
         
     lateinit var listItemRepository: ListItemRepository
@@ -29,6 +38,9 @@ class TrollyApp : Application() {
         private set
         
     lateinit var listItemUseCase: ListItemUseCase
+        private set
+        
+    lateinit var bulkListUseCase: BulkListUseCase
         private set
 
     override fun onCreate() {
@@ -51,14 +63,27 @@ class TrollyApp : Application() {
             // Inicializa repositórios usando AppModule
             Log.d("TrollyApp", "Starting repository creation...")
             shoppingListRepository = AppModule.provideShoppingListRepository(database.shoppingListDao())
-            listItemRepository = AppModule.provideListItemRepository(database.listItemDao())
+            marketProductRepository = AppModule.provideMarketProductRepository(database.marketProductDao())
+            listItemRepository = AppModule.provideListItemRepository(database.listItemDao(), marketProductRepository)
             Log.d("TrollyApp", "Repositories created successfully")
             
             // Inicializa use cases usando AppModule
             Log.d("TrollyApp", "Starting use case creation...")
             shoppingListUseCase = AppModule.provideShoppingListUseCase(shoppingListRepository, listItemRepository)
             listItemUseCase = AppModule.provideListItemUseCase(listItemRepository)
+            bulkListUseCase = AppModule.provideBulkListUseCase(shoppingListRepository, listItemRepository)
             Log.d("TrollyApp", "Use cases created successfully")
+            
+            // Inicializa produtos padrão
+            Log.d("TrollyApp", "Initializing default products...")
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    marketProductRepository.initializeDefaultProducts()
+                    Log.d("TrollyApp", "Default products initialized successfully")
+                } catch (e: Exception) {
+                    Log.e("TrollyApp", "Error initializing default products", e)
+                }
+            }
             
             Log.d("TrollyApp", "Database, repositories and use cases initialized successfully")
         } catch (e: Exception) {

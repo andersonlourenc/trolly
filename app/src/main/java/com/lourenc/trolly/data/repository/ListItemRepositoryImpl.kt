@@ -4,8 +4,12 @@ import com.lourenc.trolly.data.local.dao.ListItemDao
 import com.lourenc.trolly.data.local.entity.ListItem
 import com.lourenc.trolly.data.local.entity.MarketProduct
 import com.lourenc.trolly.domain.repository.ListItemRepository
+import com.lourenc.trolly.domain.repository.MarketProductRepository
 
-class ListItemRepositoryImpl(private val itemDao: ListItemDao) : ListItemRepository {
+class ListItemRepositoryImpl(
+    private val itemDao: ListItemDao,
+    private val marketProductRepository: MarketProductRepository
+) : ListItemRepository {
     
     override suspend fun insertItem(item: ListItem) {
         itemDao.insert(item)
@@ -55,11 +59,11 @@ class ListItemRepositoryImpl(private val itemDao: ListItemDao) : ListItemReposit
         return items.sumOf { it.unitPrice * it.quantity }
     }
     
-    override fun getPredefinedProducts(): List<MarketProduct> {
-        return emptyList() // Implement as needed
+    override suspend fun getPredefinedProducts(): List<MarketProduct> {
+        return marketProductRepository.getAllProducts()
     }
     
-    override fun filterProducts(term: String): List<MarketProduct> {
-        return emptyList() // Implement as needed
+    override suspend fun filterProducts(term: String): List<MarketProduct> {
+        return marketProductRepository.searchProducts(term)
     }
 } 

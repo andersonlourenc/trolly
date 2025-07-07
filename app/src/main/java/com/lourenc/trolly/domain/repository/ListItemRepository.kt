@@ -13,6 +13,6 @@ interface ListItemRepository {
     suspend fun markItemAsPurchased(itemId: Int, purchased: Boolean)
     suspend fun calculateListTotal(listId: Int): Double
     suspend fun addOrIncrementItem(item: ListItem): ListItem
-    fun getPredefinedProducts(): List<MarketProduct>
-    fun filterProducts(term: String): List<MarketProduct>
+    suspend fun getPredefinedProducts(): List<MarketProduct>
+    suspend fun filterProducts(term: String): List<MarketProduct>
 } 

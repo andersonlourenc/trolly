@@ -6,18 +6,21 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.lourenc.trolly.data.local.dao.ListItemDao
+import com.lourenc.trolly.data.local.dao.MarketProductDao
 import com.lourenc.trolly.data.local.dao.ShoppingListDao
 import com.lourenc.trolly.data.local.entity.ListItem
+import com.lourenc.trolly.data.local.entity.MarketProduct
 import com.lourenc.trolly.data.local.entity.ShoppingList
 
 @Database(
-    entities = [ShoppingList::class, ListItem::class],
-    version = 2,
+    entities = [ShoppingList::class, ListItem::class, MarketProduct::class],
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun shoppingListDao(): ShoppingListDao
     abstract fun listItemDao(): ListItemDao
+    abstract fun marketProductDao(): MarketProductDao
 
     companion object {
         @Volatile
