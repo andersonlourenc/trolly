@@ -1,4 +1,4 @@
-package com.lourenc.trolly.presentation.theme
+    package com.lourenc.trolly.presentation.theme
 
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
@@ -21,7 +21,7 @@ val DarkBackground = Color(0xFF1C1C1E)
 val DarkSurface = Color(0xFF2C2C2E)
 val ErrorDark = Color(0xFFC0392B)
 
-// Mantendo o que não existe no novo padrão
+
 val Success = Color(0xFF2ECC71)
 val OnSuccess = Color(0xFFFFFFFF)
 val SuccessDark = Color(0xFF27AE60)

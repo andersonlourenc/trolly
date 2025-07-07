@@ -276,12 +276,7 @@ fun StatisticsCards(
                 title = "Gasto Mensal",
                 value = ShoppingListFormatter.formatValue(monthlyExpense),
                 icon = Icons.Default.TrendingUp,
-                gradient = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFF667eea),
-                        Color(0xFF764ba2)
-                    )
-                ),
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(1f)
             )
             
@@ -289,12 +284,7 @@ fun StatisticsCards(
                 title = "Última Lista",
                 value = ShoppingListFormatter.formatValue(lastListValue),
                 icon = Icons.Default.ShoppingCart,
-                gradient = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFFf093fb),
-                        Color(0xFFf5576c)
-                    )
-                ),
+                color = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -306,12 +296,7 @@ fun StatisticsCards(
                 title = "Total de Listas",
                 value = "$totalLists",
                 icon = Icons.Default.List,
-                gradient = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFF4facfe),
-                        Color(0xFF00f2fe)
-                    )
-                ),
+                color = Color(0xFF4facfe),
                 modifier = Modifier.weight(1f)
             )
             
@@ -319,12 +304,7 @@ fun StatisticsCards(
                 title = "Média por Lista",
                 value = ShoppingListFormatter.formatValue(averageListValue),
                 icon = Icons.Default.Analytics,
-                gradient = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFF43e97b),
-                        Color(0xFF38f9d7)
-                    )
-                ),
+                color = Color(0xFF43e97b),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -336,7 +316,7 @@ fun StatCard(
     title: String,
     value: String,
     icon: ImageVector,
-    gradient: Brush,
+    color: Color,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -345,44 +325,39 @@ fun StatCard(
             .shadow(4.dp, RoundedCornerShape(12.dp)),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
+            containerColor = color
         )
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(gradient)
-                .padding(TrollySpacing.md)
+                .padding(TrollySpacing.md),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(TrollySpacing.xs))
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.9f),
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-                
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(TrollySpacing.xs))
                 Text(
-                    text = value,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
+                    text = title,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.9f),
+                    fontWeight = FontWeight.Medium
                 )
             }
+            
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
@@ -438,12 +413,7 @@ fun DetailedExpenseAnalysis(
                             .width(40.dp)
                             .height((maxHeight * heightRatio).dp)
                             .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(
-                                        Color(0xFF667eea),
-                                        Color(0xFF764ba2)
-                                    )
-                                ),
+                                MaterialTheme.colorScheme.primary,
                                 RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
                             )
                     )
@@ -468,12 +438,7 @@ fun DetailedExpenseAnalysis(
                             .width(40.dp)
                             .height((maxHeight * heightRatio).dp)
                             .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(
-                                        Color(0xFFf093fb),
-                                        Color(0xFFf5576c)
-                                    )
-                                ),
+                                MaterialTheme.colorScheme.secondary,
                                 RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
                             )
                     )
@@ -498,14 +463,14 @@ fun DetailedExpenseAnalysis(
                     title = "Gasto Mensal",
                     value = ShoppingListFormatter.formatValue(monthlyExpense),
                     icon = Icons.Default.TrendingUp,
-                    color = Color(0xFF667eea)
+                    color = MaterialTheme.colorScheme.primary
                 )
                 
                 ExpenseMetric(
                     title = "Última Lista",
                     value = ShoppingListFormatter.formatValue(lastListValue),
                     icon = Icons.Default.ShoppingCart,
-                    color = Color(0xFFf093fb)
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
             
