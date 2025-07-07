@@ -193,7 +193,7 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
 
                 Text(
                     text = "Olá, $name",
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.weight(1f)
                 )
@@ -297,7 +297,7 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
             ) {
                         Text(
                             text = "Suas Listas",
-                            style = MaterialTheme.typography.headlineSmall,
+                            style = MaterialTheme.typography.headlineMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
 
@@ -306,7 +306,7 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                     if (isLoading) {
                             Text(
                                 text = "Carregando...",
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
                     } else if (lists.isEmpty()) {
@@ -328,12 +328,12 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                                     Spacer(modifier = Modifier.height(TrollySpacing.md))
                                     Text(
                                         text = "Nenhuma lista criada",
-                                        style = MaterialTheme.typography.titleMedium,
+                                        style = MaterialTheme.typography.titleLarge,
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                     )
                                     Text(
                                         text = "Toque no botão + para criar sua primeira lista",
-                                        style = MaterialTheme.typography.bodyMedium,
+                                        style = MaterialTheme.typography.bodyLarge,
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                                     )
                             }
@@ -343,7 +343,7 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
+                            verticalArrangement = Arrangement.spacedBy(TrollySpacing.md)
                         ) {
                         items(lists) { shoppingList ->
                             HomeListCard(
@@ -403,14 +403,14 @@ fun HomeListCard(
             headlineContent = {
                 Text(
                     text = shoppingList.name,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             },
             supportingContent = {
                 Text(
                     text = "Criada em ${ShoppingListFormatter.formatDate(shoppingList.creationDate)}",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
             },
@@ -421,11 +421,14 @@ fun HomeListCard(
                     Icon(
                         imageVector = Icons.Default.MoreVert,
                         contentDescription = "Mais opções",
-                        tint = MaterialTheme.colorScheme.onSurface
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(28.dp)
                     )
                 }
             },
-            modifier = Modifier.clickable { onNavigate(shoppingList.id) }
+            modifier = Modifier
+                .clickable { onNavigate(shoppingList.id) }
+                .padding(vertical = 8.dp)
         )
     }
 
@@ -442,7 +445,7 @@ fun HomeListCard(
             ) {
                 Text(
                     text = "Opções da Lista",
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 
@@ -535,7 +538,7 @@ fun HomeListCard(
             ) {
                 Text(
                     text = "Editar Lista",
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 

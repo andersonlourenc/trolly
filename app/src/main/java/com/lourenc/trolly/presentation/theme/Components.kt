@@ -56,7 +56,7 @@ fun TrollyTopBar(
         // Título centralizado
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.align(Alignment.Center),
             textAlign = TextAlign.Center
@@ -113,8 +113,8 @@ fun TrollyCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         content()
     }
@@ -139,7 +139,7 @@ fun TrollyPrimaryButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onPrimary
         )
     }
@@ -172,7 +172,7 @@ fun TrollySecondaryButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelLarge
+            style = MaterialTheme.typography.titleMedium
         )
     }
 }
@@ -191,7 +191,7 @@ fun TrollyTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label) },
+        label = { Text(label, style = MaterialTheme.typography.bodyMedium) },
         modifier = modifier.fillMaxWidth(),
         enabled = enabled,
         singleLine = singleLine,
@@ -233,6 +233,7 @@ fun TrollyBottomNavigation(
                 label = {
                     Text(
                         "Home",
+                        style = MaterialTheme.typography.labelLarge,
                         color = if (currentRoute == "home") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 },
@@ -253,6 +254,7 @@ fun TrollyBottomNavigation(
                 label = {
                     Text(
                         "Listas",
+                        style = MaterialTheme.typography.labelLarge,
                         color = if (currentRoute == "shoppingLists") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 },
@@ -273,6 +275,7 @@ fun TrollyBottomNavigation(
                 label = {
                     Text(
                         "Insights",
+                        style = MaterialTheme.typography.labelLarge,
                         color = if (currentRoute == "insights") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 },
@@ -293,6 +296,7 @@ fun TrollyBottomNavigation(
                 label = {
                     Text(
                         "Perfil",
+                        style = MaterialTheme.typography.labelLarge,
                         color = if (currentRoute == "profile") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 },

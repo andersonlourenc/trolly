@@ -120,7 +120,7 @@ fun ShoppingListsScreen(navController: NavController, viewModel: ShoppingListVie
                         text = { 
                             Text(
                                 "Ativas (${activeLists.size})",
-                                style = MaterialTheme.typography.labelMedium
+                                style = MaterialTheme.typography.labelLarge
                             ) 
                         },
                         icon = { Icon(Icons.Default.ShoppingCart, contentDescription = null) }
@@ -131,7 +131,7 @@ fun ShoppingListsScreen(navController: NavController, viewModel: ShoppingListVie
                         text = { 
                             Text(
                                 "Concluídas (${completedLists.size})",
-                                style = MaterialTheme.typography.labelMedium
+                                style = MaterialTheme.typography.labelLarge
                             ) 
                         },
                         icon = { Icon(Icons.Default.History, contentDescription = null) }
@@ -192,7 +192,7 @@ fun ShoppingListsTabContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = TrollySpacing.md),
-        verticalArrangement = Arrangement.spacedBy(TrollySpacing.sm)
+        verticalArrangement = Arrangement.spacedBy(TrollySpacing.md)
     ) {
         item {
             Spacer(modifier = Modifier.height(TrollySpacing.md))
@@ -202,7 +202,7 @@ fun ShoppingListsTabContent(
             item {
                 Text(
                     text = "Carregando...",
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             }
@@ -226,7 +226,7 @@ fun ShoppingListsTabContent(
                         Spacer(modifier = Modifier.height(TrollySpacing.md))
                         Text(
                             text = if (showCompleteButton) "Nenhuma lista ativa" else "Nenhuma lista concluída",
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                         Text(
@@ -234,7 +234,7 @@ fun ShoppingListsTabContent(
                                 "Crie sua primeira lista de compras" 
                             else 
                                 "Nenhuma lista concluída ainda",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                         )
                     }
@@ -294,14 +294,14 @@ fun ShoppingListCard(
             headlineContent = {
                 Text(
                     text = shoppingList.name,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             },
             supportingContent = {
                 Text(
                     text = "Criada em ${viewModel.formatDate(shoppingList.creationDate)}",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
             },
@@ -313,7 +313,7 @@ fun ShoppingListCard(
                     if (listValue.isNotEmpty()) {
                         Text(
                             text = listValue,
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -323,12 +323,15 @@ fun ShoppingListCard(
                         Icon(
                             imageVector = Icons.Default.MoreVert,
                             contentDescription = "Mais opções",
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(28.dp)
                         )
                     }
                 }
             },
-            modifier = Modifier.clickable { onNavigate(shoppingList.id) }
+            modifier = Modifier
+                .clickable { onNavigate(shoppingList.id) }
+                .padding(vertical = 8.dp)
         )
     }
 
@@ -345,7 +348,7 @@ fun ShoppingListCard(
             ) {
                 Text(
                     text = "Opções da Lista",
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 
