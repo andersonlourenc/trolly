@@ -126,7 +126,7 @@ fun EditProfileScreen(navController: NavController) {
                         )
                     }
                 }
-                // Overlay escuro mais transparente
+
                 Box(
                     modifier = Modifier
                         .matchParentSize()

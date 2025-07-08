@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
-// Componente de TopBar padronizado
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrollyTopBar(
@@ -38,7 +38,7 @@ fun TrollyTopBar(
 
 
     ) {
-        // Ícone de voltar à esquerda
+
         if (showBackButton && onBackClick != null) {
             Row(
                 modifier = Modifier
@@ -53,7 +53,7 @@ fun TrollyTopBar(
                 }
             }
         }
-        // Título centralizado
+
         Text(
             text = title,
             style = MaterialTheme.typography.headlineMedium,
@@ -61,7 +61,7 @@ fun TrollyTopBar(
             modifier = Modifier.align(Alignment.Center),
             textAlign = TextAlign.Center
         )
-        // Ações à direita
+
         Row(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
@@ -71,7 +71,7 @@ fun TrollyTopBar(
     }
 }
 
-// Componente de título centralizado para telas sem TopBar
+
 @Composable
 fun TrollyCenteredTitle(
     title: String,
@@ -102,25 +102,31 @@ fun TrollyCenteredTitle(
     }
 }
 
-// Componente de card padronizado
 @Composable
 fun TrollyCard(
     modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
     content: @Composable () -> Unit
 ) {
     Card(
         modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            containerColor = containerColor
+        )
     ) {
-        content()
+        Box( // Envolve o conteúdo com fundo uniforme
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(containerColor) // <-- aplica dentro também
+        ) {
+            content()
+        }
     }
 }
 
-// Componente de botão primário padronizado
+
 @Composable
 fun TrollyPrimaryButton(
     text: String,
@@ -145,7 +151,7 @@ fun TrollyPrimaryButton(
     }
 }
 
-// Componente de botão secundário padronizado
+
 @Composable
 fun TrollySecondaryButton(
     text: String,
@@ -177,7 +183,7 @@ fun TrollySecondaryButton(
     }
 }
 
-// Componente de campo de texto padronizado
+
 @Composable
 fun TrollyTextField(
     value: String,
@@ -310,7 +316,7 @@ fun TrollyBottomNavigation(
     }
 }
 
-// Espaçamentos padronizados
+
 object TrollySpacing {
     val xs = 4.dp
     val sm = 8.dp
@@ -320,7 +326,7 @@ object TrollySpacing {
     val xxl = 48.dp
 }
 
-// Bordas padronizadas
+
 object TrollyShapes {
     val small = RoundedCornerShape(8.dp)
     val medium = RoundedCornerShape(12.dp)

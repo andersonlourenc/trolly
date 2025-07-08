@@ -68,6 +68,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.toArgb
 import android.app.Activity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.runtime.SideEffect
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.offset
@@ -85,6 +86,7 @@ import androidx.compose.ui.layout.ContentScale
 import com.google.accompanist.pager.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ListItemDefaults
 
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.graphics.Color
@@ -129,7 +131,7 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
     val carouselImages = listOf(R.drawable.churras, R.drawable.niver, R.drawable.receita)
     val pagerState = rememberPagerState()
     val cardHeight = 200.dp
-    val cardOffset = -(cardHeight.value * 0.4).dp
+
         
         
         LaunchedEffect(errorMessage) {
@@ -154,7 +156,8 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
 
         val lists = activeLists
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)) {
 
         Surface(
             modifier = Modifier
@@ -342,11 +345,14 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
+
                                 .weight(1f),
                             verticalArrangement = Arrangement.spacedBy(TrollySpacing.md)
                         ) {
                         items(lists) { shoppingList ->
                             HomeListCard(
+
+
                                 shoppingList = shoppingList,
                                 onEdit = { updatedList: ShoppingList ->
                                     viewModel.updateShoppingList(updatedList)
@@ -395,7 +401,7 @@ fun HomeListCard(
     
     val sheetState = rememberModalBottomSheetState()
     val editSheetState = rememberModalBottomSheetState()
-    
+
     TrollyCard(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -428,9 +434,13 @@ fun HomeListCard(
             },
             modifier = Modifier
                 .clickable { onNavigate(shoppingList.id) }
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp),
+            colors = ListItemDefaults.colors(
+                containerColor = Color.Transparent
+            )
         )
     }
+
 
     if (showBottomSheet) {
         ModalBottomSheet(

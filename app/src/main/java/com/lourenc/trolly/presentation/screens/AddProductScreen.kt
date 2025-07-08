@@ -35,7 +35,7 @@ fun AddProductScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    // Inicializar com alguns produtos sugeridos
+
     LaunchedEffect(Unit) {
         viewModel.searchProducts("")
     }

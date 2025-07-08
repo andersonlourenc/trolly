@@ -27,6 +27,7 @@ import com.lourenc.trolly.presentation.theme.*
 import com.lourenc.trolly.presentation.theme.EditBlue
 import com.lourenc.trolly.presentation.theme.CompleteGreen
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -164,7 +165,7 @@ fun ShoppingListsScreen(navController: NavController, viewModel: ShoppingListVie
             }
         }
         
-        // Modal de adicionar lista
+
         if (showAddListModal) {
             AddShoppingListModal(
                 onDismiss = { showAddListModal = false },
@@ -192,7 +193,8 @@ fun ShoppingListsTabContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = TrollySpacing.md),
-        verticalArrangement = Arrangement.spacedBy(TrollySpacing.md)
+        verticalArrangement = Arrangement.spacedBy(TrollySpacing.md),
+
     ) {
         item {
             Spacer(modifier = Modifier.height(TrollySpacing.md))
@@ -331,7 +333,10 @@ fun ShoppingListCard(
             },
             modifier = Modifier
                 .clickable { onNavigate(shoppingList.id) }
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp),
+            colors = ListItemDefaults.colors(
+                containerColor = Color.Transparent
+            )
         )
     }
 

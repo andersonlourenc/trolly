@@ -50,7 +50,7 @@ fun InsightsScreen(navController: NavController, viewModel: ShoppingListViewMode
     val completedLists by viewModel.completedLists.observeAsState(emptyList())
     val isLoading by viewModel.isLoading.observeAsState(false)
     
-    // Debug: Log dos dados carregados
+
     LaunchedEffect(monthlyExpense, lastListValue, activeLists.size, completedLists.size) {
         println("DEBUG: Insights - Gasto mensal: $monthlyExpense")
         println("DEBUG: Insights - Última lista: $lastListValue")
@@ -58,16 +58,16 @@ fun InsightsScreen(navController: NavController, viewModel: ShoppingListViewMode
         println("DEBUG: Insights - Listas concluídas: ${completedLists.size}")
     }
     
-    // Carregar dados quando a tela for exibida
+
     LaunchedEffect(Unit) {
-        viewModel.loadLists() // Isso carrega tudo: listas ativas, concluídas, gasto mensal e última lista
+        viewModel.loadLists()
     }
     
-    // Dados calculados a partir das listas reais
+
     val totalLists = activeLists.size + completedLists.size
     val averageListValue = if (totalLists > 0) (monthlyExpense / totalLists) else 0.0
     
-    // Animações
+
     val infiniteTransition = rememberInfiniteTransition(label = "insights")
     val pulseAnimation by infiniteTransition.animateFloat(
         initialValue = 0.8f,
@@ -125,7 +125,7 @@ fun InsightsScreen(navController: NavController, viewModel: ShoppingListViewMode
                     .padding(horizontal = TrollySpacing.md),
                 verticalArrangement = Arrangement.spacedBy(TrollySpacing.lg)
             ) {
-            // Cards de estatísticas principais
+
             item {
                 AnimatedVisibility(
                     visible = true,
@@ -140,7 +140,7 @@ fun InsightsScreen(navController: NavController, viewModel: ShoppingListViewMode
                 }
             }
             
-            // Análise detalhada de gastos
+
             item {
                 AnimatedVisibility(
                     visible = true,
@@ -156,7 +156,7 @@ fun InsightsScreen(navController: NavController, viewModel: ShoppingListViewMode
                 }
             }
             
-            // Dicas personalizadas
+
             item {
                 AnimatedVisibility(
                     visible = true,
@@ -166,7 +166,7 @@ fun InsightsScreen(navController: NavController, viewModel: ShoppingListViewMode
                 }
             }
             
-            // Tendências e insights
+
             item {
                 AnimatedVisibility(
                     visible = true,
@@ -176,85 +176,11 @@ fun InsightsScreen(navController: NavController, viewModel: ShoppingListViewMode
                 }
             }
             
-            // Espaçamento final
+
             item {
                 Spacer(modifier = Modifier.height(TrollySpacing.xl))
             }
         }
-        }
-    }
-}
-
-@Composable
-fun WelcomeHeader(name: String, photoUrl: String?) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(8.dp, RoundedCornerShape(16.dp)),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
-                        )
-                    )
-                )
-                .padding(TrollySpacing.lg)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Avatar do usuário
-                Box(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (photoUrl != null) {
-                        // AsyncImage para foto do usuário
-                        Text(
-                            text = name.firstOrNull()?.uppercase() ?: "U",
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = null,
-                            modifier = Modifier.size(32.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-                
-                Spacer(modifier = Modifier.width(TrollySpacing.md))
-                
-                Column {
-                    Text(
-                        text = "Olá, $name! 👋",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Aqui estão seus insights de compras",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
-                }
-            }
         }
     }
 }
@@ -326,7 +252,8 @@ fun StatCard(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = color
-        )
+        ),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -362,8 +289,6 @@ fun StatCard(
     }
 }
 
-
-
 @Composable
 fun DetailedExpenseAnalysis(
     monthlyExpense: Double,
@@ -374,12 +299,12 @@ fun DetailedExpenseAnalysis(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .shadow(4.dp, RoundedCornerShape(16.dp)),
+            .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+            containerColor = MaterialTheme.colorScheme.onSecondaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
             modifier = Modifier
@@ -395,13 +320,13 @@ fun DetailedExpenseAnalysis(
             
             Spacer(modifier = Modifier.height(TrollySpacing.md))
             
-            // Gráfico de barras comparativo
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(TrollySpacing.md),
                 verticalAlignment = Alignment.Bottom
             ) {
-                // Barra do gasto mensal
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -476,7 +401,7 @@ fun DetailedExpenseAnalysis(
             
             Spacer(modifier = Modifier.height(TrollySpacing.md))
             
-            // Análise de padrões
+
             ExpensePatternAnalysis(
                 monthlyExpense = monthlyExpense,
                 lastListValue = lastListValue,
@@ -486,8 +411,7 @@ fun DetailedExpenseAnalysis(
             )
             
             Spacer(modifier = Modifier.height(TrollySpacing.md))
-            
-            // Comparação percentual
+
             if (monthlyExpense > 0 && lastListValue > 0) {
                 val percentage = ((lastListValue / monthlyExpense) * 100).toFloat()
                 Row(
@@ -567,8 +491,7 @@ fun ExpensePatternAnalysis(
         Spacer(modifier = Modifier.height(TrollySpacing.sm))
         
         val patterns = mutableListOf<String>()
-        
-        // Análise de gastos
+
         when {
             monthlyExpense > 1000 -> {
                 patterns.add("💰 Gasto mensal alto - considere compras em atacado")
@@ -581,7 +504,7 @@ fun ExpensePatternAnalysis(
             }
         }
         
-        // Análise de comparação
+
         if (monthlyExpense > 0 && lastListValue > 0) {
             when {
                 lastListValue > monthlyExpense * 0.8 -> {
@@ -596,7 +519,7 @@ fun ExpensePatternAnalysis(
             }
         }
         
-        // Análise de listas
+
         when {
             activeLists > completedLists -> {
                 patterns.add("📝 Mais listas ativas - finalize algumas")
@@ -629,12 +552,12 @@ fun ExpensePatternAnalysis(
 fun PersonalizedTipsCard(monthlyExpense: Double, activeLists: Int, completedLists: Int) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .shadow(4.dp, RoundedCornerShape(16.dp)),
+            .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+            containerColor = MaterialTheme.colorScheme.onSecondaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
             modifier = Modifier
@@ -663,7 +586,7 @@ fun PersonalizedTipsCard(monthlyExpense: Double, activeLists: Int, completedList
             
             val tips = mutableListOf<String>()
             
-            // Dicas baseadas no gasto mensal
+
             when {
                 monthlyExpense > 1000 -> {
                     tips.add("💡 Considere fazer compras em atacado para economizar")
@@ -716,12 +639,12 @@ fun PersonalizedTipsCard(monthlyExpense: Double, activeLists: Int, completedList
 fun TrendsAndInsightsCard(activeLists: Int, completedLists: Int) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .shadow(4.dp, RoundedCornerShape(16.dp)),
+            .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+            containerColor = MaterialTheme.colorScheme.onSecondaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
             modifier = Modifier

@@ -98,7 +98,7 @@ fun LaunchScreen(navController: NavController) {
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.logo),
+                    painter = painterResource(id = R.drawable.logo2),
                     contentDescription = "Logo",
                     modifier = Modifier
 
@@ -153,10 +153,11 @@ fun LaunchScreen(navController: NavController) {
 
                     modifier = Modifier.fillMaxWidth()
                         .height(48.dp),
+
                     shape = MaterialTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
                     ),
 
                     ) {
