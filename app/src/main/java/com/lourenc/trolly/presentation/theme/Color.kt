@@ -4,7 +4,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 
-val CoralPrimary = Color(0xFFF77564)
+val CoralPrimary = Color(0xFFE8604E)
 val CoralVariant = Color(0xFFFFA091)
 val PeachSecondary = Color(0xFFF8D082)
 val PeachSecondaryVariant = Color(0xFFFFE3AC)
