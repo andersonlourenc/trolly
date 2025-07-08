@@ -7,32 +7,51 @@ Trolly é um aplicativo de listas de compras inteligente que ajuda você a plane
 ## 📱 Prints do App
 
 ### Tela de Login
-Permite login via e-mail ou Google.
-![Tela de Login](./screenshots/Screenshot_20250708_125810.png)
+
+<img src="./app/screenshots/login.png" width="300"/>
+
+Login via e-mail ou Google.
+Permitir que o usuário entre de forma simples e rápida com seu e-mail ou conta Google, garantindo uma experiência personalizada nas próximas interações.
 
 ---
 
 ### Home
+
+
+<img src="./app/screenshots/home.png" width="300"/>
 Exibe saudações personalizadas, banners temáticos e listas recentes.
-![Home](./screenshots/Screenshot_20250708_125716.png)
+Ser a central de navegação e inspiração, com sugestões de listas temáticas e acesso rápido às listas criadas.
+
+
+
+
 
 ---
 
 ### Minhas Listas
+
+
+<img src="./app/screenshots/listas.png" width="300"/>
 Visualização de listas ativas e concluídas com data de criação.
-![Minhas Listas](./screenshots/Screenshot_20250708_125730.png)
+Gerenciar todas as listas criadas pelo usuário, facilitando a visualização do que está em andamento e do histórico de compras.
 
 ---
 
 ### Detalhes da Lista
+
+
+<img src="./app/screenshots/sugestao.png" width="300"/>
 Adição de produtos, sugestões inteligentes com base no histórico, edição de itens e subtotal por produto.
-![Detalhes da Lista](./screenshots/Screenshot_20250708_125810.png)
+Permitir ao usuário montar e ajustar sua lista de compras com praticidade, contando com ajuda da IA para otimizar tempo e lembrar de itens recorrentes.
 
 ---
 
 ### Tela de Insights
+
+
+<img src="./app/screenshots/insights.png" width="300"/>
 Resumo de gastos mensais, média por lista, total de listas e padrões identificados.
-![Tela de Insights](./screenshots/Screenshot_20250708_125829.png)
+Oferecer uma análise visual e inteligente dos hábitos de consumo, incentivando controle financeiro e decisões mais conscientes.
 
 ---
 
