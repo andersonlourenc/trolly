@@ -41,7 +41,9 @@ fun InsightsScreen(navController: NavController, viewModel: ShoppingListViewMode
     if (user == null) {
         return
     }
-    
+
+    SetStatusBarColor(Color.White, darkIcons = true)
+
     val name = user.displayName ?: "Usuário"
     val photoUrl = user.photoUrl?.toString()
     val monthlyExpense by viewModel.monthlyExpense.observeAsState(0.0)

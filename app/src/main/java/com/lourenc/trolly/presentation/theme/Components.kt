@@ -15,9 +15,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource.Companion.SideEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+
+
+import androidx.compose.runtime.SideEffect
+
+
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import android.app.Activity
+import androidx.compose.ui.graphics.toArgb
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -332,4 +342,16 @@ object TrollyShapes {
     val medium = RoundedCornerShape(12.dp)
     val large = RoundedCornerShape(16.dp)
     val extraLarge = RoundedCornerShape(24.dp)
-} 
+}
+
+
+@Composable
+fun SetStatusBarColor(color: Color, darkIcons: Boolean) {
+    val context = LocalContext.current
+    SideEffect {
+        val window = (context as? Activity)?.window ?: return@SideEffect
+        window.statusBarColor = color.toArgb()
+        WindowCompat.getInsetsController(window, window.decorView)
+            .isAppearanceLightStatusBars = darkIcons
+    }
+}

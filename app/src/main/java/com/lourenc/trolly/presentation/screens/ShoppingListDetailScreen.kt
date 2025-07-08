@@ -116,9 +116,9 @@ fun ShoppingListDetailScreen(navController: NavController, viewModel: ShoppingLi
                     color = MaterialTheme.colorScheme.surface,
                     shadowElevation = 8.dp
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
@@ -142,16 +142,16 @@ fun ShoppingListDetailScreen(navController: NavController, viewModel: ShoppingLi
                         
                         // Botão "Concluir Lista" à direita (quando todos os itens estão comprados)
                         if (items.all { it.purchased }) {
-                            TrollyPrimaryButton(
-                                text = "Concluir Lista",
-                                onClick = {
-                                    viewModel.markListAsCompleted(listId)
-                                    navController.navigate("home") {
-                                        popUpTo("home") { inclusive = true }
-                                    }
-                                },
+                    TrollyPrimaryButton(
+                        text = "Concluir Lista",
+                        onClick = {
+                            viewModel.markListAsCompleted(listId)
+                            navController.navigate("home") {
+                                popUpTo("home") { inclusive = true }
+                            }
+                        },
                                 modifier = Modifier.width(160.dp)
-                            )
+                    )
                         }
                     }
                 }

@@ -38,9 +38,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.lourenc.trolly.auth.getGoogleSignInClient
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.ui.graphics.Color
+import com.lourenc.trolly.presentation.theme.SetStatusBarColor
 
 @Composable
 fun LaunchScreen(navController: NavController) {
+
+    SetStatusBarColor(Color.White, darkIcons = true)
+
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
 

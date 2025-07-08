@@ -66,6 +66,8 @@ fun EditProfileScreen(navController: NavController) {
         }
     }
 
+    SetStatusBarColor(Color.White, darkIcons = true)
+
     Scaffold(
         topBar = {
             TrollyTopBar(

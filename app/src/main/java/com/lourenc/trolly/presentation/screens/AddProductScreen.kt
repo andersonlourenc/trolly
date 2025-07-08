@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -36,6 +37,8 @@ fun AddProductScreen(
     val filteredProducts by viewModel.filteredProducts.observeAsState(emptyList())
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+
+    SetStatusBarColor(Color.White, darkIcons = true)
 
 
     LaunchedEffect(Unit) {
@@ -152,4 +155,4 @@ fun ProductItemCard(
         }
 
     }
-}
+    }

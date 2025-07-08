@@ -29,7 +29,7 @@ fun ProductSuggestionsCard(
     
     TrollyCard(
         modifier = modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.primaryContainer
+        containerColor = MaterialTheme.colorScheme.secondaryContainer
     ) {
         Column(
             modifier = Modifier

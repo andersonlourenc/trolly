@@ -39,6 +39,7 @@ fun ProfileScreen(navController: NavController) {
     val email = user.email ?: ""
     val photoUrl = user.photoUrl?.toString()
 
+    SetStatusBarColor(Color.White, darkIcons = true)
     Scaffold(
         topBar = {
             TrollyTopBar(

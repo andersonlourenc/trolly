@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="TrollyApp">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-07-08T04:51:38.393120046Z">
+        <DropdownSelection timestamp="2025-07-08T05:03:44.294392730Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=BY6HRS8XGIQGTOGQ" />

@@ -62,6 +62,7 @@ import com.lourenc.trolly.auth.loginWithEmail
 import android.widget.Toast
 import com.lourenc.trolly.ui.DividerWithText
 import android.util.Log
+import com.lourenc.trolly.presentation.theme.SetStatusBarColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -109,6 +110,7 @@ fun LoginScreen(navController: NavController, context: Context) {
     var passwordState by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    SetStatusBarColor(Color.White, darkIcons = true)
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
