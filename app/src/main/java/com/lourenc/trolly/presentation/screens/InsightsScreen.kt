@@ -118,15 +118,13 @@ fun InsightsScreen(navController: NavController, viewModel: ShoppingListViewMode
                 }
             }
         } else {
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(horizontal = TrollySpacing.md),
-                verticalArrangement = Arrangement.spacedBy(TrollySpacing.lg)
+                    .padding(horizontal = TrollySpacing.md)
             ) {
-
-            item {
+                // Cards de estatísticas fixos no topo
                 AnimatedVisibility(
                     visible = true,
                     enter = fadeIn() + slideInHorizontally()
@@ -138,49 +136,56 @@ fun InsightsScreen(navController: NavController, viewModel: ShoppingListViewMode
                         averageListValue = averageListValue
                     )
                 }
-            }
-            
-
-            item {
-                AnimatedVisibility(
-                    visible = true,
-                    enter = fadeIn() + expandVertically()
-                ) {
-                    DetailedExpenseAnalysis(
-                        monthlyExpense = monthlyExpense,
-                        lastListValue = lastListValue,
-                        activeLists = activeLists.size,
-                        completedLists = completedLists.size,
-                        totalLists = totalLists
-                    )
-                }
-            }
-            
-
-            item {
-                AnimatedVisibility(
-                    visible = true,
-                    enter = fadeIn() + slideInVertically()
-                ) {
-                    PersonalizedTipsCard(monthlyExpense, activeLists.size, completedLists.size)
-                }
-            }
-            
-
-            item {
-                AnimatedVisibility(
-                    visible = true,
-                    enter = fadeIn() + slideInVertically(initialOffsetY = { it * 1 })
-                ) {
-                    TrendsAndInsightsCard(activeLists.size, completedLists.size)
-                }
-            }
-            
-
-            item {
+                
                 Spacer(modifier = Modifier.height(TrollySpacing.xl))
+                
+                // Conteúdo rolável
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(TrollySpacing.lg)
+                ) {
+            
+
+                    item {
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn() + expandVertically()
+                        ) {
+                            DetailedExpenseAnalysis(
+                                monthlyExpense = monthlyExpense,
+                                lastListValue = lastListValue,
+                                activeLists = activeLists.size,
+                                completedLists = completedLists.size,
+                                totalLists = totalLists
+                            )
+                        }
+                    }
+                    
+
+                    item {
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn() + slideInVertically()
+                        ) {
+                            PersonalizedTipsCard(monthlyExpense, activeLists.size, completedLists.size)
+                        }
+                    }
+                    
+
+                    item {
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn() + slideInVertically(initialOffsetY = { it * 1 })
+                        ) {
+                            TrendsAndInsightsCard(activeLists.size, completedLists.size)
+                        }
+                    }
+                    
+
+                    item {
+                        Spacer(modifier = Modifier.height(TrollySpacing.xl))
+                    }
+                }
             }
-        }
         }
     }
 }
