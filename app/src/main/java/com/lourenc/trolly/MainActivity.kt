@@ -43,7 +43,7 @@ fun AppNavigator() {
     // Log para debug
     android.util.Log.d("MainActivity", "AppNavigator - Iniciando")
     
-    val factory = ShoppingListViewModelFactory(trollyApp.shoppingListUseCase, trollyApp.listItemUseCase)
+    val factory = ShoppingListViewModelFactory(trollyApp.shoppingListUseCase, trollyApp.listItemUseCase, trollyApp.productSuggestionUseCase)
     
     android.util.Log.d("MainActivity", "AppNavigator - Factory criada com sucesso")
     

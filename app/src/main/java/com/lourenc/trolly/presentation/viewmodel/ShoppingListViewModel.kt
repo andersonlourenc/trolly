@@ -13,12 +13,15 @@ import com.lourenc.trolly.domain.result.ListItemResult
 import com.lourenc.trolly.domain.result.ShoppingListResult
 import com.lourenc.trolly.domain.usecase.ListItemUseCase
 import com.lourenc.trolly.domain.usecase.ShoppingListUseCase
+import com.lourenc.trolly.domain.usecase.ProductSuggestionUseCase
+import com.lourenc.trolly.domain.usecase.ProductSuggestion
 import com.lourenc.trolly.utils.ShoppingListFormatter
 import java.util.Calendar
 
 class ShoppingListViewModel(
     private val shoppingListUseCase: ShoppingListUseCase,
-    private val listItemUseCase: ListItemUseCase
+    private val listItemUseCase: ListItemUseCase,
+    private val productSuggestionUseCase: ProductSuggestionUseCase? = null
 ) : ViewModel() {
 
     // LiveData para listas
@@ -253,8 +256,8 @@ class ShoppingListViewModel(
     fun searchProducts(term: String) {
         viewModelScope.launch {
             try {
-                val products = listItemUseCase.searchProducts(term)
-                _filteredProducts.value = products
+        val products = listItemUseCase.searchProducts(term)
+        _filteredProducts.value = products
             } catch (e: Exception) {
                 _errorMessage.value = "Erro ao buscar produtos: ${e.message}"
             }
@@ -498,6 +501,43 @@ class ShoppingListViewModel(
         viewModelScope.launch {
             val value = calculateRealListValue(listId)
             onResult(value)
+        }
+    }
+
+    // Métodos para sugestões de produtos
+    suspend fun getProductSuggestions(currentItems: List<ListItem>): List<ProductSuggestion> {
+        return try {
+            productSuggestionUseCase?.getProductSuggestions(currentItems) ?: emptyList()
+        } catch (e: Exception) {
+            println("Erro ao obter sugestões: ${e.message}")
+            emptyList()
+        }
+    }
+    
+    suspend fun addProductFromSuggestion(listId: Int, suggestion: ProductSuggestion) {
+        try {
+            val newItem = ListItem(
+                shoppingListId = listId,
+                name = suggestion.product.name,
+                quantity = 1,
+                unit = suggestion.product.unit,
+                unitPrice = suggestion.product.price,
+                purchased = false
+            )
+            
+            addListItem(newItem)
+        } catch (e: Exception) {
+            println("Erro ao adicionar produto da sugestão: ${e.message}")
+            _errorMessage.value = "Erro ao adicionar produto: ${e.message}"
+        }
+    }
+    
+    suspend fun getPurchasePatterns(): Map<String, Any> {
+        return try {
+            productSuggestionUseCase?.getPurchasePatterns() ?: emptyMap()
+        } catch (e: Exception) {
+            println("Erro ao obter padrões: ${e.message}")
+            emptyMap()
         }
     }
 }

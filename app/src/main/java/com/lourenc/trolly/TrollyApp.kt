@@ -16,6 +16,7 @@ import com.lourenc.trolly.domain.usecase.ListItemUseCase
 import com.lourenc.trolly.domain.usecase.ShoppingListUseCase
 import com.lourenc.trolly.domain.usecase.ListItemUseCaseImpl
 import com.lourenc.trolly.domain.usecase.ShoppingListUseCaseImpl
+import com.lourenc.trolly.domain.usecase.ProductSuggestionUseCase
 import com.lourenc.trolly.di.AppModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +42,9 @@ class TrollyApp : Application() {
         private set
         
     lateinit var bulkListUseCase: BulkListUseCase
+        private set
+        
+    lateinit var productSuggestionUseCase: ProductSuggestionUseCase
         private set
 
     override fun onCreate() {
@@ -72,6 +76,7 @@ class TrollyApp : Application() {
             shoppingListUseCase = AppModule.provideShoppingListUseCase(shoppingListRepository, listItemRepository)
             listItemUseCase = AppModule.provideListItemUseCase(listItemRepository)
             bulkListUseCase = AppModule.provideBulkListUseCase(shoppingListRepository, listItemRepository)
+            productSuggestionUseCase = AppModule.provideProductSuggestionUseCase(database.listItemDao(), marketProductRepository)
             Log.d("TrollyApp", "Use cases created successfully")
             
             // Inicializa produtos padrão

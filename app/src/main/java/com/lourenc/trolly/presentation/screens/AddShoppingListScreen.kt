@@ -106,7 +106,7 @@ fun AddShoppingListScreen(navController: androidx.navigation.NavController, view
         onDismiss = { navController.popBackStack() },
         viewModel = viewModel
     )
-}
+} 
 
 // Função para uso como modal
 @OptIn(ExperimentalMaterial3Api::class)

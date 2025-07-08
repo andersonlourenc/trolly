@@ -15,6 +15,7 @@ import com.lourenc.trolly.domain.usecase.ListItemUseCase
 import com.lourenc.trolly.domain.usecase.ShoppingListUseCase
 import com.lourenc.trolly.domain.usecase.ListItemUseCaseImpl
 import com.lourenc.trolly.domain.usecase.ShoppingListUseCaseImpl
+import com.lourenc.trolly.domain.usecase.ProductSuggestionUseCase
 import com.lourenc.trolly.presentation.viewmodel.ShoppingListViewModel
 import com.lourenc.trolly.presentation.viewmodel.ShoppingListViewModelFactory
 
@@ -57,19 +58,28 @@ object AppModule {
         return BulkListUseCaseImpl(shoppingListRepository, listItemRepository)
     }
     
+    fun provideProductSuggestionUseCase(
+        listItemDao: ListItemDao,
+        marketProductRepository: MarketProductRepository
+    ): ProductSuggestionUseCase {
+        return ProductSuggestionUseCase(listItemDao, marketProductRepository)
+    }
+    
     // ViewModel Factory
     fun provideShoppingListViewModelFactory(
         shoppingListUseCase: ShoppingListUseCase,
-        listItemUseCase: ListItemUseCase
+        listItemUseCase: ListItemUseCase,
+        productSuggestionUseCase: ProductSuggestionUseCase
     ): ShoppingListViewModelFactory {
-        return ShoppingListViewModelFactory(shoppingListUseCase, listItemUseCase)
+        return ShoppingListViewModelFactory(shoppingListUseCase, listItemUseCase, productSuggestionUseCase)
     }
     
     // ViewModel
     fun provideShoppingListViewModel(
         shoppingListUseCase: ShoppingListUseCase,
-        listItemUseCase: ListItemUseCase
+        listItemUseCase: ListItemUseCase,
+        productSuggestionUseCase: ProductSuggestionUseCase
     ): ShoppingListViewModel {
-        return ShoppingListViewModel(shoppingListUseCase, listItemUseCase)
+        return ShoppingListViewModel(shoppingListUseCase, listItemUseCase, productSuggestionUseCase)
     }
 } 

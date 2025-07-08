@@ -118,10 +118,10 @@ fun InsightsScreen(navController: NavController, viewModel: ShoppingListViewMode
                 }
             }
         } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
                     .padding(horizontal = TrollySpacing.md)
             ) {
                 // Cards de estatísticas fixos no topo
@@ -259,24 +259,24 @@ fun StatCard(
             containerColor = color
         ),
         elevation = CardDefaults.cardElevation(0.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(TrollySpacing.md),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(TrollySpacing.md),
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
+                            Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                                contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(TrollySpacing.xs))
-                Text(
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(TrollySpacing.xs))
+                            Text(
                     text = title,
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White.copy(alpha = 0.9f),
@@ -284,7 +284,7 @@ fun StatCard(
                 )
             }
             
-            Text(
+                        Text(
                 text = value,
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
@@ -339,7 +339,7 @@ fun DetailedExpenseAnalysis(
                     val heightRatio = if (monthlyExpense > 0) (monthlyExpense / (monthlyExpense + lastListValue)).toFloat().coerceIn(0.1f, 1f) else 0.1f
                     
                     Box(
-                        modifier = Modifier
+                    modifier = Modifier
                             .width(40.dp)
                             .height((maxHeight * heightRatio).dp)
                             .background(
@@ -415,7 +415,7 @@ fun DetailedExpenseAnalysis(
                 totalLists = totalLists
             )
             
-            Spacer(modifier = Modifier.height(TrollySpacing.md))
+                    Spacer(modifier = Modifier.height(TrollySpacing.md))
 
             if (monthlyExpense > 0 && lastListValue > 0) {
                 val percentage = ((lastListValue / monthlyExpense) * 100).toFloat()
@@ -493,7 +493,7 @@ fun ExpensePatternAnalysis(
             color = MaterialTheme.colorScheme.onSurface
         )
         
-        Spacer(modifier = Modifier.height(TrollySpacing.sm))
+                    Spacer(modifier = Modifier.height(TrollySpacing.sm))
         
         val patterns = mutableListOf<String>()
 
