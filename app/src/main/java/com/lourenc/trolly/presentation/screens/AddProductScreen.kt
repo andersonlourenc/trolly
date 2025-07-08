@@ -3,6 +3,8 @@ package com.lourenc.trolly.presentation.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -130,13 +132,24 @@ fun ProductItemCard(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-            IconButton(onClick = onAdd) {
+            FloatingActionButton(
+                onClick = onAdd,
+                modifier = Modifier.size(40.dp),
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                shape = CircleShape,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 8.dp
+                )
+            ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Adicionar",
-                    tint = MaterialTheme.colorScheme.primary
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
+
     }
-} 
+}

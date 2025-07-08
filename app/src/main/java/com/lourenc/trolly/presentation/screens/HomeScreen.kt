@@ -128,7 +128,7 @@ fun HomeScreen(navController: NavController, viewModel: ShoppingListViewModel) {
         val isLoading by viewModel.isLoading.observeAsState(false)
         val errorMessage by viewModel.errorMessage.observeAsState(null)
         
-    val carouselImages = listOf(R.drawable.churras, R.drawable.niver, R.drawable.receita)
+    val carouselImages = listOf(R.drawable.carousel1, R.drawable.carousel2, R.drawable.carousel3)
     val pagerState = rememberPagerState()
     val cardHeight = 200.dp
 
